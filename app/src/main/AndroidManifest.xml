@@ -49,8 +49,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.CityChooseActivity"
-            android:parentActivityName=".MainActivity">
+        <activity android:name=".activity.CityChooseActivity">
 
         </activity>
     </application>

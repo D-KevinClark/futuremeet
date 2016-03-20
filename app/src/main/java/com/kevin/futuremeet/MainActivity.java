@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NearbyFragment;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FutureMeetFragment mFutureMeetFragment;
     NewsFragment mNewsFragment;
     MeFragment mMeFragment;
+    DestChooseFragment mDestChooseFragment;
 
     //record the id of the selected tab image
     private int mSelectedTabImageID;
@@ -112,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.futuremeet_tab_layout:
                 mSelectedTabImageID=R.id.futuremeet_image;
-                mFutureMeetFragment=FutureMeetFragment.newInstance(null,null);
-                fragmentTransaction.replace(R.id.fragment_container,mFutureMeetFragment);
+                mDestChooseFragment=DestChooseFragment.newInstance(null,null);
+                fragmentTransaction.replace(R.id.fragment_container,mDestChooseFragment);
                 ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.futuremeet_selected);
                 mFutureText.setTextColor(0xFFFF4081);
                 break;

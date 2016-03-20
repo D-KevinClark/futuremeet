@@ -15,19 +15,29 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/lng_city"
+        android:id="@+id/current_city_textview"
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="40dp"
         android:background="@drawable/current_location_city_selector"
-        android:clickable="true"
+        android:clickable="false"
         android:focusable="false"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:text="武汉"
         android:textColor="#ffffff"
         android:textSize="16sp" />
+
+    <ProgressBar
+        android:id="@+id/location_progressbar"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="64dip"
+        android:layout_marginTop="13dp" />
 
     <View
         android:layout_width="match_parent"

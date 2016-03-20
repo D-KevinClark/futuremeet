@@ -14,4 +14,5 @@
     <string name="input_city_name_or_pinyin">城市名/拼音</string>
     <string name="sorry_no_cities_found">抱歉,暂时没有找到相关城市</string>
     <string name="choose_city">选择城市</string>
+    <string name="is_locating">正在定位...</string>
 </resources>

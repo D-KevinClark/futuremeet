@@ -2,17 +2,11 @@ package com.kevin.futuremeet.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.kevin.futuremeet.R;
 
 
@@ -34,25 +28,10 @@ public class FutureMeetFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private LocationClient mLocationClient=null;
     TextView textView;
 
 
-    /**
-     * A listener for the location result,deal the Location Info here
-     */
-    private BDLocationListener myLocationListener=new BDLocationListener() {
-        @Override
-        public void onReceiveLocation(BDLocation bdLocation) {
-            if (bdLocation.getLocType() == BDLocation.TypeNetWorkLocation) {
 
-            Log.i("BaiduLocationApiDem", bdLocation.getCity());
-                textView.setText(bdLocation.getCity());
-            }else{
-                Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -90,9 +69,7 @@ public class FutureMeetFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mLocationClient = new LocationClient(getContext().getApplicationContext());
-        mLocationClient.registerLocationListener(myLocationListener);
-        initLocationOption();
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_future_meet, container, false);
         textView = (TextView) root.findViewById(R.id.location_text);
@@ -102,18 +79,9 @@ public class FutureMeetFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mLocationClient.start();
-    }
+     }
 
-    /**
-     * set some option to the LocationClient,like Mode,or Address needed
-     */
-    private void initLocationOption() {
-        LocationClientOption locationClientOption = new LocationClientOption();
-        locationClientOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
-        locationClientOption.setIsNeedAddress(true);
-        mLocationClient.setLocOption(locationClientOption);
-    }
+
 
 //    // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {
