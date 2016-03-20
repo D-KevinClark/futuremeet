@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">未遇</string>
+    <string name="nearby">附近</string>
+    <string name="futuremeet">未遇</string>
+    <string name="message">消息</string>
+    <string name="me">我</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="location_failure">定位失败，请检查网络</string>
+    <string name="location_city">定位城市</string>
+    <string name="hangzhou">杭州</string>
+    <string name="current_location_city">当前定位城市</string>
+</resources>
