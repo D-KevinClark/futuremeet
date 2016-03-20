@@ -17,8 +17,8 @@ public class LetterListView extends View {
 
     OnTouchingLetterChangedListener onTouchingLetterChangedListener;
 
-    String[] b = {"定位", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
-            "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+    String[] b = {"定位", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
+            "L", "M", "N", "P", "Q", "R", "S", "T",  "W", "X",
             "Y", "Z"};
 
     int choose = -1;
@@ -57,12 +57,8 @@ public class LetterListView extends View {
         for (int i = 0; i < b.length; i++) {
             paint.setColor(Color.parseColor("#8c8c8c"));
             paint.setTextSize(26);
-            // paint.setTypeface(Typeface.DEFAULT_BOLD);
             paint.setAntiAlias(true);
-            /*if (i == choose) {
-                paint.setColor(Color.parseColor("#3399ff"));
-				paint.setFakeBoldText(true);
-			}*/
+
             float xPos = width / 2 - paint.measureText(b[i]) / 2;
             float yPos = singleHeight * i + singleHeight;
             canvas.drawText(b[i], xPos, yPos, paint);

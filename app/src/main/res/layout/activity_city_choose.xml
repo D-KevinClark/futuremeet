@@ -6,8 +6,23 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     tools:context="com.futuremeet.activity.CityChooseActivity">
 
+    <EditText
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/search_city_edittext"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:lines="1"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/white"
+        android:drawableLeft="@drawable/search_city"
+        android:drawablePadding="5dp"
+        android:hint="@string/input_city_name_or_pinyin"
+        android:padding="10dip"
+        android:textSize="16dp" >
+    </EditText>
 
     <ListView
+        android:layout_below="@id/search_city_edittext"
         android:id="@+id/all_city_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,12 +31,39 @@
         android:dividerHeight="0dp"
         android:scrollbars="none" />
 
+    <ListView
+        android:id="@+id/search_city_result_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_city_edittext"
+        android:layout_marginTop="7dp"
+        android:cacheColorHint="#00000000"
+        android:divider="#00000000"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/search_city_no_result_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_city_edittext"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/sorry_no_cities_found"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
 
     <com.kevin.futuremeet.customview.LetterListView
+        android:layout_below="@id/search_city_edittext"
         android:id="@+id/letters_sidebar_listview"
         android:layout_width="25dip"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_marginRight="2dp"
+        android:layout_marginBottom="@dimen/bottom_tab_height"
         android:layout_marginTop="7dp" />
 </RelativeLayout>

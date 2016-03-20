@@ -11,4 +11,6 @@
     <string name="location_city">定位城市</string>
     <string name="hangzhou">杭州</string>
     <string name="current_location_city">当前定位城市</string>
+    <string name="input_city_name_or_pinyin">输入城市名或拼音</string>
+    <string name="sorry_no_cities_found">抱歉,暂时没有找到相关城市</string>
 </resources>

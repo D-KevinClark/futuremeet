@@ -8,22 +8,28 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.CitiesListAdapter;
+import com.kevin.futuremeet.adapter.CitiesSearchResultAdapter;
 import com.kevin.futuremeet.beans.City;
 import com.kevin.futuremeet.customview.LetterListView;
 import com.kevin.futuremeet.database.CitiesDBHelper;
 import com.kevin.futuremeet.utility.PinYinUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,25 +37,33 @@ import java.util.List;
 import java.util.Map;
 
 public class CityChooseActivity extends AppCompatActivity implements
-        AbsListView.OnScrollListener,LetterListView.OnTouchingLetterChangedListener{
+        AbsListView.OnScrollListener, LetterListView.OnTouchingLetterChangedListener {
 
     private List<City> mCityList;
-    private CitiesDBHelper   mCityDBHelper;
+    private CitiesDBHelper mCityDBHelper;
     private ListView mAllcityListView;
 
     private TextView mLetterOverLay;
-    
-    private boolean mIsLetterOverlayReady=false;
+
+    private boolean mIsLetterOverlayReady = false;
 
     private Handler mOverlayHandler;
 
     private OverlayDismissThread mOverlayDismissThread;
 
-    private Map<String,Integer> mInitialIndexer;
+    private Map<String, Integer> mInitialIndexer;
 
     private CitiesListAdapter mCitiesListAdapter;
 
     private LetterListView mLetterListView;
+    private EditText mSearchCityEditText;
+    private ListView mCitySearchResultListView;
+    private TextView mCityNoFoundTextView;
+
+    private List<City> mSearchResultCityList;
+
+    private CitiesSearchResultAdapter mCitiesSearchResultAdapter;
+    private boolean isScroll;// indicate if the Cities ListView is scrolling because of direct touch or fling
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,38 +71,107 @@ public class CityChooseActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_city_choose);
         mAllcityListView = (ListView) findViewById(R.id.all_city_listview);
         mAllcityListView.setOnScrollListener(this);
-        mLetterListView= (LetterListView) findViewById(R.id.letters_sidebar_listview);
+        mLetterListView = (LetterListView) findViewById(R.id.letters_sidebar_listview);
         mLetterListView.setOnTouchingLetterChangedListener(this);
+        mSearchCityEditText = (EditText) findViewById(R.id.search_city_edittext);
+        mCitySearchResultListView = (ListView) findViewById(R.id.search_city_result_listview);
+        mCityNoFoundTextView = (TextView) findViewById(R.id.search_city_no_result_textview);
+        mSearchCityEditText = (EditText) findViewById(R.id.search_city_edittext);
+        mSearchCityEditText.addTextChangedListener(mSearchCityTextWhatcher);
         mCityDBHelper = new CitiesDBHelper(this);
-        mOverlayDismissThread=new OverlayDismissThread();
-        mOverlayHandler=new Handler();
+        mOverlayDismissThread = new OverlayDismissThread();
+        mOverlayHandler = new Handler();
+        mSearchResultCityList = new ArrayList<>();
 
         initAllCitise();
         initLetterOverLay();
 
 
-        mCitiesListAdapter=new CitiesListAdapter(this, mCityList);
+        mCitiesListAdapter = new CitiesListAdapter(this, mCityList);
         mAllcityListView.setAdapter(mCitiesListAdapter);
-        mInitialIndexer=mCitiesListAdapter.getInitialIndexer();
+        //init the sidebar letter ListView user the adapter which contains all the cities
+        mInitialIndexer = mCitiesListAdapter.getInitialIndexer();
+
+        mCitiesSearchResultAdapter = new CitiesSearchResultAdapter(this, mSearchResultCityList);
+        mCitySearchResultListView.setAdapter(mCitiesSearchResultAdapter);
 
     }
+
+    private void getResultCityList(String keyword) {
+        SQLiteDatabase db = mCityDBHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery(
+                "select * from city where name like \"%" + keyword
+                        + "%\" or pinyin like \"%" + keyword + "%\"", null);
+        City city;
+        while (cursor.moveToNext()) {
+            city = new City(cursor.getString(1), cursor.getString(2));
+            mSearchResultCityList.add(city);
+        }
+        cursor.close();
+        db.close();
+
+        Collections.sort(mSearchResultCityList, comparator);
+    }
+
+
+    /**
+     * a text watcher for the city search edittext
+     */
+    private final TextWatcher mSearchCityTextWhatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.toString() == null || "".equals(s.toString())) {
+                mLetterListView.setVisibility(View.VISIBLE);
+                mAllcityListView.setVisibility(View.VISIBLE);
+                mCitySearchResultListView.setVisibility(View.GONE);
+                mCityNoFoundTextView.setVisibility(View.GONE);
+            } else {
+                if (mSearchResultCityList != null) mSearchResultCityList.clear();
+                mLetterListView.setVisibility(View.GONE);
+                mAllcityListView.setVisibility(View.GONE);
+                //get the result cities
+                getResultCityList(s.toString());
+
+                Log.i("searchresult", String.valueOf(mSearchResultCityList.size()));
+                if (mSearchResultCityList.size() <= 0) {
+                    mCityNoFoundTextView.setVisibility(View.VISIBLE);
+                    mCitySearchResultListView.setVisibility(View.GONE);
+                } else {
+                    mCityNoFoundTextView.setVisibility(View.GONE);
+                    mCitySearchResultListView.setVisibility(View.VISIBLE);
+                    mCitiesSearchResultAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     /**
      * get all the city data into the ArrayList for adapter to show them
      */
     private void initAllCitise() {
-        List<City> allCities=new ArrayList<>();
+        List<City> allCities = new ArrayList<>();
         //add these two is only for the "当前定位城市" label showing
         // and the "全部城市" label showing, no actual meaning
-        allCities.add(new City("定位","0"));
-        allCities.add(new City("全部", "0"));
+        allCities.add(new City("定位", "0"));
+        allCities.add(new City("全部", "1"));
         allCities.addAll(getCityList());
-        mCityList=allCities;
+        mCityList = allCities;
     }
 
 
     /**
      * get the cities which have been sorted by the initial of the PinYin
+     *
      * @return
      */
     private ArrayList<City> getCityList() {
@@ -124,7 +207,7 @@ public class CityChooseActivity extends AppCompatActivity implements
     /**
      * init the overlay for showing the current initial
      */
-    private void initLetterOverLay(){
+    private void initLetterOverLay() {
         mIsLetterOverlayReady = true;
         LayoutInflater inflater = LayoutInflater.from(this);
         mLetterOverLay = (TextView) inflater.inflate(R.layout.letter_overlay, null);
@@ -135,18 +218,21 @@ public class CityChooseActivity extends AppCompatActivity implements
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT);
-        WindowManager windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         windowManager.addView(mLetterOverLay, lp);
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+        if (scrollState == SCROLL_STATE_TOUCH_SCROLL
+                || scrollState == SCROLL_STATE_FLING) {
+            isScroll = true;
+        }
     }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+        if (!isScroll) return;
         if (!mIsLetterOverlayReady) return;
         String text;
         String pinyin = mCityList.get(firstVisibleItem).getPinyin();
@@ -165,12 +251,14 @@ public class CityChooseActivity extends AppCompatActivity implements
 
     /**
      * invoked when the letter list is been touched
+     *
      * @param s
      */
     @Override
     public void onTouchingLetterChanged(String s) {
-        if (mInitialIndexer==null)return;
-        if (mInitialIndexer.get(s)==null) return;
+        isScroll = false;
+        if (mInitialIndexer == null) return;
+        if (mInitialIndexer.get(s) == null) return;
         int position = mInitialIndexer.get(s);
         //the follow method is to make the scroll animation stop immediately
         mAllcityListView.dispatchTouchEvent(
