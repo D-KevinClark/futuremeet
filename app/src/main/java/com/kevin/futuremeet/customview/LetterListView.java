@@ -17,7 +17,7 @@ public class LetterListView extends View {
 
     OnTouchingLetterChangedListener onTouchingLetterChangedListener;
 
-    String[] b = {"定位", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
+    String[] b = {"*", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
             "L", "M", "N", "P", "Q", "R", "S", "T",  "W", "X",
             "Y", "Z"};
 

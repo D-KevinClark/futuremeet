@@ -3,35 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
     tools:context="com.futuremeet.activity.CityChooseActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/city_choose_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        />
+
     <EditText
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_below="@id/city_choose_toolbar"
         android:id="@+id/search_city_edittext"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:lines="1"
         android:layout_marginBottom="10dp"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="@android:color/white"
         android:drawableLeft="@drawable/search_city"
         android:drawablePadding="5dp"
         android:hint="@string/input_city_name_or_pinyin"
+        android:lines="1"
         android:padding="10dip"
-        android:textSize="16dp" >
-    </EditText>
+        android:textSize="16dp"/>
 
     <ListView
-        android:layout_below="@id/search_city_edittext"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:id="@+id/all_city_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/search_city_edittext"
         android:cacheColorHint="#00000000"
         android:divider="#00000000"
         android:dividerHeight="0dp"
         android:scrollbars="none" />
 
     <ListView
+        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:id="@+id/search_city_result_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,6 +56,7 @@
         android:visibility="gone" />
 
     <TextView
+        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:id="@+id/search_city_no_result_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,12 +70,12 @@
 
 
     <com.kevin.futuremeet.customview.LetterListView
-        android:layout_below="@id/search_city_edittext"
         android:id="@+id/letters_sidebar_listview"
         android:layout_width="25dip"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="2dp"
+        android:layout_below="@id/search_city_edittext"
         android:layout_marginBottom="@dimen/bottom_tab_height"
-        android:layout_marginTop="7dp" />
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="@dimen/bottom_tab_height" />
 </RelativeLayout>

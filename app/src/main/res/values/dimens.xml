@@ -9,4 +9,5 @@
     <dimen name="cities_list_devider_left_margin">10dp</dimen>
     <dimen name="cities_list_devider_right_margin">25dp</dimen>
     <dimen name="initial_rect_size">48dp</dimen>
+    <dimen name="toolbar_elevation">4dp</dimen>
 </resources>

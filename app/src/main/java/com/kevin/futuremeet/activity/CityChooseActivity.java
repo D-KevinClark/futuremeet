@@ -4,10 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,7 +34,6 @@ import com.kevin.futuremeet.customview.LetterListView;
 import com.kevin.futuremeet.database.CitiesDBHelper;
 import com.kevin.futuremeet.utility.PinYinUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -62,6 +66,8 @@ public class CityChooseActivity extends AppCompatActivity implements
 
     private List<City> mSearchResultCityList;
 
+    private Toolbar toolbar;
+
     private CitiesSearchResultAdapter mCitiesSearchResultAdapter;
     private boolean isScroll;// indicate if the Cities ListView is scrolling because of direct touch or fling
 
@@ -77,6 +83,9 @@ public class CityChooseActivity extends AppCompatActivity implements
         mCitySearchResultListView = (ListView) findViewById(R.id.search_city_result_listview);
         mCityNoFoundTextView = (TextView) findViewById(R.id.search_city_no_result_textview);
         mSearchCityEditText = (EditText) findViewById(R.id.search_city_edittext);
+        initToolBar();
+
+
         mSearchCityEditText.addTextChangedListener(mSearchCityTextWhatcher);
         mCityDBHelper = new CitiesDBHelper(this);
         mOverlayDismissThread = new OverlayDismissThread();
@@ -95,6 +104,14 @@ public class CityChooseActivity extends AppCompatActivity implements
         mCitiesSearchResultAdapter = new CitiesSearchResultAdapter(this, mSearchResultCityList);
         mCitySearchResultListView.setAdapter(mCitiesSearchResultAdapter);
 
+    }
+
+    private void initToolBar() {
+        toolbar= (Toolbar) findViewById(R.id.city_choose_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar=getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.choose_city);
     }
 
     private void getResultCityList(String keyword) {
@@ -176,7 +193,7 @@ public class CityChooseActivity extends AppCompatActivity implements
      */
     private ArrayList<City> getCityList() {
         ArrayList<City> list = new ArrayList<City>();
-        SQLiteDatabase db = mCityDBHelper.getWritableDatabase();
+        SQLiteDatabase db = mCityDBHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from city", null);
         City city;
         while (cursor.moveToNext()) {
