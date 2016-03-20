@@ -21,7 +21,12 @@ public class CitiesListAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
     private List<City> cityList;//all the cities
-    private HashMap<String,Integer> initialIndexer;
+
+    public HashMap<String, Integer> getInitialIndexer() {
+        return initialIndexer;
+    }
+
+    public HashMap<String,Integer> initialIndexer;
     
     final int VIEW_TYPE = 3;
 
@@ -51,6 +56,8 @@ public class CitiesListAdapter extends BaseAdapter {
             }
         }
     }
+
+
 
     @Override
     public int getViewTypeCount() {

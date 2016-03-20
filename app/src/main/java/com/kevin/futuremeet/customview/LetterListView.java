@@ -71,16 +71,6 @@ public class LetterListView extends View {
     }
 
 
-//    /**
-//     *
-//     * @param event
-//     * @return
-//     */
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//
-//    }
-
     /**
      * handle the touch event when user touch the letter side bar to choose a letter, including make
      * the back ground become dark and invoke the Listener for letter-changing

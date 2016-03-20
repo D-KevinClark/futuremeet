@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.CitiesListAdapter;
 import com.kevin.futuremeet.beans.City;
+import com.kevin.futuremeet.customview.LetterListView;
 import com.kevin.futuremeet.database.CitiesDBHelper;
 import com.kevin.futuremeet.utility.PinYinUtil;
 
@@ -25,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
-public class CityChooseActivity extends AppCompatActivity implements AbsListView.OnScrollListener{
+public class CityChooseActivity extends AppCompatActivity implements
+        AbsListView.OnScrollListener,LetterListView.OnTouchingLetterChangedListener{
 
     private List<City> mCityList;
     private CitiesDBHelper   mCityDBHelper;
@@ -40,12 +45,20 @@ public class CityChooseActivity extends AppCompatActivity implements AbsListView
 
     private OverlayDismissThread mOverlayDismissThread;
 
+    private Map<String,Integer> mInitialIndexer;
+
+    private CitiesListAdapter mCitiesListAdapter;
+
+    private LetterListView mLetterListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_choose);
         mAllcityListView = (ListView) findViewById(R.id.all_city_listview);
         mAllcityListView.setOnScrollListener(this);
+        mLetterListView= (LetterListView) findViewById(R.id.letters_sidebar_listview);
+        mLetterListView.setOnTouchingLetterChangedListener(this);
         mCityDBHelper = new CitiesDBHelper(this);
         mOverlayDismissThread=new OverlayDismissThread();
         mOverlayHandler=new Handler();
@@ -54,7 +67,10 @@ public class CityChooseActivity extends AppCompatActivity implements AbsListView
         initLetterOverLay();
 
 
-        mAllcityListView.setAdapter(new CitiesListAdapter(this,mCityList));
+        mCitiesListAdapter=new CitiesListAdapter(this, mCityList);
+        mAllcityListView.setAdapter(mCitiesListAdapter);
+        mInitialIndexer=mCitiesListAdapter.getInitialIndexer();
+
     }
 
     /**
@@ -145,6 +161,34 @@ public class CityChooseActivity extends AppCompatActivity implements AbsListView
         mOverlayHandler.removeCallbacks(mOverlayDismissThread);
         // delay the execution for 1 second ,then make the overlay disappeared
         mOverlayHandler.postDelayed(mOverlayDismissThread, 1000);
+    }
+
+    /**
+     * invoked when the letter list is been touched
+     * @param s
+     */
+    @Override
+    public void onTouchingLetterChanged(String s) {
+        if (mInitialIndexer==null)return;
+        if (mInitialIndexer.get(s)==null) return;
+        int position = mInitialIndexer.get(s);
+        //the follow method is to make the scroll animation stop immediately
+        mAllcityListView.dispatchTouchEvent(
+                MotionEvent.obtain(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_CANCEL,
+                        0,
+                        0,
+                        0)
+        );
+        mAllcityListView.setSelection(position);
+        mLetterOverLay.setText(s);
+        mLetterOverLay.setVisibility(View.VISIBLE);
+        mOverlayHandler.removeCallbacks(mOverlayDismissThread);
+        // 延迟一秒后执行，让overlay为不可见
+        mOverlayHandler.postDelayed(mOverlayDismissThread, 1000);
+
     }
 
     /**
