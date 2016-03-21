@@ -15,4 +15,7 @@
     <string name="sorry_no_cities_found">抱歉,暂时没有找到相关城市</string>
     <string name="choose_city">选择城市</string>
     <string name="is_locating">正在定位...</string>
+    <string name="place_to_be">将要去哪</string>
+    <string name="seach">搜索</string>
+    <string name="not_relevant_place_in_curr_city">该城市没有找到相关地点</string>
 </resources>
