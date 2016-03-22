@@ -39,6 +39,22 @@
             android:textColor="@android:color/white" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/searching_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:gravity="center">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Small"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/is_searching_relevant_place"/>
+    </LinearLayout>
 
 
 
@@ -49,6 +65,7 @@
 
     <TextView
         android:id="@+id/empty"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/not_relevant_place_in_curr_city"/>
@@ -57,8 +74,10 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/tell_me_where_textview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="here is dest choose fragment" />
+        android:gravity="center"
+        android:text="告诉我你要去哪里呢" />
 
 </LinearLayout>

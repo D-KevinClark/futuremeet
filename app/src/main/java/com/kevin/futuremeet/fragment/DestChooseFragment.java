@@ -13,9 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -63,6 +65,9 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     private SimpleAdapter mPoiListAdapter;
     private SearchView mDestSearchView;
     private Button mPoiSearchButton;
+    private TextView mEmptyView;//show this when there are no search result for the poi search
+    private TextView mTellWhereTextView;//show this when user input nothing in the poi search view
+    private LinearLayout mSearchingIndicator;//show this when performing the poi searching
 
 
     private static final String POI_NAME="poi_name";
@@ -134,10 +139,10 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                     mPoiSearchButton.setEnabled(true);
                 }else{//when the searchview is empty the listview should be empty too
                     mPoiSearchButton.setEnabled(false);
-                    if (mPoiList.size()>0){
-                        mPoiList.clear();
-                        mPoiListAdapter.notifyDataSetChanged();
-                    }
+                    mSearchResListView.setVisibility(View.GONE);
+                    mSearchingIndicator.setVisibility(View.GONE);
+                    mEmptyView.setVisibility(View.GONE);
+                    mTellWhereTextView.setVisibility(View.VISIBLE);
                 }
                 return true;
             }
@@ -156,7 +161,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                     Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                mSearchingIndicator.setVisibility(View.VISIBLE);
+                mTellWhereTextView.setVisibility(View.GONE);
                 mPoiSearch.searchInCity((new PoiCitySearchOption())
                         .city(city)
                         .keyword(keyword)
@@ -166,11 +172,16 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     }
 
     /**
-     * init the list view for show pois by searching,instantiation for listview,arraylist,adapter,and
+     * i the list view for show pois by searching,instantiation for listview,arraylist,adapter,and
      * set it to the listview
      * @param root
      */
     private void initPoiListView(View root) {
+        //since these two view is associate with the list view , so find it here
+        mEmptyView= (TextView) root.findViewById(R.id.empty);
+        mTellWhereTextView = (TextView) root.findViewById(R.id.tell_me_where_textview);
+        mSearchingIndicator = (LinearLayout) root.findViewById(R.id.searching_indicator);
+
         mSearchResListView = (ListView) root.findViewById(R.id.dest_search_listview);
         mPoiList = new ArrayList<>();
         mPoiListAdapter=new SimpleAdapter(getContext(),
@@ -182,11 +193,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         mSearchResListView.setAdapter(mPoiListAdapter);
     }
 
-//    private void initSugSearch() {
-//        SDKInitializer.initialize(getActivity().getApplicationContext());
-//        mSugSearch = SuggestionSearch.newInstance();
-//        mSugSearch.setOnGetSuggestionResultListener(this);
-//    }
+
 
     /**
      * init the PoiSearch, instantiation and set the listener
@@ -291,6 +298,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     @Override
     public void onGetPoiResult(PoiResult poiResult) {
         if (poiResult == null || poiResult.getAllPoi() == null) {
+            mSearchingIndicator.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
             return;
         }
         if (mPoiList == null) mPoiList = new ArrayList<>();
@@ -324,12 +333,18 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            //when user delete the input every quickly, there will be some delay,and when user delete
-            //all the input, but there still Pois displayed in the list watch is inappropriate
-            if (mDestSearchView.getQuery().length()==0) mPoiList.clear();
+            mSearchingIndicator.setVisibility(View.GONE);
+            if (mPoiList.size()==0){
+                mEmptyView.setVisibility(View.VISIBLE);
+                mSearchResListView.setVisibility(View.GONE);
+            }else{
+                mEmptyView.setVisibility(View.GONE);
+                mSearchResListView.setVisibility(View.VISIBLE);
+            }
             mPoiListAdapter.notifyDataSetChanged();
         }
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {
