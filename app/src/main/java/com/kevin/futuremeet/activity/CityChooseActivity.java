@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -120,6 +119,7 @@ public class CityChooseActivity extends AppCompatActivity implements
 
 
         mSearchCityEditText.addTextChangedListener(mSearchCityTextWhatcher);
+
         mCityDBHelper = new CitiesDBHelper(this);
         mOverlayDismissThread = new OverlayDismissThread();
         mOverlayHandler = new Handler();

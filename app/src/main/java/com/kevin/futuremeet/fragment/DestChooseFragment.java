@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -328,6 +329,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         protected Void doInBackground(List<PoiInfo>... params) {
             List<PoiInfo> pois=params[0];
             for (PoiInfo info: pois) {
+                //we don't need the bus line poi and the subway line poi
                 if (info.type== PoiInfo.POITYPE.BUS_LINE||info.type==PoiInfo.POITYPE.SUBWAY_LINE){
                     continue;
                 }

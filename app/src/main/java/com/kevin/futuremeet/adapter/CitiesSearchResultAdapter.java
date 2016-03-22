@@ -1,7 +1,6 @@
 package com.kevin.futuremeet.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.beans.City;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

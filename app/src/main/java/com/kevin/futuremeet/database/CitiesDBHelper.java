@@ -29,12 +29,17 @@ public class CitiesDBHelper extends SQLiteOpenHelper {
     public CitiesDBHelper(Context context) {
         super(context, CitiesContract.DB_NAME, null, DB_VERSION);
         this.mContext = context;
+        //at first, I perform this copy function at the onCreate method , but because the logic in my
+        //code there is a place where a sql search is performed right after getReadableDatabase() is
+        //called,I guess at that point the data has not been fully input to the local system database
+        //so I always get a "no such table" error , so here we go, put it here and guarantee that database
+        //has been put in the system when it's about to be used
+        copyDataBase();
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        copyDataBase();
     }
 
     @Override
@@ -48,7 +53,6 @@ public class CitiesDBHelper extends SQLiteOpenHelper {
      * handled. This is done by transfering bytestream.
      */
     private void copyDataBase() {
-        Log.i("meet database","here is copy data");
 //        // Path to the just created empty db
         String adFileName = CitiesContract.DB_PATH + CitiesContract.DB_NAME;
 

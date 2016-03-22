@@ -39,7 +39,7 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="8qcNdv0cLGO4uroIZsBzy2zA" />
+            android:value="8HhHiBI9sqT8UMHVG29nbbCI" />
 
         <activity android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" >
