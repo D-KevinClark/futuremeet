@@ -69,6 +69,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     private TextView mTellWhereTextView;//show this when user input nothing in the poi search view
     private LinearLayout mSearchingIndicator;//show this when performing the poi searching
 
+    private View root;//this is the root view for this fragment
+
 
     private static final String POI_NAME="poi_name";
     private static final String POI_ADDRESS="poi_address";
@@ -112,20 +114,29 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_dest_choose, container, false);
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        initToolbar(root);
-        initLocationFunc();
-        mLocationClient.start();
-        initPoiSearch();
-        initPoiListView(root);
-        initPoiSearchView(root);
-        initPoiSearchButton(root);
-
+        root = inflater.inflate(R.layout.fragment_dest_choose, container, false);
         return root;
     }
 
-    private void initPoiSearchView(View root) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        initToolbar();
+        initLocationFunc();
+        mLocationClient.start();
+        initPoiSearch();
+        initPoiListView();
+        initPoiSearchView();
+        initPoiSearchButton();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    private void initPoiSearchView() {
         mDestSearchView = (SearchView) root.findViewById(R.id.dest_place_searchview);
         mDestSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -149,7 +160,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         });
     }
 
-    private void initPoiSearchButton(View root){
+    private void initPoiSearchButton(){
         mPoiSearchButton = (Button) root.findViewById(R.id.poi_search_button);
         mPoiSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,9 +185,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     /**
      * i the list view for show pois by searching,instantiation for listview,arraylist,adapter,and
      * set it to the listview
-     * @param root
      */
-    private void initPoiListView(View root) {
+    private void initPoiListView() {
         //since these two view is associate with the list view , so find it here
         mEmptyView= (TextView) root.findViewById(R.id.empty);
         mTellWhereTextView = (TextView) root.findViewById(R.id.tell_me_where_textview);
@@ -257,7 +267,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         }
     }
 
-    private void initToolbar(View root) {
+    private void initToolbar() {
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         mToolbar = (Toolbar) root.findViewById(R.id.dest_choose_toolbar);
         appCompatActivity.setSupportActionBar(mToolbar);

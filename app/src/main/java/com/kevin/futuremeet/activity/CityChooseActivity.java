@@ -228,7 +228,6 @@ public class CityChooseActivity extends AppCompatActivity implements
                 //get the result cities
                 getResultCityList(s.toString());
 
-                Log.i("searchresult", String.valueOf(mSearchResultCityList.size()));
                 if (mSearchResultCityList.size() <= 0) {
                     mCityNoFoundTextView.setVisibility(View.VISIBLE);
                     mCitySearchResultListView.setVisibility(View.GONE);

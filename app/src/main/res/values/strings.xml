@@ -19,4 +19,5 @@
     <string name="seach">搜索</string>
     <string name="not_relevant_place_in_curr_city">该城市没有找到相关地点</string>
     <string name="is_searching_relevant_place">正在查找相关地点</string>
+    <string name="accentColor">#FF4081</string>
 </resources>

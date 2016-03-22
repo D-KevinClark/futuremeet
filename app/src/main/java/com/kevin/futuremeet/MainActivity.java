@@ -1,5 +1,6 @@
 package com.kevin.futuremeet;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -42,8 +43,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     MeFragment mMeFragment;
     DestChooseFragment mDestChooseFragment;
 
-    //record the id of the selected tab image
-    private int mSelectedTabImageID;
+    private static final  String TAG_FRAGMENT_DESTCHOOSE="tag_dest_choose_fragment";
+    private static final  String TAG_FRAGMENT_ME="tag_me_fragment";
+    private static final  String TAG_FRAGMENT_NEARBY="tag_nearby_fragment";
+    private static final  String TAG_FRAGMENT_NEWS="tag_news_fragment";
+
+    private static final String KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID="selected_tag_layout_id";
+
+    //record the id of the selected tab layout id
+    private int mSelectedTabLayoutID;
 
     FragmentManager mFragmentManager=null;
 
@@ -51,20 +59,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+            mFragmentManager = getSupportFragmentManager();
         setContentView(R.layout.activity_main);
-
         initViews();
         initEvents();
 
+        //these code is prepared for the case that activity is killed by the system for resource
+        //if so, the UI instance may still be in the memory but we lost the reference to them,
+        //then by the logic in my code , the fragment will be recreate, in this way, there may be
+        //fragment overlapping to each other
+        if (savedInstanceState!=null) {
+            mSelectedTabLayoutID = savedInstanceState.getInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID);
 
+            mNearbyFragment = (NearbyFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEARBY);
+            mDestChooseFragment = (DestChooseFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_DESTCHOOSE);
+            mNewsFragment = (NewsFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEWS);
+            mMeFragment = (MeFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_ME);
+            //update the status of the bottom tab and the fragments show-hide status
+            updataTabAndFragStatus();
 
-        //init MainActivity so when use first come in, the nearby Fragment is selected
-        mFragmentManager = getSupportFragmentManager();
-        mFragmentManager.beginTransaction().
-                add(R.id.fragment_container,mNearbyFragment.newInstance(null,null)).commit();
-        mSelectedTabImageID=R.id.nearby_image;
-        mNearbyImage.setImageResource(R.drawable.nearby_selected);
-        mNearbyText.setTextColor(0xFFFF4081);
+        } else {
+            //init MainActivity so when use first come in, the nearby Fragment is selected
+            mNearbyFragment = NearbyFragment.newInstance(null, null);
+            mFragmentManager.beginTransaction().
+                    add(R.id.fragment_container,mNearbyFragment,TAG_FRAGMENT_NEARBY).commit();
+            mSelectedTabLayoutID=R.id.nearby_tab_layout;
+            mNearbyImage.setImageResource(R.drawable.nearby_selected);
+            mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
+        }
 
     }
 
@@ -97,68 +119,98 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mUserText = (TextView) findViewById(R.id.me_text);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (mFragmentManager == null) return;
-        int id = v.getId();
-        if (mSelectedTabImageID==id)return;//user click the tab that they are now in so do nothing
-        resetTabImageState(mSelectedTabImageID);
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        switch (id) {
+
+
+    /**
+     * settle the status of the bottom tab and fragment show-or-hide status according the selected
+     * bottom tab  image id
+     */
+    private void updataTabAndFragStatus(){
+        resetTabImageState();
+        FragmentTransaction fragmentTransaction=mFragmentManager.beginTransaction();
+        //first hide all the fragment
+        if (mNearbyFragment!=null)fragmentTransaction.hide(mNearbyFragment);
+        if (mDestChooseFragment!=null)fragmentTransaction.hide(mDestChooseFragment);
+        if (mNewsFragment!=null)fragmentTransaction.hide(mNewsFragment);
+        if (mMeFragment!=null)fragmentTransaction.hide(mMeFragment);
+
+        switch (mSelectedTabLayoutID) {
             case R.id.nearby_tab_layout:
-                mSelectedTabImageID=R.id.nearby_image;
-                mNearbyFragment=NearbyFragment.newInstance(null,null);
-                fragmentTransaction.replace(R.id.fragment_container, mNearbyFragment);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.nearby_selected);
-                mNearbyText.setTextColor(0xFFFF4081);
+                mSelectedTabLayoutID=R.id.nearby_tab_layout;
+                if (mNearbyFragment == null) {
+                    mNearbyFragment=NearbyFragment.newInstance(null,null);
+                    fragmentTransaction.add(R.id.fragment_container, mNearbyFragment,TAG_FRAGMENT_NEARBY);
+                }else {
+                    fragmentTransaction.show(mNearbyFragment);
+                }
+                mNearbyImage.setImageResource(R.drawable.nearby_selected);
+                mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.futuremeet_tab_layout:
-                mSelectedTabImageID=R.id.futuremeet_image;
-                mDestChooseFragment=DestChooseFragment.newInstance(null,null);
-                fragmentTransaction.replace(R.id.fragment_container,mDestChooseFragment);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.futuremeet_selected);
-                mFutureText.setTextColor(0xFFFF4081);
+                mSelectedTabLayoutID=R.id.futuremeet_tab_layout;
+                if (mDestChooseFragment == null) {
+                    mDestChooseFragment=DestChooseFragment.newInstance(null,null);
+                    fragmentTransaction.add(R.id.fragment_container, mDestChooseFragment,TAG_FRAGMENT_DESTCHOOSE);
+                }else {
+                    fragmentTransaction.show(mDestChooseFragment);
+                }
+                mFutureImage.setImageResource(R.drawable.futuremeet_selected);
+                mFutureText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.news_tab_layout:
-                mSelectedTabImageID=R.id.news_image;
-                mNewsFragment = NewsFragment.newInstance(null, null);
-                fragmentTransaction.replace(R.id.fragment_container, mNewsFragment);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.news_selected);
-                mNewsText.setTextColor(0xFFFF4081);
+                mSelectedTabLayoutID=R.id.news_tab_layout;
+                if (mNewsFragment == null) {
+                    mNewsFragment=NewsFragment.newInstance(null,null);
+                    fragmentTransaction.add(R.id.fragment_container, mNewsFragment,TAG_FRAGMENT_NEWS);
+                }else {
+                    fragmentTransaction.show(mNewsFragment);
+                }
+                mNewsImage.setImageResource(R.drawable.news_selected);
+                mNewsText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.me_layout:
-                mSelectedTabImageID=R.id.me_image;
-                mMeFragment = MeFragment.newInstance(null, null);
-                fragmentTransaction.replace(R.id.fragment_container, mMeFragment);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.user_selected);
-                mUserText.setTextColor(0xFFFF4081);
+                mSelectedTabLayoutID=R.id.me_layout;
+                if (mMeFragment == null) {
+                    mMeFragment = MeFragment.newInstance(null, null);
+                    fragmentTransaction.add(R.id.fragment_container, mMeFragment,TAG_FRAGMENT_ME);
+                }else {
+                    fragmentTransaction.show(mMeFragment);
+                }
+                mMeImage.setImageResource(R.drawable.user_selected);
+                mUserText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
         }
         fragmentTransaction.commit();
     }
 
-    /**
-     * @param mSelectedTabImageID
-     */
-    private void resetTabImageState(int mSelectedTabImageID) {
 
-        switch (mSelectedTabImageID) {
-            case R.id.nearby_image:
+    @Override
+    public void onClick(View v) {
+        if (mFragmentManager == null) return;
+        int id = v.getId();
+        if (mSelectedTabLayoutID==id)return;//user click the tab that they are now in so do nothing
+        mSelectedTabLayoutID=id;
+        updataTabAndFragStatus();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID,mSelectedTabLayoutID);
+    }
+
+    /**
+     * set the current corresponding tab image and text to normal, prepare for the change is about
+     * to coming
+     */
+    private void resetTabImageState() {
                 mNearbyText.setTextColor(0xffcccccc);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.nearby);
-                break;
-            case R.id.futuremeet_image:
+                mNearbyImage.setImageResource(R.drawable.nearby);
                 mFutureText.setTextColor(0xffcccccc);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.futuremeet);
-                break;
-            case R.id.news_image:
+                mFutureImage.setImageResource(R.drawable.futuremeet);
                 mNewsText.setTextColor(0xffcccccc);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.news);
-                break;
-            case R.id.me_image:
+                mNewsImage.setImageResource(R.drawable.news);
                 mUserText.setTextColor(0xffcccccc);
-                ((ImageView)findViewById(mSelectedTabImageID)).setImageResource(R.drawable.user);
-                break;
-        }
+                mMeImage.setImageResource(R.drawable.user);
     }
 }
