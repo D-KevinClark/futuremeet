@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -130,6 +132,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         initPoiListView();
         initPoiSearchView();
         initPoiSearchButton();
+
     }
 
     @Override
@@ -202,6 +205,18 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 new int[]{R.id.search_poi_name,R.id.search_poi_address}
                 );
         mSearchResListView.setAdapter(mPoiListAdapter);
+        mSearchResListView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                InputMethodManager inputMethodManager = (InputMethodManager) getContext()
+                        .getSystemService(getContext().INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    //hide the keyboard
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -335,7 +350,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 }
                 Map<String, String> map = new HashMap<>();
                 if (info.name != null&&info.address!=null) {
-                    map.put(POI_NAME,info.name);
+                    map.put(POI_NAME, info.name);
                     map.put(POI_ADDRESS, info.address);
                 }
                 mPoiList.add(map);
