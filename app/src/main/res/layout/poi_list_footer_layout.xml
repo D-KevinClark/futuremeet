@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/poi_list_footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/all_result_showed"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/poi_listview_footer_height"
+        android:gravity="center"
+        android:text="已显示所有结果" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/load_moro"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/poi_listview_footer_height"
+        android:gravity="center"
+        android:text="点击加载更多" />
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/is_loading"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/poi_listview_footer_height">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"/>
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正在加载"/>
+    </LinearLayout>
+
+</FrameLayout>

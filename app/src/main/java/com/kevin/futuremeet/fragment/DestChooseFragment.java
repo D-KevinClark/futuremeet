@@ -2,7 +2,6 @@ package com.kevin.futuremeet.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -44,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class DestChooseFragment extends Fragment implements OnGetPoiSearchResultListener{
+public class DestChooseFragment extends Fragment implements OnGetPoiSearchResultListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -56,15 +55,13 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
     public static final String CURR_CITY_NAME = "curr_city_name";
 
-    private String mCurrCity;
 
     private Toolbar mToolbar;
 
     private LocationClient mLocationClient;
-    private SharedPreferences mSharedPref;
     private PoiSearch mPoiSearch;
-    private ListView mSearchResListView;
-    private ArrayList<Map<String,String>> mPoiList;
+    private ListView mPoiListView;
+    private ArrayList<Map<String, String>> mPoiList;
     private SimpleAdapter mPoiListAdapter;
     private SearchView mDestSearchView;
     private Button mPoiSearchButton;
@@ -75,10 +72,22 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     private View root;//this is the root view for this fragment
 
 
-    private static final String POI_NAME="poi_name";
-    private static final String POI_ADDRESS="poi_address";
+    private static final String POI_NAME = "poi_name";
+    private static final String POI_ADDRESS = "poi_address";
+
+    private static final int POI_SEARCH_PAGESIEZ = 20;//set the page size of the poi search result
+    private int mPoiCuttPageNum = 0;//page number index  start at 0
+    private int mTotalPoiPageNum=0;//total page number start at 1
+    //click the search button to preform a poi search do not need the old poi data but click listview footer need
+    //so here this boolean is to indicate that
+    private boolean mIsPreviousPoiDataNeeded;
 
 
+    private View mAllPoiShowedFooter;
+    private View mIsloadingPoiFooter;
+    private View mLoadMorePoiFooter;
+
+    private String mCurrentPoiKeywords = null;
 
 
 //    private OnFragmentInteractionListener mListener;
@@ -124,7 +133,6 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         initToolbar();
         initLocationFunc();
         mLocationClient.start();
@@ -150,11 +158,11 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.length()>0){
+                if (newText.length() > 0) {
                     mPoiSearchButton.setEnabled(true);
-                }else{//when the searchview is empty the listview should be empty too
+                } else {//when the searchview is empty the listview should be empty too
                     mPoiSearchButton.setEnabled(false);
-                    mSearchResListView.setVisibility(View.GONE);
+                    mPoiListView.setVisibility(View.GONE);
                     mSearchingIndicator.setVisibility(View.GONE);
                     mEmptyView.setVisibility(View.GONE);
                     mTellWhereTextView.setVisibility(View.VISIBLE);
@@ -164,26 +172,49 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         });
     }
 
-    private void initPoiSearchButton(){
+    private void initPoiSearchButton() {
         mPoiSearchButton = (Button) root.findViewById(R.id.poi_search_button);
         mPoiSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String keyword=mDestSearchView.getQuery().toString();
-                String city = mToolbar.getTitle().toString();
+                String keyword = mDestSearchView.getQuery().toString();
+                mCurrentPoiKeywords = keyword;
+                String city = getCurrentCityfromPrefs();
+                mPoiCuttPageNum = 0;//reset the current poi page number
                 //is the location has failed, there no need and no way to proceed an poi search
-                if (city.equals(getString(R.string.is_locating))) {
+                if (city == null || city.equals(getString(R.string.is_locating))) {
                     Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mIsPreviousPoiDataNeeded=false;
                 mSearchingIndicator.setVisibility(View.VISIBLE);
                 mTellWhereTextView.setVisibility(View.GONE);
-                mPoiSearch.searchInCity((new PoiCitySearchOption())
-                        .city(city)
-                        .keyword(keyword)
-                        .pageCapacity(10));
+                searchPois(keyword, city, 0);
             }
         });
+    }
+
+
+    private void setCurrentCityToPrefs(String city) {
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .edit()
+                .putString(CurrentLocation.CURRENT_LOCAITON, city)
+                .apply();
+    }
+
+    private String getCurrentCityfromPrefs(){
+        String city=PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getString(CurrentLocation.CURRENT_LOCAITON, null);
+        return city;
+    }
+
+
+    private void searchPois(String keywords, String city, int pagenumber) {
+        mPoiSearch.searchInCity((new PoiCitySearchOption())
+                .city(city)
+                .keyword(keywords)
+                .pageCapacity(POI_SEARCH_PAGESIEZ)
+                .pageNum(pagenumber));
     }
 
     /**
@@ -192,20 +223,38 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
      */
     private void initPoiListView() {
         //since these two view is associate with the list view , so find it here
-        mEmptyView= (TextView) root.findViewById(R.id.empty);
+        mEmptyView = (TextView) root.findViewById(R.id.empty);
         mTellWhereTextView = (TextView) root.findViewById(R.id.tell_me_where_textview);
         mSearchingIndicator = (LinearLayout) root.findViewById(R.id.searching_indicator);
+        mPoiListView = (ListView) root.findViewById(R.id.dest_search_listview);
+        //init the footer of the listview
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View footerLayout = inflater.inflate(R.layout.poi_list_footer_layout, null);
+        mAllPoiShowedFooter = footerLayout.findViewById(R.id.all_result_showed);
+        mIsloadingPoiFooter = footerLayout.findViewById(R.id.is_loading);
+        mLoadMorePoiFooter = footerLayout.findViewById(R.id.load_moro);
+        mLoadMorePoiFooter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String city = getCurrentCityfromPrefs();
+                if (city==null||mCurrentPoiKeywords==null) return;
+                searchPois(mCurrentPoiKeywords,city,++mPoiCuttPageNum);
+                updataListFooterState(IS_LOADING_MORE);
+                mIsPreviousPoiDataNeeded=true;
+            }
+        });
 
-        mSearchResListView = (ListView) root.findViewById(R.id.dest_search_listview);
+        mPoiListView.setVisibility(View.GONE);
+        mPoiListView.addFooterView(footerLayout);
         mPoiList = new ArrayList<>();
-        mPoiListAdapter=new SimpleAdapter(getContext(),
+        mPoiListAdapter = new SimpleAdapter(getContext(),
                 mPoiList,
                 R.layout.search_poi_list_item,
-                new String[]{POI_NAME,POI_ADDRESS},
-                new int[]{R.id.search_poi_name,R.id.search_poi_address}
-                );
-        mSearchResListView.setAdapter(mPoiListAdapter);
-        mSearchResListView.setOnTouchListener(new View.OnTouchListener() {
+                new String[]{POI_NAME, POI_ADDRESS},
+                new int[]{R.id.search_poi_name, R.id.search_poi_address}
+        );
+        mPoiListView.setAdapter(mPoiListAdapter);
+        mPoiListView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 InputMethodManager inputMethodManager = (InputMethodManager) getContext()
@@ -219,14 +268,34 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         });
     }
 
+    private static final int CLICK_TO_LOAD_MORE=1;
+    private static final int IS_LOADING_MORE=2;
+    private static final int All_POI_SHOWED=3;
 
+    
+    private void updataListFooterState(int state) {
+        mIsloadingPoiFooter.setVisibility(View.GONE);
+        mAllPoiShowedFooter.setVisibility(View.GONE);
+        mLoadMorePoiFooter.setVisibility(View.GONE);
+        switch (state){
+            case CLICK_TO_LOAD_MORE:
+                mLoadMorePoiFooter.setVisibility(View.VISIBLE);
+                break;
+            case IS_LOADING_MORE:
+                mIsloadingPoiFooter.setVisibility(View.VISIBLE);
+                break;
+            case All_POI_SHOWED:
+                mAllPoiShowedFooter.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
 
     /**
      * init the PoiSearch, instantiation and set the listener
      */
-    private void initPoiSearch(){
+    private void initPoiSearch() {
         SDKInitializer.initialize(getActivity().getApplicationContext());
-        mPoiSearch=PoiSearch.newInstance();
+        mPoiSearch = PoiSearch.newInstance();
         mPoiSearch.setOnGetPoiSearchResultListener(this);
     }
 
@@ -239,16 +308,16 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         public void onReceiveLocation(BDLocation bdLocation) {
             if (bdLocation.getLocType() == BDLocation.TypeNetWorkLocation) {
                 String cityFullName = bdLocation.getCity();
-                mCurrCity = cityFullName.substring(0, cityFullName.length() - 1);
-                if (mSharedPref.getString(CurrentLocation.CURRENT_LOCAITON, null) == null) {
-                    mSharedPref.edit().putString(CurrentLocation.CURRENT_LOCAITON, mCurrCity).apply();
-                    if (mToolbar != null) mToolbar.setTitle(mCurrCity);
+                String city = cityFullName.substring(0, cityFullName.length() - 1);
+                if (getCurrentCityfromPrefs() == null) {
+                   setCurrentCityToPrefs(city);
+                    if (mToolbar != null) mToolbar.setTitle(city);
                 } else {
-                    if (mSharedPref.getString(CurrentLocation.CURRENT_LOCAITON, null).equals(mCurrCity)) {
+                    if (getCurrentCityfromPrefs().equals(city)) {
                         return;
                     } else {
-                        mSharedPref.edit().putString(CurrentLocation.CURRENT_LOCAITON, mCurrCity).apply();
-                        if (mToolbar != null) mToolbar.setTitle(mCurrCity);
+                        setCurrentCityToPrefs(city);
+                        if (mToolbar != null) mToolbar.setTitle(city);
                     }
                 }
                 mLocationClient.stop();
@@ -287,9 +356,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         mToolbar = (Toolbar) root.findViewById(R.id.dest_choose_toolbar);
         appCompatActivity.setSupportActionBar(mToolbar);
-        if (mSharedPref.getString(CurrentLocation.CURRENT_LOCAITON, null) != null) {
-            String currCity = mSharedPref.getString(CurrentLocation.CURRENT_LOCAITON, null);
-            mCurrCity = currCity;
+        String currCity=getCurrentCityfromPrefs();
+        if (currCity != null) {
             mToolbar.setTitle(currCity);
         } else {
             mToolbar.setTitle(R.string.is_locating);
@@ -326,10 +394,16 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         if (poiResult == null || poiResult.getAllPoi() == null) {
             mSearchingIndicator.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
+            mPoiListView.setVisibility(View.GONE);
             return;
         }
+        mPoiCuttPageNum = poiResult.getCurrentPageNum();
+        mTotalPoiPageNum=poiResult.getTotalPageNum();
         if (mPoiList == null) mPoiList = new ArrayList<>();
-        mPoiList.clear();
+        if (!mIsPreviousPoiDataNeeded) {
+            mPoiList.clear();//clear the old data only if it's unneeded
+            mPoiListView.smoothScrollToPosition(0);//if is a new search scroll to the  top of the listview
+        }
         new PreparePoiDataTask().execute(poiResult.getAllPoi());
     }
 
@@ -338,18 +412,18 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
     }
 
-    private class PreparePoiDataTask extends AsyncTask<List<PoiInfo>,Void,Void>{
+    private class PreparePoiDataTask extends AsyncTask<List<PoiInfo>, Void, Void> {
 
         @Override
         protected Void doInBackground(List<PoiInfo>... params) {
-            List<PoiInfo> pois=params[0];
-            for (PoiInfo info: pois) {
+            List<PoiInfo> pois = params[0];
+            for (PoiInfo info : pois) {
                 //we don't need the bus line poi and the subway line poi
-                if (info.type== PoiInfo.POITYPE.BUS_LINE||info.type==PoiInfo.POITYPE.SUBWAY_LINE){
+                if (info.type == PoiInfo.POITYPE.BUS_LINE || info.type == PoiInfo.POITYPE.SUBWAY_LINE) {
                     continue;
                 }
                 Map<String, String> map = new HashMap<>();
-                if (info.name != null&&info.address!=null) {
+                if (info.name != null && info.address != null) {
                     map.put(POI_NAME, info.name);
                     map.put(POI_ADDRESS, info.address);
                 }
@@ -361,14 +435,20 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         @Override
         protected void onPostExecute(Void aVoid) {
             mSearchingIndicator.setVisibility(View.GONE);
-            if (mPoiList.size()==0){
+            int poiSize = mPoiList.size();
+            if (poiSize == 0) {
                 mEmptyView.setVisibility(View.VISIBLE);
-                mSearchResListView.setVisibility(View.GONE);
-            }else{
+                mPoiListView.setVisibility(View.GONE);
+            } else {
                 mEmptyView.setVisibility(View.GONE);
-                mSearchResListView.setVisibility(View.VISIBLE);
+                mPoiListView.setVisibility(View.VISIBLE);
             }
             mPoiListAdapter.notifyDataSetChanged();
+            if (mPoiCuttPageNum == mTotalPoiPageNum-1) {
+                updataListFooterState(All_POI_SHOWED);
+            }else{
+                updataListFooterState(CLICK_TO_LOAD_MORE);
+            }
         }
     }
 
