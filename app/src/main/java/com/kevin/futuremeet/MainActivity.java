@@ -66,66 +66,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     FragmentManager mFragmentManager = null;
 
-    private static final int REQUEST_CODE_GALLERY = 100;
-    private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
-        @Override
-        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-
-        }
-
-        @Override
-        public void onHanlderFailure(int requestCode, String errorMsg) {
-
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //带配置
+        mFragmentManager = getSupportFragmentManager();
+        setContentView(R.layout.activity_main);
+        initViews();
+        initEvents();
 
-        FunctionConfig functionConfig = new FunctionConfig.Builder()
-                .setEnableCamera(true)
-                .setEnableEdit(true)
-                .setEnableCrop(true)
-                .setEnablePreview(true)
-                .setEnableRotate(true)
-                .setCropSquare(true)
-                .setEnablePreview(true)
-                .setMutiSelectMaxSize(8)
-                .build();
+        //these code is prepared for the case that activity is killed by the system for resource
+        //if so, the UI instance may still be in the memory but we lost the reference to them,
+        //then by the logic in my code , the fragment will be recreate, in this way, there may be
+        //fragment overlapping to each other
+        if (savedInstanceState != null) {
+            mSelectedTabLayoutID = savedInstanceState.getInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID);
 
-        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY, functionConfig, mOnHanlderResultCallback);
+            mFutureMeetFragment = (FutureMeetFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_FUTUREMEET);
+            mNearbyFragment = (NearbyFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEARBY);
+            mDestChooseFragment = (DestChooseFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_DESTCHOOSE);
+            mNewsFragment = (NewsFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEWS);
+            mMeFragment = (MeFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_ME);
+            //update the status of the bottom tab and the fragments show-hide status
+            updataTabAndFragStatus();
 
-//        mFragmentManager = getSupportFragmentManager();
-//        setContentView(R.layout.activity_main);
-//        initViews();
-//        initEvents();
-//
-//        //these code is prepared for the case that activity is killed by the system for resource
-//        //if so, the UI instance may still be in the memory but we lost the reference to them,
-//        //then by the logic in my code , the fragment will be recreate, in this way, there may be
-//        //fragment overlapping to each other
-//        if (savedInstanceState != null) {
-//            mSelectedTabLayoutID = savedInstanceState.getInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID);
-//
-//            mFutureMeetFragment = (FutureMeetFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_FUTUREMEET);
-//            mNearbyFragment = (NearbyFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEARBY);
-//            mDestChooseFragment = (DestChooseFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_DESTCHOOSE);
-//            mNewsFragment = (NewsFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEWS);
-//            mMeFragment = (MeFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_ME);
-//            //update the status of the bottom tab and the fragments show-hide status
-//            updataTabAndFragStatus();
-//
-//        } else {
-//            //init MainActivity so when use first come in, the nearby Fragment is selected
-//            mNearbyFragment = NearbyFragment.newInstance(null, null);
-//            mFragmentManager.beginTransaction().
-//                    add(R.id.fragment_container, mNearbyFragment, TAG_FRAGMENT_NEARBY).commit();
-//            mSelectedTabLayoutID = R.id.nearby_tab_layout;
-//            mNearbyImage.setImageResource(R.drawable.nearby_selected);
-//            mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
-//        }
+        } else {
+            //init MainActivity so when use first come in, the nearby Fragment is selected
+            mNearbyFragment = NearbyFragment.newInstance(null, null);
+            mFragmentManager.beginTransaction().
+                    add(R.id.fragment_container, mNearbyFragment, TAG_FRAGMENT_NEARBY).commit();
+            mSelectedTabLayoutID = R.id.nearby_tab_layout;
+            mNearbyImage.setImageResource(R.drawable.nearby_selected);
+            mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
+        }
 
     }
 
