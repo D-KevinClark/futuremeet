@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -36,6 +38,7 @@ import com.baidu.mapapi.search.poi.PoiSearch;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.CityChooseActivity;
 import com.kevin.futuremeet.beans.CurrentLocation;
+import com.kevin.futuremeet.utility.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,13 +74,19 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
     private View root;//this is the root view for this fragment
 
-
     private static final String POI_NAME = "poi_name";
+    public static final String POI_NAME1 = POI_NAME;
     private static final String POI_ADDRESS = "poi_address";
+    private static final String POI_LNG = "poi_lng";
+    public static final String POI_LNG1 = POI_LNG;
+    public static final String POI_LNG_1 = POI_LNG1;
+    public static final String POI_LNG_11 = POI_LNG_1;
+    private static final String POI_LAT = "poi_lat";
+
 
     private static final int POI_SEARCH_PAGESIEZ = 20;//set the page size of the poi search result
     private int mPoiCuttPageNum = 0;//page number index  start at 0
-    private int mTotalPoiPageNum=0;//total page number start at 1
+    private int mTotalPoiPageNum = 0;//total page number start at 1
     //click the search button to preform a poi search do not need the old poi data but click listview footer need
     //so here this boolean is to indicate that
     private boolean mIsPreviousPoiDataNeeded;
@@ -186,7 +195,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                     Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mIsPreviousPoiDataNeeded=false;
+                mIsPreviousPoiDataNeeded = false;
                 mSearchingIndicator.setVisibility(View.VISIBLE);
                 mTellWhereTextView.setVisibility(View.GONE);
                 searchPois(keyword, city, 0);
@@ -202,8 +211,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 .apply();
     }
 
-    private String getCurrentCityfromPrefs(){
-        String city=PreferenceManager.getDefaultSharedPreferences(getContext())
+    private String getCurrentCityfromPrefs() {
+        String city = PreferenceManager.getDefaultSharedPreferences(getContext())
                 .getString(CurrentLocation.CURRENT_LOCAITON, null);
         return city;
     }
@@ -237,10 +246,10 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
             @Override
             public void onClick(View v) {
                 String city = getCurrentCityfromPrefs();
-                if (city==null||mCurrentPoiKeywords==null) return;
-                searchPois(mCurrentPoiKeywords,city,++mPoiCuttPageNum);
+                if (city == null || mCurrentPoiKeywords == null) return;
+                searchPois(mCurrentPoiKeywords, city, ++mPoiCuttPageNum);
                 updataListFooterState(IS_LOADING_MORE);
-                mIsPreviousPoiDataNeeded=true;
+                mIsPreviousPoiDataNeeded = true;
             }
         });
 
@@ -266,18 +275,39 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 return false;
             }
         });
+        mPoiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Map<String, String> map = mPoiList.get(position);
+                String poiName = map.get(POI_NAME);
+                String poiAdress = map.get(POI_ADDRESS);
+                String poiLng = map.get(POI_LNG);
+                String poiLat = map.get(POI_LAT);
+
+                ArriveTimePickerDialogFragment pickerDialogFragment = new ArriveTimePickerDialogFragment();
+                Bundle bundle = new Bundle();
+
+                bundle.putString(Config.BUNDLE_POI_ADDRESS, poiAdress);
+                bundle.putString(Config.BUNDLE_POI_NAME, poiName);
+                bundle.putString(Config.BUNDLE_POI_LAT, poiLat);
+                bundle.putString(Config.BUNDLE_POI_LNG, poiLng);
+
+                pickerDialogFragment.setArguments(bundle);
+                pickerDialogFragment.show(getActivity().getSupportFragmentManager(), "dialogFragment");
+            }
+        });
     }
 
-    private static final int CLICK_TO_LOAD_MORE=1;
-    private static final int IS_LOADING_MORE=2;
-    private static final int All_POI_SHOWED=3;
+    private static final int CLICK_TO_LOAD_MORE = 1;
+    private static final int IS_LOADING_MORE = 2;
+    private static final int All_POI_SHOWED = 3;
 
-    
+
     private void updataListFooterState(int state) {
         mIsloadingPoiFooter.setVisibility(View.GONE);
         mAllPoiShowedFooter.setVisibility(View.GONE);
         mLoadMorePoiFooter.setVisibility(View.GONE);
-        switch (state){
+        switch (state) {
             case CLICK_TO_LOAD_MORE:
                 mLoadMorePoiFooter.setVisibility(View.VISIBLE);
                 break;
@@ -310,7 +340,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 String cityFullName = bdLocation.getCity();
                 String city = cityFullName.substring(0, cityFullName.length() - 1);
                 if (getCurrentCityfromPrefs() == null) {
-                   setCurrentCityToPrefs(city);
+                    setCurrentCityToPrefs(city);
                     if (mToolbar != null) mToolbar.setTitle(city);
                 } else {
                     if (getCurrentCityfromPrefs().equals(city)) {
@@ -356,7 +386,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         mToolbar = (Toolbar) root.findViewById(R.id.dest_choose_toolbar);
         appCompatActivity.setSupportActionBar(mToolbar);
-        String currCity=getCurrentCityfromPrefs();
+        String currCity = getCurrentCityfromPrefs();
         if (currCity != null) {
             mToolbar.setTitle(currCity);
         } else {
@@ -398,7 +428,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
             return;
         }
         mPoiCuttPageNum = poiResult.getCurrentPageNum();
-        mTotalPoiPageNum=poiResult.getTotalPageNum();
+        mTotalPoiPageNum = poiResult.getTotalPageNum();
         if (mPoiList == null) mPoiList = new ArrayList<>();
         if (!mIsPreviousPoiDataNeeded) {
             mPoiList.clear();//clear the old data only if it's unneeded
@@ -426,6 +456,8 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 if (info.name != null && info.address != null) {
                     map.put(POI_NAME, info.name);
                     map.put(POI_ADDRESS, info.address);
+                    map.put(POI_LAT, String.valueOf(info.location.latitude));
+                    map.put(POI_LNG, String.valueOf(info.location.longitude));
                 }
                 mPoiList.add(map);
             }
@@ -444,9 +476,9 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 mPoiListView.setVisibility(View.VISIBLE);
             }
             mPoiListAdapter.notifyDataSetChanged();
-            if (mPoiCuttPageNum == mTotalPoiPageNum-1) {
+            if (mPoiCuttPageNum == mTotalPoiPageNum - 1) {
                 updataListFooterState(All_POI_SHOWED);
-            }else{
+            } else {
                 updataListFooterState(CLICK_TO_LOAD_MORE);
             }
         }

@@ -1,7 +1,9 @@
 package com.kevin.futuremeet;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -11,13 +13,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.kevin.futuremeet.fragment.ArriveTimePickerDialogFragment;
 import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NearbyFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
+import com.kevin.futuremeet.utility.Config;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, ArriveTimePickerDialogFragment.ArriveTimePicerDialogListener {
 
     FrameLayout mFragmentContainer;
 
@@ -43,23 +47,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     MeFragment mMeFragment;
     DestChooseFragment mDestChooseFragment;
 
-    private static final  String TAG_FRAGMENT_DESTCHOOSE="tag_dest_choose_fragment";
-    private static final  String TAG_FRAGMENT_ME="tag_me_fragment";
-    private static final  String TAG_FRAGMENT_NEARBY="tag_nearby_fragment";
-    private static final  String TAG_FRAGMENT_NEWS="tag_news_fragment";
+    private static final String TAG_FRAGMENT_DESTCHOOSE = "tag_dest_choose_fragment";
+    private static final String TAG_FRAGMENT_ME = "tag_me_fragment";
+    private static final String TAG_FRAGMENT_NEARBY = "tag_nearby_fragment";
+    private static final String TAG_FRAGMENT_NEWS = "tag_news_fragment";
+    private static final String TAG_FRAGMENT_FUTUREMEET = "tag_futuremeet_fragmetn";
 
-    private static final String KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID="selected_tag_layout_id";
+    private static final String KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID = "selected_tag_layout_id";
 
     //record the id of the selected tab layout id
     private int mSelectedTabLayoutID;
 
-    FragmentManager mFragmentManager=null;
+    FragmentManager mFragmentManager = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            mFragmentManager = getSupportFragmentManager();
+        mFragmentManager = getSupportFragmentManager();
         setContentView(R.layout.activity_main);
         initViews();
         initEvents();
@@ -68,9 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //if so, the UI instance may still be in the memory but we lost the reference to them,
         //then by the logic in my code , the fragment will be recreate, in this way, there may be
         //fragment overlapping to each other
-        if (savedInstanceState!=null) {
+        if (savedInstanceState != null) {
             mSelectedTabLayoutID = savedInstanceState.getInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID);
 
+            mFutureMeetFragment = (FutureMeetFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_FUTUREMEET);
             mNearbyFragment = (NearbyFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEARBY);
             mDestChooseFragment = (DestChooseFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_DESTCHOOSE);
             mNewsFragment = (NewsFragment) mFragmentManager.findFragmentByTag(TAG_FRAGMENT_NEWS);
@@ -82,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //init MainActivity so when use first come in, the nearby Fragment is selected
             mNearbyFragment = NearbyFragment.newInstance(null, null);
             mFragmentManager.beginTransaction().
-                    add(R.id.fragment_container,mNearbyFragment,TAG_FRAGMENT_NEARBY).commit();
-            mSelectedTabLayoutID=R.id.nearby_tab_layout;
+                    add(R.id.fragment_container, mNearbyFragment, TAG_FRAGMENT_NEARBY).commit();
+            mSelectedTabLayoutID = R.id.nearby_tab_layout;
             mNearbyImage.setImageResource(R.drawable.nearby_selected);
             mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
         }
@@ -120,60 +126,71 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     /**
      * settle the status of the bottom tab and fragment show-or-hide status according the selected
      * bottom tab  image id
      */
-    private void updataTabAndFragStatus(){
+    private void updataTabAndFragStatus() {
         resetTabImageState();
-        FragmentTransaction fragmentTransaction=mFragmentManager.beginTransaction();
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         //first hide all the fragment
-        if (mNearbyFragment!=null)fragmentTransaction.hide(mNearbyFragment);
-        if (mDestChooseFragment!=null)fragmentTransaction.hide(mDestChooseFragment);
-        if (mNewsFragment!=null)fragmentTransaction.hide(mNewsFragment);
-        if (mMeFragment!=null)fragmentTransaction.hide(mMeFragment);
+        if (mNearbyFragment != null) fragmentTransaction.hide(mNearbyFragment);
+        if (mDestChooseFragment != null) fragmentTransaction.hide(mDestChooseFragment);
+        if (mNewsFragment != null) fragmentTransaction.hide(mNewsFragment);
+        if (mMeFragment != null) fragmentTransaction.hide(mMeFragment);
+        if (mFutureMeetFragment != null) fragmentTransaction.hide(mFutureMeetFragment);
 
         switch (mSelectedTabLayoutID) {
             case R.id.nearby_tab_layout:
-                mSelectedTabLayoutID=R.id.nearby_tab_layout;
+                mSelectedTabLayoutID = R.id.nearby_tab_layout;
                 if (mNearbyFragment == null) {
-                    mNearbyFragment=NearbyFragment.newInstance(null,null);
-                    fragmentTransaction.add(R.id.fragment_container, mNearbyFragment,TAG_FRAGMENT_NEARBY);
-                }else {
+                    mNearbyFragment = NearbyFragment.newInstance(null, null);
+                    fragmentTransaction.add(R.id.fragment_container, mNearbyFragment, TAG_FRAGMENT_NEARBY);
+                } else {
                     fragmentTransaction.show(mNearbyFragment);
                 }
                 mNearbyImage.setImageResource(R.drawable.nearby_selected);
                 mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.futuremeet_tab_layout:
-                mSelectedTabLayoutID=R.id.futuremeet_tab_layout;
-                if (mDestChooseFragment == null) {
-                    mDestChooseFragment=DestChooseFragment.newInstance(null,null);
-                    fragmentTransaction.add(R.id.fragment_container, mDestChooseFragment,TAG_FRAGMENT_DESTCHOOSE);
-                }else {
-                    fragmentTransaction.show(mDestChooseFragment);
+                mSelectedTabLayoutID = R.id.futuremeet_tab_layout;
+                boolean showFutureFragment = PreferenceManager.getDefaultSharedPreferences(this)
+                        .getBoolean(Config.PREF_SHOW_FUTUREMEET_FRAGMENT, false);
+                if (showFutureFragment) {//if future meet fragment need to be showed, show it
+                    if (mDestChooseFragment != null)//first remove the destination choose fragment
+                        fragmentTransaction.remove(mDestChooseFragment);
+                    if (mFutureMeetFragment != null) //we don't create the future fragment here,see method onFuturePOIandTimeConfirmed()
+                        fragmentTransaction.show(mFutureMeetFragment);
+                } else {//if future meet fragment is not needed to be showed
+                    if (mFutureMeetFragment != null)
+                        fragmentTransaction.remove(mFutureMeetFragment);
+                    if (mDestChooseFragment == null) {
+                        mDestChooseFragment = DestChooseFragment.newInstance(null, null);
+                        fragmentTransaction.add(R.id.fragment_container, mDestChooseFragment, TAG_FRAGMENT_DESTCHOOSE);
+                    } else {
+                        fragmentTransaction.show(mDestChooseFragment);
+                    }
                 }
                 mFutureImage.setImageResource(R.drawable.futuremeet_selected);
                 mFutureText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.news_tab_layout:
-                mSelectedTabLayoutID=R.id.news_tab_layout;
+                mSelectedTabLayoutID = R.id.news_tab_layout;
                 if (mNewsFragment == null) {
-                    mNewsFragment=NewsFragment.newInstance(null,null);
-                    fragmentTransaction.add(R.id.fragment_container, mNewsFragment,TAG_FRAGMENT_NEWS);
-                }else {
+                    mNewsFragment = NewsFragment.newInstance(null, null);
+                    fragmentTransaction.add(R.id.fragment_container, mNewsFragment, TAG_FRAGMENT_NEWS);
+                } else {
                     fragmentTransaction.show(mNewsFragment);
                 }
                 mNewsImage.setImageResource(R.drawable.news_selected);
                 mNewsText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.me_layout:
-                mSelectedTabLayoutID=R.id.me_layout;
+                mSelectedTabLayoutID = R.id.me_layout;
                 if (mMeFragment == null) {
                     mMeFragment = MeFragment.newInstance(null, null);
-                    fragmentTransaction.add(R.id.fragment_container, mMeFragment,TAG_FRAGMENT_ME);
-                }else {
+                    fragmentTransaction.add(R.id.fragment_container, mMeFragment, TAG_FRAGMENT_ME);
+                } else {
                     fragmentTransaction.show(mMeFragment);
                 }
                 mMeImage.setImageResource(R.drawable.user_selected);
@@ -188,15 +205,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (mFragmentManager == null) return;
         int id = v.getId();
-        if (mSelectedTabLayoutID==id)return;//user click the tab that they are now in so do nothing
-        mSelectedTabLayoutID=id;
+        if (mSelectedTabLayoutID == id)
+            return;//user click the tab that they are now in so do nothing
+        mSelectedTabLayoutID = id;
         updataTabAndFragStatus();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID,mSelectedTabLayoutID);
+        outState.putInt(KEY_BUNDLE_SELECTED_TAG_LAYOTU_ID, mSelectedTabLayoutID);
     }
 
     /**
@@ -204,13 +222,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * to coming
      */
     private void resetTabImageState() {
-                mNearbyText.setTextColor(0xffcccccc);
-                mNearbyImage.setImageResource(R.drawable.nearby);
-                mFutureText.setTextColor(0xffcccccc);
-                mFutureImage.setImageResource(R.drawable.futuremeet);
-                mNewsText.setTextColor(0xffcccccc);
-                mNewsImage.setImageResource(R.drawable.news);
-                mUserText.setTextColor(0xffcccccc);
-                mMeImage.setImageResource(R.drawable.user);
+        mNearbyText.setTextColor(0xffcccccc);
+        mNearbyImage.setImageResource(R.drawable.nearby);
+        mFutureText.setTextColor(0xffcccccc);
+        mFutureImage.setImageResource(R.drawable.futuremeet);
+        mNewsText.setTextColor(0xffcccccc);
+        mNewsImage.setImageResource(R.drawable.news);
+        mUserText.setTextColor(0xffcccccc);
+        mMeImage.setImageResource(R.drawable.user);
+    }
+
+
+    private void setFuturePoiInfoToPrefs(String poiName, String poiAdress,
+                                         String poiLat, String poiLng, boolean showFutureMeetFragment) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.edit()
+                .putString(Config.PREF_FUTURE_POI_ADRESS, poiAdress)
+                .putString(Config.BUNDLE_POI_NAME, poiName)
+                .putString(Config.BUNDLE_POI_LAT, poiLat)
+                .putString(Config.BUNDLE_POI_LNG, poiLng)
+                .putBoolean(Config.PREF_SHOW_FUTUREMEET_FRAGMENT, showFutureMeetFragment)
+                .apply();
+    }
+
+    @Override
+    public void onFuturePOIandTimeConfirmed(Bundle poiInfo) {
+        String poiAdr = poiInfo.getString(Config.BUNDLE_POI_ADDRESS);
+        String poiName = poiInfo.getString(Config.BUNDLE_POI_NAME);
+        String poiLat = poiInfo.getString(Config.BUNDLE_POI_LAT);
+        String poiLng = poiInfo.getString(Config.BUNDLE_POI_LNG);
+        setFuturePoiInfoToPrefs(poiName, poiAdr, poiLat, poiLng, true);
+
+        mFutureMeetFragment = FutureMeetFragment.newInstance(poiInfo);
+        mFragmentManager.beginTransaction().remove(mDestChooseFragment)
+                .add(R.id.fragment_container, mFutureMeetFragment)
+                .commit();
     }
 }

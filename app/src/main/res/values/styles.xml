@@ -16,4 +16,8 @@
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
+    <style name="MyPickerDialogActivityTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

@@ -11,4 +11,5 @@
     <dimen name="initial_rect_size">48dp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="poi_listview_footer_height">48dp</dimen>
+    <dimen name="dialog_content_margin">24dp</dimen>
 </resources>
