@@ -6,7 +6,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
     private NumberPicker mMinutePicker;
     private TextView mArriHour;
     private TextView mArriMinute;
+    private TextView mWordsCountText;
     private Calendar mCalendar;
     private int mBeginDay;
     private TextView mTodayOrTomoText;
@@ -88,6 +91,7 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
         mBeginDay = mCalendar.get(Calendar.DAY_OF_YEAR);
 
         mLabelText = (EditText) root.findViewById(R.id.label_edittext);
+        mWordsCountText = (TextView) root.findViewById(R.id.words_count_text);
         NumberPicker mHourPicker = (NumberPicker) root.findViewById(R.id.hour_number_picker);
         mMinutePicker = (NumberPicker) root.findViewById(R.id.minute_number_picker);
         mArriHour = (TextView) root.findViewById(R.id.hour_text);
@@ -103,6 +107,23 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
         mHourPicker.setMaxValue(23);
         mMinutePicker.setMinValue(Config.MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW);
         mMinutePicker.setMaxValue(59);
+
+        mLabelText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mWordsCountText.setText(s.length()+"/10");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
 
         mHourPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {

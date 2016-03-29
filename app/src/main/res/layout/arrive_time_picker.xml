@@ -135,6 +135,7 @@
             android:layout_height="wrap_content"
             android:text="详细" />
 
+
         <EditText
             android:id="@+id/label_edittext"
             android:layout_width="0dp"
@@ -143,6 +144,12 @@
             android:layout_weight="1"
             android:maxLength="10"
             android:hint=" 如 吃饭/唱歌" />
+
+        <TextView
+            android:id="@+id/words_count_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0/10"/>
     </LinearLayout>
 
 </LinearLayout>

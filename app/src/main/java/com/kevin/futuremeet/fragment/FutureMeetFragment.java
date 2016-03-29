@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 public class FutureMeetFragment extends Fragment {
     private String mPoiName;
     private String mPoiAdrress;
+    private String mLabel;
     private double mPoiLat;
     private double mPoiLng;
     private Long mPoiTime;
@@ -51,11 +52,12 @@ public class FutureMeetFragment extends Fragment {
         mCalendar = new GregorianCalendar();
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            mPoiAdrress = bundle.getString(Config.BUNDLE_POI_ADDRESS);
-            mPoiName = bundle.getString(Config.BUNDLE_POI_NAME);
-            mPoiLat = Double.parseDouble(bundle.getString(Config.BUNDLE_POI_LAT));
-            mPoiLng = Double.parseDouble(bundle.getString(Config.BUNDLE_POI_LNG));
-            mPoiTime = bundle.getLong(Config.BUNDLE_POI_ARRIVE_TIME);
+            mPoiAdrress = bundle.getString(DestChooseFragment.POI_ADDRESS);
+            mPoiName = bundle.getString(DestChooseFragment.POI_NAME);
+            mPoiLat = Double.parseDouble(bundle.getString(DestChooseFragment.POI_LAT));
+            mPoiLng = Double.parseDouble(bundle.getString(DestChooseFragment.POI_LNG));
+            mPoiTime = bundle.getLong(DestChooseFragment.POI_ARRIVE_TIME);
+            mLabel = bundle.getString(DestChooseFragment.POI_DETAIL_LABEL);
             mCalendar.setTimeInMillis(mPoiTime);
         }
     }
@@ -67,7 +69,7 @@ public class FutureMeetFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_future_meet, container, false);
         textView = (TextView) root.findViewById(R.id.location_text);
-        textView.setText(mPoiAdrress+" "+mPoiName+" "+mPoiLat+" "+mPoiLng+" "+mPoiTime+" "
+        textView.setText(mPoiAdrress+" "+mPoiName+" "+mPoiLat+" "+mPoiLng+" "+mPoiTime+" "+mLabel+"  "
         +"date: "+mCalendar.get(Calendar.DAY_OF_MONTH)+"hout:min "+mCalendar.get(Calendar.HOUR_OF_DAY)+":"
         +mCalendar.get(Calendar.MINUTE));
         return root;
