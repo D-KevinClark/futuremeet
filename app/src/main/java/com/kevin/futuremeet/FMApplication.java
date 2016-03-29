@@ -2,6 +2,7 @@ package com.kevin.futuremeet;
 
 import android.app.Application;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.kevin.futuremeet.loader.GlideImageLoader;
 
 import cn.finalteam.galleryfinal.CoreConfig;
@@ -18,6 +19,9 @@ public class FMApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        SDKInitializer.initialize(this);
+
         ThemeConfig theme = new ThemeConfig.Builder()
                 .build();
         ImageLoader imageloader = new GlideImageLoader();

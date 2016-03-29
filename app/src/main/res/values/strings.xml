@@ -18,7 +18,7 @@
     <string name="place_to_be">将要去哪</string>
     <string name="seach">搜索</string>
     <string name="not_relevant_place_in_curr_city">该城市没有找到相关地点</string>
-    <string name="is_searching_relevant_place">正在查找相关地点</string>
+    <string name="is_searching_relevant_place">正在查找相关地点...</string>
     <string name="accentColor">#FF4081</string>
     <string name="arrive">到</string>
     <string name="toady">今天</string>
@@ -26,4 +26,5 @@
     <string name="label">标签</string>
     <string name="positive">确定</string>
     <string name="negative">取消</string>
+    <string name="please_choose_city">请选取城市</string>
 </resources>

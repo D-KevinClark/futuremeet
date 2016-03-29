@@ -6,11 +6,7 @@ package com.kevin.futuremeet.utility;
 public class Config {
     public static final int MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW=30;
 
-    public static final String BUNDLE_POI_NAME = "poi_name";
-    public static final String BUNDLE_POI_ADDRESS = "poi_address";
-    public static final String BUNDLE_POI_LNG = "poi_lng";
-    public static final String BUNDLE_POI_LAT = "poi_lat";
-    public static final String BUNDLE_POI_ARRIVE_TIME = "poi_arrive_time";
+
 
     public static final String PREF_SHOW_FUTUREMEET_FRAGMENT = "show_future_meet_fragment";
     public static final String PREF_FUTURE_POI_ADRESS = "future_poi_address";

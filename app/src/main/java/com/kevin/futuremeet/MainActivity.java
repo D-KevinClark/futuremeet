@@ -238,24 +238,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * set the future poi info to shared preference
+     * @param poiName
+     * @param poiAdress
+     * @param poiLat
+     * @param poiLng
+     * @param showFutureMeetFragment
+     */
     private void setFuturePoiInfoToPrefs(String poiName, String poiAdress,
                                          String poiLat, String poiLng, boolean showFutureMeetFragment) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.edit()
                 .putString(Config.PREF_FUTURE_POI_ADRESS, poiAdress)
-                .putString(Config.BUNDLE_POI_NAME, poiName)
-                .putString(Config.BUNDLE_POI_LAT, poiLat)
-                .putString(Config.BUNDLE_POI_LNG, poiLng)
+                .putString(Config.PREF_FUTURE_POI_NAME, poiName)
+                .putString(Config.PREF_FUTURE_POI_LAT, poiLat)
+                .putString(Config.PREF_FUTURE_POI_LNG, poiLng)
                 .putBoolean(Config.PREF_SHOW_FUTUREMEET_FRAGMENT, showFutureMeetFragment)
                 .apply();
     }
 
+
+    /**
+     * when the future destination is confirmed in the {@link DestChooseFragment},this method will be called
+     * @param poiInfo
+     */
     @Override
     public void onFuturePOIandTimeConfirmed(Bundle poiInfo) {
-        String poiAdr = poiInfo.getString(Config.BUNDLE_POI_ADDRESS);
-        String poiName = poiInfo.getString(Config.BUNDLE_POI_NAME);
-        String poiLat = poiInfo.getString(Config.BUNDLE_POI_LAT);
-        String poiLng = poiInfo.getString(Config.BUNDLE_POI_LNG);
+        String poiAdr = poiInfo.getString(DestChooseFragment.POI_ADDRESS);
+        String poiName = poiInfo.getString(DestChooseFragment.POI_NAME);
+        String poiLat = poiInfo.getString(DestChooseFragment.POI_LAT);
+        String poiLng = poiInfo.getString(DestChooseFragment.POI_LNG);
+
         setFuturePoiInfoToPrefs(poiName, poiAdr, poiLat, poiLng, true);
 
         mFutureMeetFragment = FutureMeetFragment.newInstance(poiInfo);
