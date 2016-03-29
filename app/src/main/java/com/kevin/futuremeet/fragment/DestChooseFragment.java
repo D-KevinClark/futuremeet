@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -44,7 +43,6 @@ import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.CityChooseActivity;
 import com.kevin.futuremeet.beans.CurrentLocation;
-import com.kevin.futuremeet.utility.Config;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -233,10 +231,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                     mTellWhereTextView.setVisibility(View.VISIBLE);
                 }
 
-                if (mCurrentCity == null) {
-                    Toast.makeText(getContext(), R.string.please_choose_city, Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                if (mCurrentCity == null)  return;
 
                 mSugSearch.requestSuggestion((new SuggestionSearchOption())
                         .keyword(s.toString()).city(mCurrentCity));
@@ -248,26 +243,6 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
 
             }
         });
-//        mDestSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                if (newText.length() > 0) {
-//                    mPoiSearchButton.setEnabled(true);
-//                } else {//when the searchview is empty the listview should be empty too
-//                    mPoiSearchButton.setEnabled(false);
-//                    mPoiListView.setVisibility(View.GONE);
-//                    mSearchingIndicator.setVisibility(View.GONE);
-//                    mEmptyView.setVisibility(View.GONE);
-//                    mTellWhereTextView.setVisibility(View.VISIBLE);
-//                }
-//                return true;
-//            }
-//        });
     }
 
     private void initPoiSearchButton() {
@@ -431,6 +406,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
                 if (mToolbar != null) mToolbar.setTitle(city);
                 mLocationClient.stop();
             } else {
+                Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
                 mCurrentCity = getCurrentCityfromPrefs();
                 if (mCurrentCity != null && mToolbar != null) {
                     mToolbar.setTitle(mCurrentCity);
@@ -576,45 +552,4 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
             }
         }
     }
-
-
-// TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
-
 }
