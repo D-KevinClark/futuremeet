@@ -164,8 +164,10 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
         } else {
             mTodayOrTomoText.setText(R.string.tomorrow);
         }
-        mArriHour.setText(mCalendar.get(Calendar.HOUR_OF_DAY) + "");
-        mArriMinute.setText(mCalendar.get(Calendar.MINUTE) + "");
+        int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
+        int minute = mCalendar.get(Calendar.MINUTE);
+        mArriHour.setText(hour>9?(hour+ ""):("0"+hour));
+        mArriMinute.setText(minute>9?(minute+ ""):("0"+minute));
     }
 
 

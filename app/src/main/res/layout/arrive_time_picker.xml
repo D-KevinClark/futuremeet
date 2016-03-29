@@ -10,11 +10,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="4dp"
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginRight="@dimen/dialog_content_margin"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
 
 
         <TextView
@@ -52,24 +51,32 @@
 
             tools:text="24" />
 
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="@dimen/dialog_content_margin"
+        android:layout_marginRight="@dimen/dialog_content_margin">
+
         <TextView
-            android:layout_marginLeft="8dp"
             android:id="@+id/will_be_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:text="将在"/>
+            android:text="将在"
+            android:textSize="16dp" />
 
         <TextView
-            android:layout_marginLeft="4dp"
-            android:layout_marginBottom="4dp"
-            android:lines="1"
             android:id="@+id/poi_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:lines="1"
             android:textSize="20dp"
             tools:text="肯肯德肯（湖滨）" />
-
 
     </LinearLayout>
 
@@ -90,12 +97,15 @@
             android:text="小\n时" />
 
         <NumberPicker
+            android:layout_marginBottom="-30dp"
+            android:layout_marginTop="-30dp"
             android:id="@+id/hour_number_picker"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_toLeftOf="@id/hour"
-            android:descendantFocusability="blocksDescendants" />
+            android:descendantFocusability="blocksDescendants"
+            android:scaleY="0.7" />
 
 
         <TextView
@@ -111,7 +121,10 @@
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/hour"
-            android:descendantFocusability="blocksDescendants" />
+            android:layout_marginBottom="-30dp"
+            android:layout_marginTop="-30dp"
+            android:descendantFocusability="blocksDescendants"
+            android:scaleY="0.7" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -142,14 +155,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_weight="1"
-            android:maxLength="10"
-            android:hint=" 如 吃饭/唱歌" />
+            android:hint=" 如 吃饭/唱歌"
+            android:maxLength="10" />
 
         <TextView
             android:id="@+id/words_count_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0/10"/>
+            android:text="0/10" />
     </LinearLayout>
 
 </LinearLayout>
