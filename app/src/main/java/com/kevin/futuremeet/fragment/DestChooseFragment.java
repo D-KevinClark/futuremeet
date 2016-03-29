@@ -94,13 +94,15 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
     private View root;//this is the root view for this fragment
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({POI_NAME,POI_ADDRESS,POI_LNG,POI_LAT})
+    @StringDef({POI_NAME,POI_ADDRESS,POI_LNG,POI_LAT,POI_ARRIVE_TIME})
     public @interface PoiAtrr{}
 
     public static final String POI_NAME = "poi_name";
     public static final String POI_ADDRESS = "poi_address";
     public static final String POI_LNG = "poi_lng";
     public static final String POI_LAT = "poi_lat";
+    public static final String POI_ARRIVE_TIME = "poi_arrive_time";
+    public static final String POI_DETAIL_LABEL="poi_detail_label";
 
 
     private static final int POI_SEARCH_PAGESIEZ = 20;//set the page size of the poi search result

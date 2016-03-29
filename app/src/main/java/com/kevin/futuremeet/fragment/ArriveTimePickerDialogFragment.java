@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -29,12 +30,13 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
     private Calendar mCalendar;
     private int mBeginDay;
     private TextView mTodayOrTomoText;
+    private EditText mLabelText;
     private String mPoiName;
     private ArriveTimePicerDialogListener mListener;
     private Bundle mPoiInfoBundle;
-    private Long  mInitTime;
+    private Long mInitTime;
 
-    public interface ArriveTimePicerDialogListener{
+    public interface ArriveTimePicerDialogListener {
         void onFuturePOIandTimeConfirmed(Bundle poiInfo);
     }
 
@@ -60,30 +62,32 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
 
         if (getArguments() != null) {
             mPoiInfoBundle = getArguments();
-            mPoiName = mPoiInfoBundle.getString(Config.BUNDLE_POI_NAME);
+            mPoiName = mPoiInfoBundle.getString(DestChooseFragment.POI_NAME);
         }
 
         initViews(DialogView);
         builder.setView(DialogView)
-        .setPositiveButton(getActivity().getString(R.string.positive), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mPoiInfoBundle.putLong(Config.BUNDLE_POI_ARRIVE_TIME, mCalendar.getTimeInMillis());
-                mListener.onFuturePOIandTimeConfirmed(mPoiInfoBundle);
-            }
-        })
-        .setNegativeButton(getActivity().getString(R.string.negative), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ArriveTimePickerDialogFragment.this.getDialog().dismiss();
-            }
-        });
+                .setPositiveButton(getActivity().getString(R.string.positive), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mPoiInfoBundle.putLong(DestChooseFragment.POI_ARRIVE_TIME, mCalendar.getTimeInMillis());
+                        mPoiInfoBundle.putString(DestChooseFragment.POI_DETAIL_LABEL, mLabelText.getText().toString());
+                        mListener.onFuturePOIandTimeConfirmed(mPoiInfoBundle);
+                    }
+                })
+                .setNegativeButton(getActivity().getString(R.string.negative), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ArriveTimePickerDialogFragment.this.getDialog().dismiss();
+                    }
+                });
         return builder.create();
     }
 
     private void initViews(View root) {
         mBeginDay = mCalendar.get(Calendar.DAY_OF_YEAR);
 
+        mLabelText = (EditText) root.findViewById(R.id.label_edittext);
         NumberPicker mHourPicker = (NumberPicker) root.findViewById(R.id.hour_number_picker);
         mMinutePicker = (NumberPicker) root.findViewById(R.id.minute_number_picker);
         mArriHour = (TextView) root.findViewById(R.id.hour_text);
@@ -93,13 +97,12 @@ public class ArriveTimePickerDialogFragment extends DialogFragment {
         mPoiNameText.setEllipsize(TextUtils.TruncateAt.END);
         mPoiNameText.setText(mPoiName);
 
-        setTimeBoardProperly(0,Config.MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW);
+        setTimeBoardProperly(0, Config.MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW);
 
         mHourPicker.setMinValue(0);
         mHourPicker.setMaxValue(23);
         mMinutePicker.setMinValue(Config.MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW);
         mMinutePicker.setMaxValue(59);
-
 
 
         mHourPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {

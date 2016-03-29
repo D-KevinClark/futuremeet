@@ -21,12 +21,6 @@ import com.kevin.futuremeet.fragment.NearbyFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
 import com.kevin.futuremeet.utility.Config;
 
-import java.util.List;
-
-import cn.finalteam.galleryfinal.FunctionConfig;
-import cn.finalteam.galleryfinal.GalleryFinal;
-import cn.finalteam.galleryfinal.model.PhotoInfo;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ArriveTimePickerDialogFragment.ArriveTimePicerDialogListener {
 
     FrameLayout mFragmentContainer;
@@ -240,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * set the future poi info to shared preference
+     *
      * @param poiName
      * @param poiAdress
      * @param poiLat
@@ -247,13 +242,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param showFutureMeetFragment
      */
     private void setFuturePoiInfoToPrefs(String poiName, String poiAdress,
-                                         String poiLat, String poiLng, boolean showFutureMeetFragment) {
+                                         String poiLat, String poiLng,
+                                         Long arriveTime, String detailLabel, boolean showFutureMeetFragment) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.edit()
                 .putString(Config.PREF_FUTURE_POI_ADRESS, poiAdress)
                 .putString(Config.PREF_FUTURE_POI_NAME, poiName)
                 .putString(Config.PREF_FUTURE_POI_LAT, poiLat)
                 .putString(Config.PREF_FUTURE_POI_LNG, poiLng)
+                .putLong(Config.PREF_FUTURE_POI_ARRIVE_TIME, arriveTime)
+                .putString(Config.PREF_FUTURE_POI_DETAIL_LABEL, detailLabel)
                 .putBoolean(Config.PREF_SHOW_FUTUREMEET_FRAGMENT, showFutureMeetFragment)
                 .apply();
     }
@@ -261,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * when the future destination is confirmed in the {@link DestChooseFragment},this method will be called
+     *
      * @param poiInfo
      */
     @Override
@@ -269,8 +268,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String poiName = poiInfo.getString(DestChooseFragment.POI_NAME);
         String poiLat = poiInfo.getString(DestChooseFragment.POI_LAT);
         String poiLng = poiInfo.getString(DestChooseFragment.POI_LNG);
+        Long arriTime = poiInfo.getLong(DestChooseFragment.POI_ARRIVE_TIME);
+        String label = poiInfo.getString(DestChooseFragment.POI_DETAIL_LABEL);
 
-        setFuturePoiInfoToPrefs(poiName, poiAdr, poiLat, poiLng, true);
+        setFuturePoiInfoToPrefs(poiName, poiAdr, poiLat, poiLng, arriTime, label, true);
 
         mFutureMeetFragment = FutureMeetFragment.newInstance(poiInfo);
         mFragmentManager.beginTransaction().remove(mDestChooseFragment)
