@@ -15,4 +15,5 @@ public class Config {
     public static final String PREF_FUTURE_POI_LNG = "future_poi_lng";
     public static final String PREF_FUTURE_POI_ARRIVE_TIME = "future_poi_arrive_time";
     public static final String PREF_FUTURE_POI_DETAIL_LABEL="future_poi_detail_label";
+
 }
