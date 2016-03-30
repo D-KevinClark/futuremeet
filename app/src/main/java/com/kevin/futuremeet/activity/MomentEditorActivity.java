@@ -1,6 +1,9 @@
 package com.kevin.futuremeet.activity;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -17,6 +20,7 @@ import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,32 +83,36 @@ public class MomentEditorActivity extends AppCompatActivity {
     private GalleryFinal.OnHanlderResultCallback mOnGalleryResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+
             //get the size of the imageview
-            int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
-            int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
+            final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
+            final int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
             LayoutInflater inflater = LayoutInflater.from(MomentEditorActivity.this);
-            int tag=0;//the tag used to find the pic layout when user want to delete it
+            int tag = 0;//the tag used to find the pic layout when user want to delete it
             for (PhotoInfo info : resultList) {
                 final File file = new File(info.getPhotoPath());
                 if (file.exists()) {
-                    String imagePath=file.getAbsolutePath();
+                    String imagePath = file.getAbsolutePath();
                     mImages.add(imagePath);
-                    Bitmap bitmap = Util.decodeSampledBitmapFromFile(imagePath, width, height);
+                    //find the relevant views
                     final RelativeLayout view = (RelativeLayout)
                             inflater.inflate(R.layout.moment_editor_pic_item, null, false);
-                    final int finalTag = tag;
-                    view.setTag(tag++);
                     ImageView picImage = (ImageView) view.findViewById(R.id.pic_image);
                     final ImageView deleteImage = (ImageView) view.findViewById(R.id.moment_pic_delete_image);
+                    //set the tag and the click event handler for the case that user delete the selected pics
+                    final int finalTag = tag;
+                    view.setTag(tag++);
                     deleteImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            View deletePic=view.findViewWithTag(finalTag);
+                            View deletePic = view.findViewWithTag(finalTag);
                             deletePic.setVisibility(View.GONE);
-                            mImages.remove(finalTag);
                         }
                     });
-                    picImage.setImageBitmap(bitmap);
+                    //load the scaled bitmap to the imageview
+                    BitmapWorkTask bitmapWorkTask = new BitmapWorkTask(picImage);
+                    bitmapWorkTask.execute(imagePath);
+                    //add the imageview to the parent layout to show them
                     mPicContainerLayout.addView(view, width, height);
                 }
             }
@@ -115,6 +123,33 @@ public class MomentEditorActivity extends AppCompatActivity {
 
         }
     };
+
+    class BitmapWorkTask extends AsyncTask<String, Void, Bitmap> {
+        private WeakReference<ImageView> imageViewWeakReference ;
+        private String data;
+
+        public BitmapWorkTask(ImageView imageView) {
+            imageViewWeakReference = new WeakReference<ImageView>(imageView);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            data = params[0];
+            final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
+            final int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
+            return Util.decodeSampledBitmapFromFile(data, width, height);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null && imageViewWeakReference != null) {
+                final ImageView imageView = imageViewWeakReference.get();
+                if (imageView != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }
+    }
 
     /**
      * init all the needed view

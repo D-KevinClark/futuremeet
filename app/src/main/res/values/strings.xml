@@ -28,4 +28,5 @@
     <string name="negative">取消</string>
     <string name="please_choose_city">请选取城市</string>
     <string name="picture">图片</string>
+    <string name="is_handlling">正在处理...</string>
 </resources>
