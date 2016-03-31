@@ -1,8 +1,13 @@
 package com.kevin.futuremeet.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,13 +25,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
@@ -42,7 +47,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     private Toolbar mToolBar;
 
 
-    private Map<String, Bitmap.Config> mSelectedImageConfigInfo = new HashMap<>();
+    private HashMap<String, Bitmap.Config> mSelectedImageConfigInfo = new HashMap<>();
 
 
     private static final int GALLERY_OPEN_REQUEST_CODE = 100;
@@ -53,8 +58,28 @@ public class MomentEditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment_editor);
+
+        IntentFilter intentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
+        MomentUploadStatusReportReceiver reportReceiver = new MomentUploadStatusReportReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(reportReceiver, intentFilter);
+
         initView();
         initEvent();
+    }
+
+    private class MomentUploadStatusReportReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS,0);
+                if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
+                    Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_fail, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     @Override
@@ -68,15 +93,12 @@ public class MomentEditorActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish:
-                publishMoment();
+                PublishMomentIntentService.startPublishMoment(this,
+                        mWordsEdit.getText().toString(), mSelectedImageConfigInfo);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void publishMoment() {
-        String content = mWordsEdit.getText().toString();
-        Toast.makeText(this, "laalla", Toast.LENGTH_SHORT).show();
-    }
 
     private void initEvent() {
         //add a text watcher for the moment words edittext , to show the current count of the words

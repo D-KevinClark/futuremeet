@@ -76,7 +76,6 @@
         android:visibility="gone" />
 
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/tell_me_where_textview"
         android:layout_width="match_parent"

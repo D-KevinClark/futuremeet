@@ -31,4 +31,6 @@
     <string name="is_handlling">正在处理...</string>
     <string name="publish">发布</string>
     <string name="publish_moment">发布动态</string>
+    <string name="moment_publish_success">动态发布成功</string>
+    <string name="moment_publish_fail">动态上传失败</string>
 </resources>
