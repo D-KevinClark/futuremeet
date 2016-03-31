@@ -14,14 +14,16 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <EditText
-        android:layout_below="@id/toolbar"
-        android:maxLength="100"
         android:id="@+id/moment_words_edit"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_below="@id/toolbar"
         android:background="@null"
         android:gravity="top"
+        android:hint="@string/what_u_want_to_say_to_them"
         android:lines="5"
+        android:maxLength="100"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:textColor="@android:color/black"
         android:textSize="16dp" />
 
@@ -29,16 +31,17 @@
         android:id="@+id/words_count_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/moment_words_edit"
         android:layout_alignParentRight="true"
+        android:layout_below="@id/moment_words_edit"
         android:layout_marginRight="4dp"
-        tools:text="0/100" />
+        android:text="0/100" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/words_count_text"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="8dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin">
 
         <LinearLayout
             android:id="@+id/pics_container"
@@ -47,10 +50,11 @@
             android:orientation="horizontal" />
 
         <RelativeLayout
-            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
             android:id="@+id/add_pic_layout"
             android:layout_width="@dimen/moment_pics_size"
             android:layout_height="@dimen/moment_pics_size"
+            android:layout_gravity="center_vertical"
             android:background="@color/greyShadow">
 
             <View
@@ -72,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/center_view"
                 android:layout_centerHorizontal="true"
-                android:text="@string/picture" />
+                android:text="@string/picture"
+                android:textColor="#cccccc" />
 
         </RelativeLayout>
 

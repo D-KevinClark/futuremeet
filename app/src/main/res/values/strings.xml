@@ -33,4 +33,6 @@
     <string name="publish_moment">发布动态</string>
     <string name="moment_publish_success">动态发布成功</string>
     <string name="moment_publish_fail">动态上传失败</string>
+    <string name="what_u_want_to_say_to_them">有什么想对未来的他们说？</string>
+    <string name="please_edit_content_first">请先编辑发送内容</string>
 </resources>

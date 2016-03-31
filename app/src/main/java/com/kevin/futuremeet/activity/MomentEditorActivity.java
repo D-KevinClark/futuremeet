@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
+import com.kevin.futuremeet.utility.Config;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
@@ -93,8 +95,14 @@ public class MomentEditorActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish:
+                String content = mWordsEdit.getText().toString();
+                if (TextUtils.isEmpty(content) && mSelectedImageConfigInfo.size() == 0) {
+                    Toast.makeText(MomentEditorActivity.this, R.string.please_edit_content_first, Toast.LENGTH_SHORT).show();
+                    return super.onOptionsItemSelected(item);
+                }
                 PublishMomentIntentService.startPublishMoment(this,
                         mWordsEdit.getText().toString(), mSelectedImageConfigInfo);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -122,8 +130,9 @@ public class MomentEditorActivity extends AppCompatActivity {
         mAddPicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int mitiPicNum=GALLERY_MITI_PIC_MAX_SIZE-mSelectedImageConfigInfo.size();
                 FunctionConfig config = new FunctionConfig.Builder()
-                        .setMutiSelectMaxSize(GALLERY_MITI_PIC_MAX_SIZE)
+                        .setMutiSelectMaxSize(mitiPicNum)
                         .setEnableCamera(true)
                         .setEnablePreview(true)
                         .build();
@@ -135,7 +144,9 @@ public class MomentEditorActivity extends AppCompatActivity {
     private GalleryFinal.OnHanlderResultCallback mOnGalleryResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-
+            if (resultList.size()+mSelectedImageConfigInfo.size() == GALLERY_MITI_PIC_MAX_SIZE) {
+                mAddPicView.setVisibility(View.GONE);
+            }
             //get the size of the imageview
             final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
             final int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
@@ -158,6 +169,9 @@ public class MomentEditorActivity extends AppCompatActivity {
                             String keyString = (String) deletePic.getTag();
                             mSelectedImageConfigInfo.remove(keyString);
                             mPicContainerLayout.removeView(deletePic);
+                            if (mAddPicView.getVisibility() == View.GONE) {
+                                mAddPicView.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
                     //load the scaled bitmap to the imageview
@@ -183,6 +197,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         public BitmapWorkTask(ImageView imageView) {
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
         }
+
 
         @Override
         protected Bitmap doInBackground(String... params) {
