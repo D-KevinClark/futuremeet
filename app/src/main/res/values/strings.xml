@@ -29,4 +29,6 @@
     <string name="please_choose_city">请选取城市</string>
     <string name="picture">图片</string>
     <string name="is_handlling">正在处理...</string>
+    <string name="publish">发布</string>
+    <string name="publish_moment">发布动态</string>
 </resources>

@@ -37,6 +37,7 @@ public class Util {
 
     /**
      * get the scaled Bitmap according to the requested width and height
+     * better not to call this method in the UI thread
      * @param filePath
      * @param reqWidth
      * @param reqHeight
@@ -75,5 +76,62 @@ public class Util {
             }
         }
         return inSampleSize;
+    }
+
+    /**
+     * decode a image File for upload
+     * @param filePath the path of the file
+     * @param maxByte the maximum byte for the file after compressed
+     * @param config the bitmap config info for the corresponding image
+     * @return
+     */
+    public static Bitmap decodeImageFileForUpload(String filePath,int maxByte,Bitmap.Config config) {
+        File file = new File(filePath);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+
+        options.inSampleSize = calculateInSampleSizeForUploadImage(options, maxByte, config);
+        options.inJustDecodeBounds=false;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+
+    /**
+     * calculate the inSampleSize for the Bitmap for uploading , according to the minimum byte and the maximum byte
+     * @param options
+     * @param maxByte
+     * @param config
+     * @return
+     */
+    private static int calculateInSampleSizeForUploadImage(BitmapFactory.Options options,int maxByte,Bitmap.Config config) {
+        final int width = options.outWidth;
+        final int height = options.outHeight;
+        int inSample=1;
+        int size = width * height * getBytesPerPixel(config);
+        while (size > maxByte) {
+            inSample*=2;
+            size/=4;
+        }
+        return inSample;
+    }
+
+    /**
+     * get the bytes for per pixel according the bitmap config info
+     * @param config
+     * @return
+     */
+    private static int getBytesPerPixel(Bitmap.Config config) {
+        switch (config) {
+            case ARGB_8888:
+                return 4;
+            case ARGB_4444:
+                return 2;
+            case RGB_565:
+                return 2;
+            case ALPHA_8:
+                return 1;
+        }
+        return 1;
     }
 }

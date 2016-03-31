@@ -5,7 +5,16 @@
     android:layout_height="wrap_content"
     android:background="@android:color/white">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <EditText
+        android:layout_below="@id/toolbar"
         android:maxLength="100"
         android:id="@+id/moment_words_edit"
         android:layout_width="match_parent"

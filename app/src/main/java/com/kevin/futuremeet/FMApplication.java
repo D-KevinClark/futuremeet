@@ -3,6 +3,8 @@ package com.kevin.futuremeet;
 import android.app.Application;
 import android.os.Environment;
 
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
 import com.baidu.mapapi.SDKInitializer;
 import com.kevin.futuremeet.loader.GlideImageLoader;
 
@@ -44,6 +46,9 @@ public class FMApplication extends Application {
                 .setEditPhotoCacheFolder(photoCacheDir)
                 .build();
         GalleryFinal.init(coreConfig);
+
+        //initial the LeanCloud
+        AVOSCloud.initialize(this,"Q0Uvxfqo7eW0EJCW0JPjTJID-gzGzoHsz","18gnqT4d6IAdD7vKxRBXOaFd");
     }
 
 }

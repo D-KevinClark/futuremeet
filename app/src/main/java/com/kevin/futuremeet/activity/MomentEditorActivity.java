@@ -1,28 +1,32 @@
 package com.kevin.futuremeet.activity;
 
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
@@ -35,10 +39,15 @@ public class MomentEditorActivity extends AppCompatActivity {
     private View mAddPicView;
     private LinearLayout mPicContainerLayout;
 
-    private ArrayList<String> mImages = new ArrayList<>();
+    private Toolbar mToolBar;
+
+
+    private Map<String, Bitmap.Config> mSelectedImageConfigInfo = new HashMap<>();
+
 
     private static final int GALLERY_OPEN_REQUEST_CODE = 100;
     private static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,27 @@ public class MomentEditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_moment_editor);
         initView();
         initEvent();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.moment_editor_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.publish:
+                publishMoment();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void publishMoment() {
+        String content = mWordsEdit.getText().toString();
+        Toast.makeText(this, "laalla", Toast.LENGTH_SHORT).show();
     }
 
     private void initEvent() {
@@ -88,25 +118,24 @@ public class MomentEditorActivity extends AppCompatActivity {
             final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
             final int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
             LayoutInflater inflater = LayoutInflater.from(MomentEditorActivity.this);
-            int tag = 0;//the tag used to find the pic layout when user want to delete it
             for (PhotoInfo info : resultList) {
                 final File file = new File(info.getPhotoPath());
                 if (file.exists()) {
                     String imagePath = file.getAbsolutePath();
-                    mImages.add(imagePath);
                     //find the relevant views
                     final RelativeLayout view = (RelativeLayout)
                             inflater.inflate(R.layout.moment_editor_pic_item, null, false);
+                    view.setTag(imagePath);
                     ImageView picImage = (ImageView) view.findViewById(R.id.pic_image);
                     final ImageView deleteImage = (ImageView) view.findViewById(R.id.moment_pic_delete_image);
                     //set the tag and the click event handler for the case that user delete the selected pics
-                    final int finalTag = tag;
-                    view.setTag(tag++);
                     deleteImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            View deletePic = view.findViewWithTag(finalTag);
-                            deletePic.setVisibility(View.GONE);
+                            View deletePic = (View) v.getParent();
+                            String keyString = (String) deletePic.getTag();
+                            mSelectedImageConfigInfo.remove(keyString);
+                            mPicContainerLayout.removeView(deletePic);
                         }
                     });
                     //load the scaled bitmap to the imageview
@@ -114,6 +143,7 @@ public class MomentEditorActivity extends AppCompatActivity {
                     bitmapWorkTask.execute(imagePath);
                     //add the imageview to the parent layout to show them
                     mPicContainerLayout.addView(view, width, height);
+
                 }
             }
         }
@@ -125,7 +155,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     };
 
     class BitmapWorkTask extends AsyncTask<String, Void, Bitmap> {
-        private WeakReference<ImageView> imageViewWeakReference ;
+        private WeakReference<ImageView> imageViewWeakReference;
         private String data;
 
         public BitmapWorkTask(ImageView imageView) {
@@ -146,6 +176,7 @@ public class MomentEditorActivity extends AppCompatActivity {
                 final ImageView imageView = imageViewWeakReference.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
+                    mSelectedImageConfigInfo.put(data, bitmap.getConfig());
                 }
             }
         }
@@ -159,5 +190,11 @@ public class MomentEditorActivity extends AppCompatActivity {
         mWordsCount = (TextView) findViewById(R.id.words_count_text);
         mAddPicView = findViewById(R.id.add_pic_layout);
         mPicContainerLayout = (LinearLayout) findViewById(R.id.pics_container);
+        //set up the toolbar
+        mToolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolBar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.publish_moment);
     }
 }
