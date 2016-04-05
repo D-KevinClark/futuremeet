@@ -13,6 +13,7 @@ import com.kevin.futuremeet.R;
 import cn.finalteam.galleryfinal.widget.GFImageView;
 
 /**
+ * this is used by the GalleryFinal
  * Created by carver on 2016/3/26.
  */
 public class GlideImageLoader implements cn.finalteam.galleryfinal.ImageLoader {
@@ -26,7 +27,7 @@ public class GlideImageLoader implements cn.finalteam.galleryfinal.ImageLoader {
                 .override(width, height)
                 .diskCacheStrategy(DiskCacheStrategy.NONE) //不缓存到SD卡
                 .skipMemoryCache(true)
-                        //.centerCrop()
+//                        .centerCrop()
                 .into(new ImageViewTarget<GlideDrawable>(imageView) {
                     @Override
                     protected void setResource(GlideDrawable resource) {

@@ -4,7 +4,6 @@ import android.app.Application;
 import android.os.Environment;
 
 import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
 import com.baidu.mapapi.SDKInitializer;
 import com.kevin.futuremeet.loader.GlideImageLoader;
 
@@ -40,6 +39,7 @@ public class FMApplication extends Application {
         ThemeConfig theme = new ThemeConfig.Builder()
                 .setIconCamera(R.drawable.camera_icon)
                 .build();
+
         ImageLoader imageloader = new GlideImageLoader();
         CoreConfig coreConfig = new CoreConfig.Builder(this, imageloader, theme)
                 .setTakePhotoFolder(mediaStorageDir)

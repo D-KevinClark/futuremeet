@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.utility.Config;
@@ -144,6 +145,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     private GalleryFinal.OnHanlderResultCallback mOnGalleryResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+            //if it the max number of pics that user can pic, dismiss the picker launcher imageview
             if (resultList.size()+mSelectedImageConfigInfo.size() == GALLERY_MITI_PIC_MAX_SIZE) {
                 mAddPicView.setVisibility(View.GONE);
             }
@@ -177,11 +179,15 @@ public class MomentEditorActivity extends AppCompatActivity {
                     //load the scaled bitmap to the imageview
                     BitmapWorkTask bitmapWorkTask = new BitmapWorkTask(picImage);
                     bitmapWorkTask.execute(imagePath);
+//                    Glide.with(MomentEditorActivity.this)
+//                            .load(imagePath)
+//                            .into(picImage);
                     //add the imageview to the parent layout to show them
                     mPicContainerLayout.addView(view, width, height);
 
                 }
             }
+
         }
 
         @Override

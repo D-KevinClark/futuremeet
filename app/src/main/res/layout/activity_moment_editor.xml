@@ -23,7 +23,7 @@
         android:hint="@string/what_u_want_to_say_to_them"
         android:lines="5"
         android:maxLength="100"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/moment_editor_textview_side_padding"
         android:textColor="@android:color/black"
         android:textSize="16dp" />
 
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/words_count_text"
         android:layout_marginBottom="8dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin">
+        android:paddingLeft="3dp">
 
         <LinearLayout
             android:id="@+id/pics_container"
@@ -50,7 +50,7 @@
             android:orientation="horizontal" />
 
         <RelativeLayout
-            android:layout_marginLeft="5dp"
+            android:layout_margin="5dp"
             android:id="@+id/add_pic_layout"
             android:layout_width="@dimen/moment_pics_size"
             android:layout_height="@dimen/moment_pics_size"
