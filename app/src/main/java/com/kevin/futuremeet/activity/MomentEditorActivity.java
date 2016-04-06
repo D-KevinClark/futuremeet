@@ -1,5 +1,6 @@
 package com.kevin.futuremeet.activity;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.utility.Config;
@@ -57,6 +60,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     private static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,10 +79,10 @@ public class MomentEditorActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
-                int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS,0);
+                int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS, 0);
                 if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
                     Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_fail, Toast.LENGTH_LONG).show();
                 }
             }
@@ -131,7 +135,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         mAddPicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int mitiPicNum=GALLERY_MITI_PIC_MAX_SIZE-mSelectedImageConfigInfo.size();
+                int mitiPicNum = GALLERY_MITI_PIC_MAX_SIZE - mSelectedImageConfigInfo.size();
                 FunctionConfig config = new FunctionConfig.Builder()
                         .setMutiSelectMaxSize(mitiPicNum)
                         .setEnableCamera(true)
@@ -142,13 +146,19 @@ public class MomentEditorActivity extends AppCompatActivity {
         });
     }
 
+
+    private int mSelectedPicNum;//record the number of the pic that user has been selected
+    private ProgressDialog mProgressDialog;//show this before the pic that be selected has been processed
+
+
     private GalleryFinal.OnHanlderResultCallback mOnGalleryResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
             //if it the max number of pics that user can pic, dismiss the picker launcher imageview
-            if (resultList.size()+mSelectedImageConfigInfo.size() == GALLERY_MITI_PIC_MAX_SIZE) {
+            if (resultList.size() + mSelectedImageConfigInfo.size() == GALLERY_MITI_PIC_MAX_SIZE) {
                 mAddPicView.setVisibility(View.GONE);
             }
+            mSelectedPicNum = resultList.size();
             //get the size of the imageview
             final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
             final int height = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
@@ -156,12 +166,12 @@ public class MomentEditorActivity extends AppCompatActivity {
             for (PhotoInfo info : resultList) {
                 final File file = new File(info.getPhotoPath());
                 if (file.exists()) {
-                    String imagePath = file.getAbsolutePath();
+                    final String imagePath = file.getAbsolutePath();
                     //find the relevant views
                     final RelativeLayout view = (RelativeLayout)
                             inflater.inflate(R.layout.moment_editor_pic_item, null, false);
                     view.setTag(imagePath);
-                    ImageView picImage = (ImageView) view.findViewById(R.id.pic_image);
+                    final ImageView picImage = (ImageView) view.findViewById(R.id.pic_image);
                     final ImageView deleteImage = (ImageView) view.findViewById(R.id.moment_pic_delete_image);
                     //set the tag and the click event handler for the case that user delete the selected pics
                     deleteImage.setOnClickListener(new View.OnClickListener() {
@@ -179,14 +189,13 @@ public class MomentEditorActivity extends AppCompatActivity {
                     //load the scaled bitmap to the imageview
                     BitmapWorkTask bitmapWorkTask = new BitmapWorkTask(picImage);
                     bitmapWorkTask.execute(imagePath);
-//                    Glide.with(MomentEditorActivity.this)
-//                            .load(imagePath)
-//                            .into(picImage);
-                    //add the imageview to the parent layout to show them
                     mPicContainerLayout.addView(view, width, height);
 
                 }
             }
+            mProgressDialog = new ProgressDialog(MomentEditorActivity.this);
+            mProgressDialog.setMessage("正在处理图片...");
+            mProgressDialog.show();
 
         }
 
@@ -195,6 +204,7 @@ public class MomentEditorActivity extends AppCompatActivity {
 
         }
     };
+
 
     class BitmapWorkTask extends AsyncTask<String, Void, Bitmap> {
         private WeakReference<ImageView> imageViewWeakReference;
@@ -221,6 +231,10 @@ public class MomentEditorActivity extends AppCompatActivity {
                     imageView.setImageBitmap(bitmap);
                     mSelectedImageConfigInfo.put(data, bitmap.getConfig());
                 }
+            }
+            mSelectedPicNum--;
+            if (mSelectedPicNum == 0 && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
             }
         }
     }
