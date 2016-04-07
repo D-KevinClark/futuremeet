@@ -3,8 +3,11 @@ package com.kevin.futuremeet.utility;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.WindowManager;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by carver on 2016/3/30.
@@ -78,60 +81,42 @@ public class Util {
         return inSampleSize;
     }
 
+
     /**
-     * decode a image File for upload
-     * @param filePath the path of the file
-     * @param maxByte the maximum byte for the file after compressed
-     * @param config the bitmap config info for the corresponding image
+    * get a bitmap for upload use,the bitmap returned is decoded according the device screen width and height
+     * @param filePath
+     * @param context
      * @return
      */
-    public static Bitmap decodeImageFileForUpload(String filePath,int maxByte,Bitmap.Config config) {
-        File file = new File(filePath);
+    public static ByteArrayOutputStream decodeImageFileForUpload(String filePath,Context context) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
 
-        options.inSampleSize = calculateInSampleSizeForUploadImage(options, maxByte, config);
-        options.inJustDecodeBounds=false;
-        return BitmapFactory.decodeFile(filePath, options);
-    }
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        final int width = displayMetrics.widthPixels;
+        final int height = displayMetrics.heightPixels;
+
+        options.inSampleSize = calculateInSampleSize(options, width, height);
+
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 
 
-    /**
-     * calculate the inSampleSize for the Bitmap for uploading , according to the minimum byte and the maximum byte
-     * @param options
-     * @param maxByte
-     * @param config
-     * @return
-     */
-    private static int calculateInSampleSizeForUploadImage(BitmapFactory.Options options,int maxByte,Bitmap.Config config) {
-        final int width = options.outWidth;
-        final int height = options.outHeight;
-        int inSample=1;
-        int size = width * height * getBytesPerPixel(config);
-        while (size > maxByte) {
-            inSample*=2;
-            size/=4;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int quality=100;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+        while (outputStream.toByteArray().length>200*1024){
+            quality-=20;
+            outputStream.reset();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
         }
-        return inSample;
+        bitmap.recycle();//recycle the space allocated for bitmap
+
+        return outputStream;
     }
 
-    /**
-     * get the bytes for per pixel according the bitmap config info
-     * @param config
-     * @return
-     */
-    private static int getBytesPerPixel(Bitmap.Config config) {
-        switch (config) {
-            case ARGB_8888:
-                return 4;
-            case ARGB_4444:
-                return 2;
-            case RGB_565:
-                return 2;
-            case ALPHA_8:
-                return 1;
-        }
-        return 1;
-    }
+
 }

@@ -4,8 +4,10 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
@@ -29,12 +31,14 @@ public class PublishMomentIntentService extends IntentService {
     private static final String EXTRA_CONTENT = "com.kevin.futuremeet.background.extra.content";
     private static final String EXTRA_IMAEGS = "com.kevin.futuremeet.background.extra.images";
 
-    public static final String STATUS_REPORT_ACTION="com.kevin.futuremeet.background.action.status.report";
-    public static final String EXTRA_STATUS="com.kevin.futuremeet.background.extra.status";
+    public static final String STATUS_REPORT_ACTION = "com.kevin.futuremeet.background.action.status.report";
+    public static final String EXTRA_STATUS = "com.kevin.futuremeet.background.extra.status";
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({UPLOAD_SUCCESS,UPLOAD_FAIL})
-    public @interface UploadStatus{}
+    @IntDef({UPLOAD_SUCCESS, UPLOAD_FAIL})
+    public @interface UploadStatus {
+    }
+
     public static final int UPLOAD_SUCCESS = 100;
     public static final int UPLOAD_FAIL = 110;
 
@@ -43,7 +47,7 @@ public class PublishMomentIntentService extends IntentService {
     }
 
 
-    public static void startPublishMoment(Context context, String content, HashMap<String, Bitmap.Config> imageInfoMap) {
+    public static void startPublishMoment(Context context, String content, HashMap<String, String> imageInfoMap) {
         Intent intent = new Intent(context, PublishMomentIntentService.class);
         intent.putExtra(EXTRA_CONTENT, content);
         intent.putExtra(EXTRA_IMAEGS, imageInfoMap);
@@ -55,24 +59,20 @@ public class PublishMomentIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String content = intent.getStringExtra(EXTRA_CONTENT);
-            final HashMap<String, Bitmap.Config> imageInfoMap = (HashMap<String, Bitmap.Config>) intent.getSerializableExtra(EXTRA_IMAEGS);
+            final HashMap<String, String> imageInfoMap = (HashMap<String, String>) intent.getSerializableExtra(EXTRA_IMAEGS);
             handleMomentPublish(content, imageInfoMap);
         }
     }
 
 
-    private void handleMomentPublish(String content, HashMap<String, Bitmap.Config> imageInfoMap) {
+    private void handleMomentPublish(String content, HashMap<String, String> imageInfoMap) {
         Set<String> imagePathSet = imageInfoMap.keySet();
         Iterator iterator = imagePathSet.iterator();
         List<AVFile> fileList = new LinkedList<>();
 
         while (iterator.hasNext()) {
-            String filePath= (String) iterator.next();
-            //compress the original pic to smaller than 200KB so that it suit to upload to internet
-            Bitmap bitmap = Util.decodeImageFileForUpload(filePath,
-                    1024 * 200, imageInfoMap.get(filePath));
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            String filePath = (String) iterator.next();
+            ByteArrayOutputStream outputStream = Util.decodeImageFileForUpload(filePath, getApplicationContext());
             byte[] bytes = outputStream.toByteArray();
             AVFile avFile = new AVFile("MomentPics", bytes);
             try {

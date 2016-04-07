@@ -1,14 +1,9 @@
 package com.kevin.futuremeet.activity;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,12 +21,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
-import com.kevin.futuremeet.utility.Config;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
@@ -53,7 +44,9 @@ public class MomentEditorActivity extends AppCompatActivity {
     private Toolbar mToolBar;
 
 
-    private HashMap<String, Bitmap.Config> mSelectedImageConfigInfo = new HashMap<>();
+    //a map to record the selected pic info , for the delete operation,
+    // the key and value is the same which will be the image file path
+    private HashMap<String, String> mSelectedImageConfigInfo = new HashMap<>();
 
 
     private static final int GALLERY_OPEN_REQUEST_CODE = 100;
@@ -65,29 +58,11 @@ public class MomentEditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment_editor);
-
-        IntentFilter intentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
-        MomentUploadStatusReportReceiver reportReceiver = new MomentUploadStatusReportReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(reportReceiver, intentFilter);
-
         initView();
         initEvent();
     }
 
-    private class MomentUploadStatusReportReceiver extends BroadcastReceiver {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS, 0);
-                if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
-                    Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MomentEditorActivity.this, R.string.moment_publish_fail, Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,6 +82,7 @@ public class MomentEditorActivity extends AppCompatActivity {
                 }
                 PublishMomentIntentService.startPublishMoment(this,
                         mWordsEdit.getText().toString(), mSelectedImageConfigInfo);
+                finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -229,7 +205,7 @@ public class MomentEditorActivity extends AppCompatActivity {
                 final ImageView imageView = imageViewWeakReference.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
-                    mSelectedImageConfigInfo.put(data, bitmap.getConfig());
+                    mSelectedImageConfigInfo.put(data, data);
                 }
             }
             mSelectedPicNum--;
@@ -250,6 +226,12 @@ public class MomentEditorActivity extends AppCompatActivity {
         //set up the toolbar
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.publish_moment);

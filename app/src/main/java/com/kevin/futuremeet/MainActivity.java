@@ -1,18 +1,25 @@
 package com.kevin.futuremeet;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.fragment.ArriveTimePickerDialogFragment;
 import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
@@ -93,6 +100,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mNearbyText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
         }
 
+        IntentFilter intentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
+        MomentUploadStatusReportReceiver reportReceiver = new MomentUploadStatusReportReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(reportReceiver, intentFilter);
+
+    }
+
+    private class MomentUploadStatusReportReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS, 0);
+                if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
+                    Toast.makeText(MainActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.moment_publish_fail, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     private void initEvents() {
