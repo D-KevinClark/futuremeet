@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
@@ -73,12 +72,18 @@ public class PublishMomentIntentService extends IntentService {
     }
 
 
+    /**
+     * handle the moment pulish ,upload image and content
+     * @param content
+     * @param imageInfoMap
+     */
     private void handleMomentPublish(String content, HashMap<String, String> imageInfoMap) {
         //record tha handles to the image upload Thread so it can be interrupted
         ArrayList<Thread> imageUploadThreads = new ArrayList<>();
 
         Set<String> imagePathSet = imageInfoMap.keySet();
         Iterator iterator = imagePathSet.iterator();
+        //used to preform the logic: upload the moment until all the image has been uploaded
         CountDownLatch latch = new CountDownLatch(imageInfoMap.size());
 
         while (iterator.hasNext()) {
@@ -92,12 +97,14 @@ public class PublishMomentIntentService extends IntentService {
         }
 
 
+        //wait until all the image is uploaded
         try {
             latch.await();
         } catch (InterruptedException e) {
             return;
         }
 
+        //upload the moment content with all the images has been uploaded
         AVObject avObject = new AVObject(MomentContract.CLASS_NAME);
         avObject.put(MomentContract.CONTENT, content);
         avObject.addAll(MomentContract.IMAGES, fileList);
@@ -147,9 +154,8 @@ public class PublishMomentIntentService extends IntentService {
             try {
                 avFile.save();
             } catch (AVException e) {
-                e.printStackTrace();
-                mImageUploadFail = true;
-                interruptAllImageUploadThread(threads);
+                mImageUploadFail = true;//change the upload state flag
+                interruptAllImageUploadThread(threads);//interrupt all the image upload thread
                 sendStatusReportBroadcast(UPLOAD_FAIL);//send a report broadcast to MainActivity
                 mainThread.interrupt();//no more wait
                 return;
