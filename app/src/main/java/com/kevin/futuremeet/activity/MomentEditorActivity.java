@@ -50,7 +50,7 @@ public class MomentEditorActivity extends AppCompatActivity {
 
 
     private static final int GALLERY_OPEN_REQUEST_CODE = 100;
-    private static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
+    public static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
 
 
 

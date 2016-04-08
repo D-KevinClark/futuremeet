@@ -104,10 +104,9 @@ public class Util {
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int quality=100;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+
         while (outputStream.toByteArray().length>200*1024){
             quality-=20;
             outputStream.reset();
