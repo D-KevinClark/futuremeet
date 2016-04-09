@@ -25,6 +25,7 @@ public class CitiesSearchResultAdapter extends BaseAdapter {
         mResultCitiesList=cities;
     }
 
+
     @Override
     public int getCount() {
         return mResultCitiesList.size();

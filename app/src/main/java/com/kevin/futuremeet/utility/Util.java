@@ -106,9 +106,9 @@ public class Util {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int quality=100;
-
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
         while (outputStream.toByteArray().length>200*1024){
-            quality-=20;
+            quality-=10;
             outputStream.reset();
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
         }

@@ -33,7 +33,7 @@ public class PublishMomentIntentService extends IntentService {
     public static final String STATUS_REPORT_ACTION = "com.kevin.futuremeet.background.action.status.report";
     public static final String EXTRA_STATUS = "com.kevin.futuremeet.background.extra.status";
 
-    private static final List<AVFile> fileList = new LinkedList<>();
+    private final List<AVFile> fileList = new LinkedList<>();
 
 
     @Retention(RetentionPolicy.SOURCE)
