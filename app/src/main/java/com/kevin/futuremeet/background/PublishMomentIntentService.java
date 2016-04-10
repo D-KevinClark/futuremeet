@@ -145,12 +145,14 @@ public class PublishMomentIntentService extends IntentService {
                 return;
             }
             ByteArrayOutputStream outputStream = Util.decodeImageFileForUpload(mImagePath, PublishMomentIntentService.this);
+
             if (Thread.interrupted()) {
                 return;
             }
 
             byte[] bytes = outputStream.toByteArray();
             AVFile avFile = new AVFile("MomentPics", bytes);
+
             try {
                 avFile.save();
             } catch (AVException e) {
@@ -160,6 +162,7 @@ public class PublishMomentIntentService extends IntentService {
                 mainThread.interrupt();//no more wait
                 return;
             }
+
             fileList.add(avFile);
             latch.countDown();
         }

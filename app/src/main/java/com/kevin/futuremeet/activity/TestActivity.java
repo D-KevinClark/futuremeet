@@ -25,7 +25,7 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Glide.with(TestActivity.this)
-                        .load("http://ac-q0uvxfqo.clouddn.com/uxj8ohHUoLwambuNmvTGVEl9KI2Kd6hlDii7IDOr")
+                        .load("http://ac-q0uvxfqo.clouddn.com/lCopIltOoQMV3Z57KUyDtIZpdwBGHm1QBxACRS0f")
                         .asBitmap()
                         .into(mImageView);
             }
