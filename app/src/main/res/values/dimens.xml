@@ -17,4 +17,5 @@
     <dimen name="moment_editor_textview_side_padding">8dp</dimen>
     <dimen name="moment_avatar_size_moment">48dp</dimen>
     <dimen name="moment_images_size">64dp</dimen>
+    <dimen name="moment_images_margin_right">8dp</dimen>
 </resources>

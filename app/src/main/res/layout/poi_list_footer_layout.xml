@@ -8,20 +8,22 @@
 
 
     <TextView
+        android:alpha="0.6"
         android:visibility="gone"
         android:id="@+id/all_result_showed"
         android:layout_width="match_parent"
         android:layout_height="@dimen/poi_listview_footer_height"
         android:gravity="center"
-        android:text="已显示所有结果" />
+        android:text="@string/all_results_is_displayed" />
 
     <TextView
+        android:alpha="0.6"
         android:visibility="gone"
         android:id="@+id/load_moro"
         android:layout_width="match_parent"
         android:layout_height="@dimen/poi_listview_footer_height"
         android:gravity="center"
-        android:text="点击加载更多" />
+        android:text="@string/click_to_laod_more" />
 
 
     <LinearLayout
@@ -32,14 +34,16 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/poi_listview_footer_height">
         <ProgressBar
+            android:alpha="0.6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@android:style/Widget.ProgressBar.Small.Inverse"/>
         <TextView
+            android:alpha="0.6"
             android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="正在加载"/>
+            android:text="@string/is_loading"/>
     </LinearLayout>
 
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.kevin.futuremeet.customview;
+package com.kevin.futuremeet.custom;
 
 /**
  * Created by carver on 2016/3/19.

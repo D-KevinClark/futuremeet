@@ -7,4 +7,5 @@ public class MomentContract {
     public static final String CLASS_NAME = "Moment";
     public static final String CONTENT = "content";
     public static final String IMAGES = "images";
+    public static final String PUBLISH_TIME="createdAt";
 }

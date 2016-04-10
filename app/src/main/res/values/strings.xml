@@ -35,4 +35,8 @@
     <string name="moment_publish_fail">动态上传失败</string>
     <string name="what_u_want_to_say_to_them">有什么想对未来的他们说？</string>
     <string name="please_edit_content_first">请先编辑发送内容</string>
+    <string name="search_failed_please_check_network">查询失败,请检查网络</string>
+    <string name="is_loading">正在加载</string>
+    <string name="click_to_laod_more">点击加载更多</string>
+    <string name="all_results_is_displayed">已显示所有结果</string>
 </resources>

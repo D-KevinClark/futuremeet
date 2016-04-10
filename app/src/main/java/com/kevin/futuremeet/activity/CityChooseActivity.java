@@ -35,7 +35,7 @@ import com.baidu.location.LocationClientOption;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.CitiesSearchResultAdapter;
 import com.kevin.futuremeet.beans.City;
-import com.kevin.futuremeet.customview.LetterListView;
+import com.kevin.futuremeet.custom.LetterListView;
 import com.kevin.futuremeet.database.CitiesDBHelper;
 import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.utility.PinYinUtil;

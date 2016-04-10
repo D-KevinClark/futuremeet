@@ -1,7 +1,5 @@
 package com.kevin.futuremeet.fragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,9 +7,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.MomentsRecyclerViewAdapter;
+import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.custom.EndlessRecyclerViewScrollListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class NearByMomentFragment extends Fragment {
@@ -24,8 +32,21 @@ public class NearByMomentFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-//    private OnFragmentInteractionListener mListener;
+
+    //    private OnFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
+
+    private List<AVObject> mMomentList = new ArrayList<>();
+    private MomentsRecyclerViewAdapter mMomentsAdater;
+    private LinearLayoutManager mLinearLayoutManager;
+
+    private static final int MOMENT_SEARCH_PAGE_SIZE = 10;
+
+
+    //make it a private field , every time a new query is required a new instance will be created,
+    //but when search more page with a same query , it should not be newed
+    private AVQuery<AVObject> mMomentSearchQuery;
+
 
     public NearByMomentFragment() {
         // Required empty public constructor
@@ -61,53 +82,90 @@ public class NearByMomentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_near_by_moment, container, false);
+        View view = inflater.inflate(R.layout.fragment_near_by_moment, container, false);
         initRecyclerView(view);
+        newQueryOfMoments();
         return view;
     }
 
-    private void initRecyclerView(View root) {
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new MomentsRecyclerViewAdapter(getContext()));
+    /**
+     * a new search, used when this activity first is launched or a refresh is needed
+     */
+    private void newQueryOfMoments() {
+        mMomentSearchQuery = new AVQuery<>(MomentContract.CLASS_NAME);
+        // TODO: 2016/4/10 maybe use LeanCloud cache strategy, Think this later....
+        mMomentSearchQuery.setLimit(MOMENT_SEARCH_PAGE_SIZE);
+        mMomentSearchQuery.orderByDescending(MomentContract.PUBLISH_TIME);
+        mMomentSearchQuery.include(MomentContract.IMAGES);
+        mMomentSearchQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (list == null) {
+                        mMomentsAdater.showAllMomentsLoadedFooter();
+                        return;//no need to add items just return
+                    }
+                    if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
+                        mMomentsAdater.showAllMomentsLoadedFooter();
+                    }
+                    mMomentList = list;
+                    mMomentsAdater = new MomentsRecyclerViewAdapter(getContext(), mMomentList);
+                    mRecyclerView.setAdapter(mMomentsAdater);
+                } else {
+                    Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+
+
+    /**
+     * a query of more moment for the pagination mechanism
+     */
+    private void paginationQueryOfMoments() {
+        if (mMomentSearchQuery == null) {
+            return;
+        }
+        final int currItemsNum = mMomentsAdater.getDataItemCount();
+        mMomentSearchQuery.skip(currItemsNum);
+        mMomentSearchQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (list == null) {
+                        mMomentsAdater.showAllMomentsLoadedFooter();
+                        return;//no need to add items just return
+                    }
+                    if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
+                        mMomentsAdater.showAllMomentsLoadedFooter();
+                    }
+                    mMomentList.addAll(list);
+                    mMomentsAdater.setMomentsList(mMomentList);
+                    mMomentsAdater.notifyItemRangeInserted(currItemsNum, list.size());
+                } else {
+                    Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    /**
+     * init the RecyclerView
+     * @param root
+     */
+    private void initRecyclerView(View root) {
+        mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore() {
+
+                paginationQueryOfMoments();
+            }
+        });
+    }
+
 }

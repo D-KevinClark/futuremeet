@@ -69,7 +69,7 @@
         android:visibility="gone" />
 
 
-    <com.kevin.futuremeet.customview.LetterListView
+    <com.kevin.futuremeet.custom.LetterListView
         android:id="@+id/letters_sidebar_listview"
         android:layout_width="25dip"
         android:layout_height="fill_parent"
