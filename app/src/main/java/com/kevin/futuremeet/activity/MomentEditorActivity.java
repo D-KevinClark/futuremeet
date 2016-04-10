@@ -80,8 +80,13 @@ public class MomentEditorActivity extends AppCompatActivity {
                     Toast.makeText(MomentEditorActivity.this, R.string.please_edit_content_first, Toast.LENGTH_SHORT).show();
                     return super.onOptionsItemSelected(item);
                 }
+                if (!Util.isNetworkAvailabel(MomentEditorActivity.this)) {
+                    Toast.makeText(MomentEditorActivity.this, "网络不可用,请检查", Toast.LENGTH_SHORT).show();
+                    return super.onOptionsItemSelected(item);
+                }
                 PublishMomentIntentService.startPublishMoment(this,
                         mWordsEdit.getText().toString(), mSelectedImageConfigInfo);
+                Util.closeTheSoftKeyboard(this.getCurrentFocus(),MomentEditorActivity.this);
                 finish();
                 break;
         }
@@ -111,6 +116,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         mAddPicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.closeTheSoftKeyboard(v, MomentEditorActivity.this);
                 int mitiPicNum = GALLERY_MITI_PIC_MAX_SIZE - mSelectedImageConfigInfo.size();
                 FunctionConfig config = new FunctionConfig.Builder()
                         .setMutiSelectMaxSize(mitiPicNum)
@@ -229,6 +235,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.closeTheSoftKeyboard(v,MomentEditorActivity.this);
                 finish();
             }
         });

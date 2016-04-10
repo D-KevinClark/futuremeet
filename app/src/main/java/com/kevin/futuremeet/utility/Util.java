@@ -3,9 +3,13 @@ package com.kevin.futuremeet.utility;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import java.io.ByteArrayOutputStream;
 
@@ -146,5 +150,30 @@ public class Util {
 
     }
 
+
+    /**
+     * close The Soft Keyboard
+     * @param context
+     */
+    public static void closeTheSoftKeyboard(View currentView,Context context) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context
+                .getSystemService(context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            //hide the keyboard
+            inputMethodManager.hideSoftInputFromWindow(currentView.getWindowToken(), 0);
+        }
+    }
+
+    /**
+     * detect the network status
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailabel(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
 
 }

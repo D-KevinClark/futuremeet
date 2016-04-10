@@ -64,12 +64,12 @@
         android:text="3分钟前" />
 
     <View
-        android:layout_marginTop="4dp"
         android:id="@+id/devider_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignLeft="@id/nickname_textview"
         android:layout_below="@id/dest_textviwe"
+        android:layout_marginTop="4dp"
         android:background="@color/greyShadow" />
 
     <TextView
@@ -82,37 +82,32 @@
         android:paddingTop="8dp"
         android:text="东方时空的风景挥洒的风师打发撒旦法撒旦法考规定规范的国防生发送的发生的发生发的是打发斯蒂芬虑对方哈萨克的符号案例客服电话计算机的凤凰历史的" />
 
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/nickname_textview"
         android:layout_below="@id/content_textview"
-        android:scrollbars="none">
+        android:orientation="horizontal"
+        android:paddingTop="8dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="8dp">
+        <ImageView
+            android:layout_width="@dimen/moment_images_size"
+            android:layout_height="@dimen/moment_images_size"
+            android:layout_marginRight="4dp"
+            android:src="@color/greyShadow" />
 
-            <ImageView
-                android:layout_width="@dimen/moment_images_size"
-                android:layout_height="@dimen/moment_images_size"
-                android:layout_marginRight="4dp"
-                android:src="@color/greyShadow" />
+        <ImageView
+            android:layout_width="@dimen/moment_images_size"
+            android:layout_height="@dimen/moment_images_size"
+            android:layout_marginRight="4dp"
+            android:src="@color/greyShadow" />
 
-            <ImageView
-                android:layout_width="@dimen/moment_images_size"
-                android:layout_height="@dimen/moment_images_size"
-                android:layout_marginRight="4dp"
-                android:src="@color/greyShadow" />
-
-            <ImageView
-                android:layout_width="@dimen/moment_images_size"
-                android:layout_height="@dimen/moment_images_size"
-                android:layout_marginRight="4dp"
-                android:src="@color/greyShadow" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <ImageView
+            android:layout_width="@dimen/moment_images_size"
+            android:layout_height="@dimen/moment_images_size"
+            android:layout_marginRight="4dp"
+            android:src="@color/greyShadow" />
+    </LinearLayout>
 
 </RelativeLayout>

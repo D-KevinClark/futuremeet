@@ -43,6 +43,7 @@ import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.CityChooseActivity;
 import com.kevin.futuremeet.beans.CurrentLocation;
+import com.kevin.futuremeet.utility.Util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -330,12 +331,7 @@ public class DestChooseFragment extends Fragment implements OnGetPoiSearchResult
         mPoiListView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getContext()
-                        .getSystemService(getContext().INPUT_METHOD_SERVICE);
-                if (inputMethodManager != null) {
-                    //hide the keyboard
-                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
+                Util.closeTheSoftKeyboard(v, getContext());
                 return false;
             }
         });
