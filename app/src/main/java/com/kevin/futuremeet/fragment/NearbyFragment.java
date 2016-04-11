@@ -2,8 +2,11 @@ package com.kevin.futuremeet.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -12,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.MomentEditorActivity;
@@ -26,9 +28,8 @@ public class NearbyFragment extends Fragment {
     private String mParam2;
 
     private Toolbar mToolbar;
-
-
-
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
 
 
     public NearbyFragment() {
@@ -38,6 +39,7 @@ public class NearbyFragment extends Fragment {
 
     /**
      * get a instance of this fragment
+     *
      * @param param1
      * @param param2
      * @return
@@ -63,18 +65,20 @@ public class NearbyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_nearby, container, false);
+        View view = inflater.inflate(R.layout.fragment_nearby, container, false);
         initToolbar(view);
-        FragmentManager childFragmentManager = getChildFragmentManager();
-        childFragmentManager.beginTransaction()
-                .add(R.id.fragment_container,NearByMomentFragment.newInstance(null,null))
-                .commit();
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+
+        mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
+        mTabLayout.setupWithViewPager(mViewPager);
+
         return view;
     }
 
     private void initToolbar(View view) {
         setHasOptionsMenu(true);
-        AppCompatActivity appCompatActivity= (AppCompatActivity) getActivity();
+        AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         appCompatActivity.setSupportActionBar(mToolbar);
     }
@@ -95,4 +99,39 @@ public class NearbyFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
+
+        private final int FRAGMENT_NUM = 2;
+
+        public ViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                MomentFragment momentFragment = MomentFragment.newInstance(null, null);
+                return momentFragment;
+            } else {
+                PeopleFragment peopleFragment = PeopleFragment.newInstance(null, null);
+                return peopleFragment;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return FRAGMENT_NUM;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position == 0) {
+                return getResources().getString(R.string.moment_fragment_page_title);
+            } else {
+                return getResources().getString(R.string.people_fragment_page_title);
+            }
+        }
+    }
 }
+

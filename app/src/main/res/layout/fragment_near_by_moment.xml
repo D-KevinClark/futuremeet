@@ -1,14 +1,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/greyShadow"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kevin.futuremeet.fragment.NearByMomentFragment">
+    android:background="@color/greyShadow"
+    tools:context=".fragment.MomentFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview"
-        android:scrollbars="vertical"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </FrameLayout>

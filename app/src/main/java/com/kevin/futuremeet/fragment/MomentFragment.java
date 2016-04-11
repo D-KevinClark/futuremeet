@@ -2,6 +2,7 @@ package com.kevin.futuremeet.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NearByMomentFragment extends Fragment {
+public class MomentFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -39,7 +40,9 @@ public class NearByMomentFragment extends Fragment {
     private List<AVObject> mMomentList = new ArrayList<>();
     private MomentsRecyclerViewAdapter mMomentsAdater;
     private LinearLayoutManager mLinearLayoutManager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
+    // TODO: 2016/4/11 this number may need to change eventually
     private static final int MOMENT_SEARCH_PAGE_SIZE = 10;
 
 
@@ -48,7 +51,7 @@ public class NearByMomentFragment extends Fragment {
     private AVQuery<AVObject> mMomentSearchQuery;
 
 
-    public NearByMomentFragment() {
+    public MomentFragment() {
         // Required empty public constructor
     }
 
@@ -58,11 +61,11 @@ public class NearByMomentFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NearByMomentFragment.
+     * @return A new instance of fragment MomentFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NearByMomentFragment newInstance(String param1, String param2) {
-        NearByMomentFragment fragment = new NearByMomentFragment();
+    public static MomentFragment newInstance(String param1, String param2) {
+        MomentFragment fragment = new MomentFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -83,9 +86,36 @@ public class NearByMomentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_near_by_moment, container, false);
-        initRecyclerView(view);
+        initViews(view);
+        initEvents();
         newQueryOfMoments();
         return view;
+    }
+
+    private void initEvents() {
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                paginationQueryOfMoments();
+            }
+        });
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                newQueryOfMoments();
+            }
+        });
+    }
+
+    private void initViews(View root) {
+        mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorAccent,
+                R.color.colorPrimary, R.color.colorAccentLight);
     }
 
     /**
@@ -111,13 +141,18 @@ public class NearByMomentFragment extends Fragment {
                     mMomentList = list;
                     mMomentsAdater = new MomentsRecyclerViewAdapter(getContext(), mMomentList);
                     mRecyclerView.setAdapter(mMomentsAdater);
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 } else {
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                     Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
-
 
 
     /**
@@ -150,22 +185,5 @@ public class NearByMomentFragment extends Fragment {
         });
     }
 
-
-    /**
-     * init the RecyclerView
-     * @param root
-     */
-    private void initRecyclerView(View root) {
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
-        mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
-            @Override
-            public void onLoadMore() {
-
-                paginationQueryOfMoments();
-            }
-        });
-    }
 
 }

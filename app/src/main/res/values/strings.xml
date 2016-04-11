@@ -39,4 +39,6 @@
     <string name="is_loading">正在加载</string>
     <string name="click_to_laod_more">点击加载更多</string>
     <string name="all_results_is_displayed">已显示所有结果</string>
+    <string name="moment_fragment_page_title">动态</string>
+    <string name="people_fragment_page_title">人</string>
 </resources>
