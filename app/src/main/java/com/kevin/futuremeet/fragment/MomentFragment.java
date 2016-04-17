@@ -85,7 +85,7 @@ public class MomentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_near_by_moment, container, false);
+        View view = inflater.inflate(R.layout.fragment_moments, container, false);
         initViews(view);
         initEvents();
         newQueryOfMoments();

@@ -24,7 +24,6 @@ import com.kevin.futuremeet.fragment.ArriveTimePickerDialogFragment;
 import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
-import com.kevin.futuremeet.fragment.NearbyFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
 import com.kevin.futuremeet.utility.Config;
 

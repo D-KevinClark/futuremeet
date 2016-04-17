@@ -1,32 +1,36 @@
 package com.kevin.futuremeet.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.utility.Config;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import com.kevin.futuremeet.activity.MomentEditorActivity;
 
 
 public class FutureMeetFragment extends Fragment {
-    private String mPoiName;
-    private String mPoiAdrress;
-    private String mLabel;
-    private double mPoiLat;
-    private double mPoiLng;
-    private Long mPoiTime;
-    private Calendar mCalendar;
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-    TextView textView;
+    private String mParam1;
+    private String mParam2;
 
+    private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
 
-//    private OnFragmentInteractionListener mListener;
 
     public FutureMeetFragment() {
         // Required empty public constructor
@@ -34,89 +38,99 @@ public class FutureMeetFragment extends Fragment {
 
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * get a instance of this fragment
      *
-     * @param poiInfo
+     * @param param1
+     * @param param2
      * @return
      */
-    public static FutureMeetFragment newInstance(Bundle poiInfo) {
+    public static FutureMeetFragment newInstance(String param1, String param2) {
         FutureMeetFragment fragment = new FutureMeetFragment();
-        fragment.setArguments(poiInfo);
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCalendar = new GregorianCalendar();
         if (getArguments() != null) {
-            Bundle bundle = getArguments();
-            mPoiAdrress = bundle.getString(DestChooseFragment.POI_ADDRESS);
-            mPoiName = bundle.getString(DestChooseFragment.POI_NAME);
-            mPoiLat = Double.parseDouble(bundle.getString(DestChooseFragment.POI_LAT));
-            mPoiLng = Double.parseDouble(bundle.getString(DestChooseFragment.POI_LNG));
-            mPoiTime = bundle.getLong(DestChooseFragment.POI_ARRIVE_TIME);
-            mLabel = bundle.getString(DestChooseFragment.POI_DETAIL_LABEL);
-            mCalendar.setTimeInMillis(mPoiTime);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_future_meet, container, false);
+        initToolbar(view);
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
-        // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_future_meet, container, false);
-        textView = (TextView) root.findViewById(R.id.location_text);
-        textView.setText(mPoiAdrress+" "+mPoiName+" "+mPoiLat+" "+mPoiLng+" "+mPoiTime+" "+mLabel+"  "
-        +"date: "+mCalendar.get(Calendar.DAY_OF_MONTH)+"hout:min "+mCalendar.get(Calendar.HOUR_OF_DAY)+":"
-        +mCalendar.get(Calendar.MINUTE));
-        return root;
+        mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        return view;
+    }
+
+    private void initToolbar(View view) {
+        setHasOptionsMenu(true);
+        AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
+        mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        appCompatActivity.setSupportActionBar(mToolbar);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.nearby_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.moment_editor:
+                Intent intent = new Intent(getActivity(), MomentEditorActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
+
+        private final int FRAGMENT_NUM = 2;
+
+        public ViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                MomentFragment momentFragment = MomentFragment.newInstance(null, null);
+                return momentFragment;
+            } else {
+                PeopleFragment peopleFragment = PeopleFragment.newInstance(null, null);
+                return peopleFragment;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return FRAGMENT_NUM;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position == 0) {
+                return getResources().getString(R.string.moment_fragment_page_title);
+            } else {
+                return getResources().getString(R.string.people_fragment_page_title);
+            }
+        }
+    }
 }

@@ -55,7 +55,8 @@
             android:layout_width="@dimen/moment_pics_size"
             android:layout_height="@dimen/moment_pics_size"
             android:layout_gravity="center_vertical"
-            android:background="@color/greyShadow">
+            android:clickable="true"
+            android:background="@drawable/grey_background_selector">
 
             <View
                 android:id="@+id/center_view"

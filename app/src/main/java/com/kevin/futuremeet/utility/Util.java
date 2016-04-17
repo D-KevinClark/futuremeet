@@ -1,10 +1,12 @@
 package com.kevin.futuremeet.utility;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -112,12 +114,12 @@ public class Util {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream);
         bitmap.recycle();//recycle the space allocated for bitmap
-
         return outputStream;
     }
 
     /**
      * calculate InSampleSize For Upload use
+     *
      * @param options
      * @param reqWidth
      * @param reqHeight
@@ -153,9 +155,10 @@ public class Util {
 
     /**
      * close The Soft Keyboard
+     *
      * @param context
      */
-    public static void closeTheSoftKeyboard(View currentView,Context context) {
+    public static void closeTheSoftKeyboard(View currentView, Context context) {
         InputMethodManager inputMethodManager = (InputMethodManager) context
                 .getSystemService(context.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null) {
@@ -166,6 +169,7 @@ public class Util {
 
     /**
      * detect the network status
+     *
      * @param context
      * @return
      */
@@ -174,6 +178,25 @@ public class Util {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public static boolean isOnlyDigitAndLetter(String pass) {
+        for (int i = 0; i < pass.length(); i++) {
+            if (!Character.isLetterOrDigit(pass.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * make the saved file can be seen in the gallery immediately
+     * @param context
+     * @param filePath
+     */
+    public static final void scanImageFile(Context context,String filePath) {
+        Uri uri = Uri.parse("file://" + filePath);
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
 
 }
