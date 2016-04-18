@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -49,13 +50,11 @@ public class RegisterFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private static final int CORP_AVATAR_REQUEST_CODE = 100;
     private static final int SELECT_AVATAR_REQUEST_CODE = 100;
 
 //    private OnFragmentInteractionListener mListener;
 
     private FrameLayout mAvatarLayout;
-    private ImageView mAvatarImageView;
     private EditText mUsernameEditText;
     private EditText mPasswordEditText;
     private EditText mPhoneNumEditText;
@@ -110,12 +109,13 @@ public class RegisterFragment extends Fragment {
      * @param view
      */
     private void initView(View view) {
-        mAvatarImageView = (ImageView) view.findViewById(R.id.avatar_imageview);
         mAvatarLayout = (FrameLayout) view.findViewById(R.id.avatar_layout);
         mUsernameEditText = (EditText) view.findViewById(R.id.nickname_edittext);
         mPasswordEditText = (EditText) view.findViewById(R.id.password_edittext);
         mPhoneNumEditText = (EditText) view.findViewById(R.id.phonenumber_edittext);
         mRegisterButton = (Button) view.findViewById(R.id.register_button);
+
+
     }
 
 
@@ -247,7 +247,7 @@ public class RegisterFragment extends Fragment {
         if (mAvatarPath == null) {
             errorMsg = getString(R.string.please_set_avatar);
         } else if (TextUtils.isEmpty(username)) {
-            errorMsg = getString(R.string.please_inseart_nicknane);
+            errorMsg = getString(R.string.please_input_nicknane);
         } else if (username.contains(" ") || username.contains("@")) {
             errorMsg = getString(R.string.username_format_error_msg);
         } else if (TextUtils.isEmpty(phoneNum)) {
@@ -256,7 +256,7 @@ public class RegisterFragment extends Fragment {
             errorMsg = getString(R.string.please_check_phonenumber_format);
         } else if (TextUtils.isEmpty(password)) {
             errorMsg = getString(R.string.please_input_phone_number);
-        } else if (Util.isOnlyDigitAndLetter(password) && phoneNum.length() < 5) {
+        } else if (!Util.isOnlyDigitAndLetter(password) || password.length() < 5) {
             errorMsg = getString(R.string.the_password_format_statement);
         }
 

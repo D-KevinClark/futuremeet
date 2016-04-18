@@ -43,16 +43,16 @@
     <string name="people_fragment_page_title">人</string>
     <string name="nickname">昵称</string>
     <string name="password">密码</string>
-    <string name="phone">手机</string>
+    <string name="phoneNumber">手机号码</string>
     <string name="verify_code">验证码</string>
     <string name="get_verify_code">获取验证码</string>
     <string name="register">注册</string>
-    <string name="input_nick_nake">填入昵称</string>
+    <string name="nick_nake">昵称</string>
     <string name="your_phone_number">你的手机号码</string>
     <string name="input_password">填入密码</string>
     <string name="input_verify_code">输入验证码</string>
     <string name="username_format_error_msg">昵称中不能包含空格或者@字符</string>
-    <string name="please_inseart_nicknane">请填写昵称</string>
+    <string name="please_input_nicknane">请填写昵称</string>
     <string name="please_input_phonenumber">请填入电话号码</string>
     <string name="please_check_phonenumber_format">请检查手机号码格式</string>
     <string name="please_input_phone_number">请输入密码</string>
@@ -66,4 +66,8 @@
     <string name="cancel">取消</string>
     <string name="avatar_selection_failed">头像选择失败,请重新选择</string>
     <string name="friends">好友</string>
+    <string name="birthday">生日</string>
+    <string name="male">男</string>
+    <string name="gender">性别</string>
+    <string name="female">女</string>
 </resources>

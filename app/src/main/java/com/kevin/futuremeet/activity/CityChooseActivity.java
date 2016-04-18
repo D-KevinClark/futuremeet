@@ -37,7 +37,6 @@ import com.kevin.futuremeet.adapter.CitiesSearchResultAdapter;
 import com.kevin.futuremeet.beans.City;
 import com.kevin.futuremeet.custom.LetterListView;
 import com.kevin.futuremeet.database.CitiesDBHelper;
-import com.kevin.futuremeet.fragment.DestChooseFragment;
 import com.kevin.futuremeet.utility.PinYinUtil;
 
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class CityChooseActivity extends AppCompatActivity implements
                 if (position > 1) {
                     City city = mCityList.get(position);
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra(DestChooseFragment.CURR_CITY_NAME, city.getName());
+                    resultIntent.putExtra(DestChooseActivity.CURR_CITY_NAME, city.getName());
                     setResult(Activity.RESULT_OK, resultIntent);
                     finish();
                 }
@@ -108,7 +107,7 @@ public class CityChooseActivity extends AppCompatActivity implements
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 City city = mSearchResultCityList.get(position);
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra(DestChooseFragment.CURR_CITY_NAME, city.getName());
+                resultIntent.putExtra(DestChooseActivity.CURR_CITY_NAME, city.getName());
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             }
@@ -463,7 +462,7 @@ public class CityChooseActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.putExtra(DestChooseFragment.CURR_CITY_NAME,
+                        intent.putExtra(DestChooseActivity.CURR_CITY_NAME,
                                 mCurrCityTextView.getText().toString());
                         setResult(Activity.RESULT_OK, intent);
                         finish();

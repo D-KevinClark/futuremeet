@@ -12,8 +12,8 @@ import com.kevin.futuremeet.fragment.RegisterFragment;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private FrameLayout mFragmentContaienr;
     private Toolbar mToobar;
+
 
 
     @Override
@@ -24,7 +24,6 @@ public class RegisterActivity extends AppCompatActivity {
         setSupportActionBar(mToobar);
         getSupportActionBar().setTitle(R.string.register);
 
-        mFragmentContaienr = (FrameLayout) findViewById(R.id.fragment_container);
         if (savedInstanceState == null) {
             RegisterFragment registerFragment = RegisterFragment.newInstance(null, null);
             FragmentManager fragmentManager = getSupportFragmentManager();
