@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.fragment;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -18,27 +18,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.ClipImageActivity;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.ByteArrayOutputStream;
+import java.security.acl.Acl;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
 import cn.finalteam.galleryfinal.model.PhotoInfo;
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,8 +69,17 @@ public class RegisterFragment extends Fragment {
     private EditText mPasswordEditText;
     private EditText mPhoneNumEditText;
     private Button mRegisterButton;
+    private RadioButton mMaleRadio;
+    private RadioButton mFemaleRadio;
+    private View mBirthdayLayout;
+    private TextView mBirthDayTextView;
 
     private String mAvatarPath = null;
+    private int mGender = 0;//1---male  2----female
+    private Date mBirthday = null;
+
+    private OnRegisteListener mListener;
+
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -115,7 +134,11 @@ public class RegisterFragment extends Fragment {
         mPhoneNumEditText = (EditText) view.findViewById(R.id.phonenumber_edittext);
         mRegisterButton = (Button) view.findViewById(R.id.register_button);
 
+        mFemaleRadio = (RadioButton) view.findViewById(R.id.female_radio);
+        mMaleRadio = (RadioButton) view.findViewById(R.id.male_radio);
 
+        mBirthdayLayout = view.findViewById(R.id.birthday_layout);
+        mBirthDayTextView = (TextView) view.findViewById(R.id.birthday_textview);
     }
 
 
@@ -137,7 +160,12 @@ public class RegisterFragment extends Fragment {
                     String userName = mUsernameEditText.getText().toString();
                     String passWord = mPasswordEditText.getText().toString();
                     String phone = mPhoneNumEditText.getText().toString();
-                    new UserRegisterTask(getContext()).execute(mAvatarPath,userName,passWord,phone);
+                    new UserRegisterTask(getContext()).execute(
+                            mAvatarPath,
+                            userName,
+                            passWord,
+                            phone
+                    );
                 }
             }
         });
@@ -161,6 +189,32 @@ public class RegisterFragment extends Fragment {
         mUsernameEditText.addTextChangedListener(watcher);
         mPasswordEditText.addTextChangedListener(watcher);
         mPhoneNumEditText.addTextChangedListener(watcher);
+
+
+        mFemaleRadio.setOnClickListener(this);
+        mMaleRadio.setOnClickListener(this);
+
+        mBirthdayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                Calendar calendar = Calendar.getInstance();
+                                int currentYear = calendar.get(Calendar.YEAR);
+                                if (currentYear - year < 12 || currentYear - year > 100) {
+                                    Toast.makeText(getContext(), R.string.birthyear_restriction, Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                calendar.set(year, monthOfYear, dayOfMonth);
+                                mBirthday = calendar.getTime();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                mBirthDayTextView.setText(dateFormat.format(mBirthday));
+                            }
+                        }, 1990, 0, 1).show();
+            }
+        });
     }
 
 
@@ -178,6 +232,20 @@ public class RegisterFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        boolean checked = ((RadioButton) v).isChecked();
+        if (checked)
+            switch (v.getId()) {
+                case R.id.male_radio:
+                    mGender = 1;
+                    break;
+                case R.id.female_radio:
+                    mGender = 2;
+                    break;
+            }
+    }
+
 
     /**
      * Execute the Register action
@@ -187,6 +255,9 @@ public class RegisterFragment extends Fragment {
         private Context mContext;
         private static final int REGISTER_FAILED = 0;
         private static final int REGISTER_SUCCESS = 1;
+        private static final int PHONENUMBER_INVALID = 2;
+        private static final int PHONENUMBER_ALREADY_TAKEN = 3;
+        private static final int USERNAME_ALERADY_TAKKEN = 4;
 
         UserRegisterTask(Context context) {
             mContext = context;
@@ -199,19 +270,62 @@ public class RegisterFragment extends Fragment {
 
         @Override
         protected Integer doInBackground(String... params) {
+
+            AVUser user;
+            // if case the follow image and detail info upload failed and user click the register button again
+            if (AVUser.getCurrentUser() == null) {
+                //save the user account
+                user = new AVUser();
+                user.setUsername(params[1]);
+                user.setPassword(params[2]);
+                user.setMobilePhoneNumber(params[3]);
+                try {
+                    user.save();
+                } catch (AVException e) {
+                    if (e.getCode() == AVException.INVALID_PHONE_NUMBER) {
+                        return PHONENUMBER_INVALID;
+                    } else if (e.getCode() == AVException.USER_MOBILE_PHONENUMBER_TAKEN) {
+                        return PHONENUMBER_ALREADY_TAKEN;
+                    } else if (e.getCode() == AVException.USERNAME_TAKEN) {
+                        return USERNAME_ALERADY_TAKKEN;
+                    } else {
+                        return REGISTER_FAILED;
+                    }
+                }
+            } else {
+                user = AVUser.getCurrentUser();
+            }
+
+
+            //save the avatar
             String imagePath = params[0];
             ByteArrayOutputStream outputStream = Util.decodeImageFileForUpload(imagePath, mContext);
-            final AVFile avFile = new AVFile(UserContract.AVATAR, outputStream.toByteArray());
+            final AVFile avatarFile = new AVFile(UserDetailContract.AVATAR, outputStream.toByteArray());
             try {
-                avFile.save();
+                avatarFile.save();
             } catch (AVException e) {
                 return REGISTER_FAILED;
             }
-            AVObject user = new AVObject(UserContract.CLASS_NAME);
-            user.put(UserContract.USERNAME, params[1]);
-            user.put(UserContract.PASSWORD, params[2]);
-            user.put(UserContract.PHONE_NUMEBR, params[3]);
-            user.put(UserContract.AVATAR, avFile);
+
+            //save the user detail info
+            AVObject detailInfo = new AVObject(UserDetailContract.CLASS_NAME);
+            detailInfo.put(UserDetailContract.GENDER, mGender);
+            detailInfo.put(UserDetailContract.AGE, mBirthday);
+            detailInfo.put(UserDetailContract.AVATAR, avatarFile);
+
+            //only the this user hava the write access to this user detail info record
+            AVACL avacl = new AVACL();
+            avacl.setWriteAccess(user, true);
+            avacl.setPublicReadAccess(true);
+            detailInfo.setACL(avacl);
+
+            try {
+                detailInfo.save();
+            } catch (AVException e) {
+                return REGISTER_FAILED;
+            }
+
+            user.put(UserContract.USER_DETAIL_INFO, detailInfo);
             try {
                 user.save();
             } catch (AVException e) {
@@ -222,14 +336,33 @@ public class RegisterFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Integer status) {
+            String errorMsg = null;
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            if (status == REGISTER_FAILED) {
-                Toast.makeText(getContext(), R.string.register_fail_please_check_network, Toast.LENGTH_SHORT).show();
-            } else {
-                // TODO: 2016/4/13 lunch the verify code fragment
-                Toast.makeText(getContext(), "注册成功", Toast.LENGTH_SHORT).show();
+            if (status == PHONENUMBER_ALREADY_TAKEN) {
+                errorMsg = getString(R.string.phonenumber_has_been_taken);
+            } else if (status == PHONENUMBER_INVALID) {
+                errorMsg = getString(R.string.invalid_phonenumber);
+            } else if (status == USERNAME_ALERADY_TAKKEN) {
+                errorMsg = getString(R.string.username_taken);
+            } else if (status == REGISTER_FAILED) {
+                errorMsg = getString(R.string.please_check_network);
+            }
+
+            if (errorMsg != null) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle(getString(R.string.register_failed))
+                        .setMessage(errorMsg)
+                        .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            } else if (mListener != null) {
+                mListener.onResisteSuccess();
             }
         }
     }
@@ -258,11 +391,15 @@ public class RegisterFragment extends Fragment {
             errorMsg = getString(R.string.please_input_phone_number);
         } else if (!Util.isOnlyDigitAndLetter(password) || password.length() < 5) {
             errorMsg = getString(R.string.the_password_format_statement);
+        } else if (mGender == 0) {
+            errorMsg = getString(R.string.please_input_gender);
+        } else if (mBirthday == null) {
+            errorMsg = getString(R.string.please_input_birthday);
         }
 
         if (errorMsg != null) {
             new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.register_fail)
+                    .setTitle(R.string.register_failed)
                     .setMessage(errorMsg)
                     .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
                         @Override
@@ -329,42 +466,25 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    //    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnRegisteListener) {
+            mListener = (OnRegisteListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnRegisteListener {
+        void onResisteSuccess();
+    }
 }

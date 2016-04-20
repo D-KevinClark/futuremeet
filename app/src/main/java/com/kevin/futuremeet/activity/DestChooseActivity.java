@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,18 +38,19 @@ import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.beans.CurrentLocation;
+import com.kevin.futuremeet.fragment.DestTimeChooserDialog;
 import com.kevin.futuremeet.utility.Util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DestChooseActivity extends AppCompatActivity implements
-        OnGetSuggestionResultListener,OnGetPoiSearchResultListener{
+        OnGetSuggestionResultListener, OnGetPoiSearchResultListener, DestTimeChooserDialog.OnTimePickerListener {
 
 
     private static final int CITY_REQUEST_CODE = 100;
@@ -77,17 +78,26 @@ public class DestChooseActivity extends AppCompatActivity implements
 
     private ProgressDialog mProgressDialog;
 
+    public static final String CURRENT_LOCAITON = "current_location";
+
+
+    @Override
+    public void OnTimerPicked(Date date) {
+        // TODO: 2016/4/19 publish a future poi
+    }
+
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({POI_NAME,POI_ADDRESS,POI_LNG,POI_LAT,POI_ARRIVE_TIME})
-    public @interface PoiAtrr{}
+    @StringDef({POI_NAME, POI_ADDRESS, POI_LNG, POI_LAT, POI_ARRIVE_TIME})
+    public @interface PoiAtrr {
+    }
 
     public static final String POI_NAME = "poi_name";
     public static final String POI_ADDRESS = "poi_address";
     public static final String POI_LNG = "poi_lng";
     public static final String POI_LAT = "poi_lat";
     public static final String POI_ARRIVE_TIME = "poi_arrive_time";
-    public static final String POI_DETAIL_LABEL="poi_detail_label";
+    public static final String POI_DETAIL_LABEL = "poi_detail_label";
 
 
     private static final int POI_SEARCH_PAGESIEZ = 20;//set the page size of the poi search result
@@ -108,9 +118,9 @@ public class DestChooseActivity extends AppCompatActivity implements
 
     private String mCurrentCity = null;
 
+    private static final String POIS_LIST = "pois_list";
 
-    
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,11 +136,27 @@ public class DestChooseActivity extends AppCompatActivity implements
         initAutoTextView();
         initPoiSearchButton();
         initDeleteAllTextView();
+
+        if (savedInstanceState != null) {
+            mPoiList = (ArrayList<Map<String, String>>) savedInstanceState.getSerializable(POIS_LIST);
+            mPoiListAdapter = new SimpleAdapter(this,
+                    mPoiList,
+                    R.layout.search_poi_list_item,
+                    new String[]{POI_NAME, POI_ADDRESS},
+                    new int[]{R.id.search_poi_name, R.id.search_poi_address}
+            );
+            mPoiListView.setAdapter(mPoiListAdapter);
+            mEmptyView.setVisibility(View.GONE);
+            mPoiListView.setVisibility(View.VISIBLE);
+
+        }
     }
 
-
-
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(POIS_LIST, mPoiList);
+    }
 
 
     private void initDeleteAllTextView() {
@@ -174,7 +200,7 @@ public class DestChooseActivity extends AppCompatActivity implements
     }
 
     private void initAutoTextView() {
-        mDestSearchView = (AutoCompleteTextView)findViewById(R.id.dest_place_searchview);
+        mDestSearchView = (AutoCompleteTextView) findViewById(R.id.dest_place_searchview);
         mDestSearchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -192,7 +218,7 @@ public class DestChooseActivity extends AppCompatActivity implements
                     mTellWhereTextView.setVisibility(View.VISIBLE);
                 }
 
-                if (mCurrentCity == null)  return;
+                if (mCurrentCity == null) return;
 
                 mSugSearch.requestSuggestion((new SuggestionSearchOption())
                         .keyword(s.toString()).city(mCurrentCity));
@@ -207,10 +233,11 @@ public class DestChooseActivity extends AppCompatActivity implements
     }
 
     private void initPoiSearchButton() {
-        mPoiSearchButton = (Button)findViewById(R.id.poi_search_button);
+        mPoiSearchButton = (Button) findViewById(R.id.poi_search_button);
         mPoiSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.closeTheSoftKeyboard(v, DestChooseActivity.this);
                 if (mCurrentCity == null) {
                     Toast.makeText(DestChooseActivity.this, R.string.please_choose_city, Toast.LENGTH_SHORT).show();
                     return;
@@ -233,13 +260,13 @@ public class DestChooseActivity extends AppCompatActivity implements
     private void setCurrentCityToPrefs(String city) {
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
-                .putString(CurrentLocation.CURRENT_LOCAITON, city)
+                .putString(CURRENT_LOCAITON, city)
                 .apply();
     }
 
     private String getCurrentCityfromPrefs() {
         String city = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(CurrentLocation.CURRENT_LOCAITON, null);
+                .getString(CURRENT_LOCAITON, null);
         return city;
     }
 
@@ -258,7 +285,7 @@ public class DestChooseActivity extends AppCompatActivity implements
      */
     private void initPoiListView() {
         //since these two view is associate with the list view , so find it here
-        mEmptyView = (TextView)findViewById(R.id.empty);
+        mEmptyView = (TextView) findViewById(R.id.empty);
         mTellWhereTextView = (TextView) findViewById(R.id.tell_me_where_textview);
         mPoiListView = (ListView) findViewById(R.id.dest_search_listview);
         //init the footer of the listview
@@ -304,7 +331,9 @@ public class DestChooseActivity extends AppCompatActivity implements
                 String poiLng = map.get(POI_LNG);
                 String poiLat = map.get(POI_LAT);
 
-              //// TODO: 2016/4/17 when user click a poi item
+                DestTimeChooserDialog timeChooserDialog = new DestTimeChooserDialog();
+                timeChooserDialog.show(getSupportFragmentManager(), null);
+                //// TODO: 2016/4/17 when user click a poi item
             }
         });
     }
@@ -426,7 +455,7 @@ public class DestChooseActivity extends AppCompatActivity implements
     @Override
     public void onGetPoiResult(PoiResult poiResult) {
         if (poiResult == null || poiResult.getAllPoi() == null) {
-            if (mProgressDialog.isShowing()){
+            if (mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
             }
             mEmptyView.setVisibility(View.VISIBLE);
@@ -435,7 +464,7 @@ public class DestChooseActivity extends AppCompatActivity implements
         }
         mPoiCuttPageNum = poiResult.getCurrentPageNum();
         mTotalPoiPageNum = poiResult.getTotalPageNum();
-        if (mPoiList == null||!mIsPreviousPoiDataNeeded) mPoiList = new ArrayList<>();
+        if (mPoiList == null || !mIsPreviousPoiDataNeeded) mPoiList = new ArrayList<>();
 
         new PreparePoiDataTask().execute(poiResult.getAllPoi());
     }

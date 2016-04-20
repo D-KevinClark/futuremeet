@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/nick_nake"
                     android:lines="1"
-                    android:maxLength="10"
+                    android:maxLength="15"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
 
@@ -70,7 +70,6 @@
                     android:hint="@string/phoneNumber"
                     android:inputType="phone"
                     android:lines="1"
-                    android:maxLength="10"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
 
@@ -89,6 +88,7 @@
                     android:hint="@string/password"
                     android:inputType="textPassword"
                     android:lines="1"
+                    android:fontFamily="sans-serif"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
 
@@ -158,6 +158,7 @@
                     android:orientation="horizontal">
 
                     <RadioButton
+                        android:id="@+id/male_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="48dp"
@@ -165,6 +166,7 @@
                         android:textSize="18dp" />
 
                     <RadioButton
+                        android:id="@+id/female_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="48dp"

@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/verify_code_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/please_input_verify_code"
+            android:inputType="phone" />
+
+        <Button
+            android:id="@+id/resend_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/poi_search_button_selector"
+            android:enabled="false"
+            android:text="@string/resend"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+
+   <Button
+       android:textColor="@android:color/white"
+       android:enabled="false"
+       android:id="@+id/confirm_button"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="8dp"
+       android:background="@drawable/poi_search_button_selector"
+       android:text="@string/confirm"/>
+
+
+</LinearLayout>

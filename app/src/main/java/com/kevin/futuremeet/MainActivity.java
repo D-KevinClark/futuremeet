@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+
     private class MomentUploadStatusReportReceiver extends BroadcastReceiver {
 
         @Override

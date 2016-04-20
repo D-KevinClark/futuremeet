@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.FrameLayout;
 
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.fragment.RegisterFragment;
+import com.kevin.futuremeet.fragment.VerifyCodeFragment;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements RegisterFragment.OnRegisteListener {
 
     private Toolbar mToobar;
 
@@ -37,5 +37,14 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * register succeed, show the verify code confirm fragment
+     */
+    @Override
+    public void onResisteSuccess() {
+        VerifyCodeFragment verifyCodeFragment = VerifyCodeFragment.newInstance(null, null);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, verifyCodeFragment).commit();
     }
 }

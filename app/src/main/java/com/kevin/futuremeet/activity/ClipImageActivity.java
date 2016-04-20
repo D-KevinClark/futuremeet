@@ -1,5 +1,6 @@
 package com.kevin.futuremeet.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -74,11 +75,18 @@ public class ClipImageActivity extends AppCompatActivity {
      * clip the bitmap and save it
      */
     private void clipBitmap() {
+        ProgressDialog progressDialog = new ProgressDialog(ClipImageActivity.this);
+        progressDialog.setMessage(getString(R.string.waiting));
+        progressDialog.show();
+
         Bitmap bitmap = mClipImageLayout.clip();
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "未遇");
-        mClippeddImagePath = mediaStorageDir.getAbsolutePath()+File.separator+ Config.AVATAR_IMAGE_LOCAL_STORAGE_NAEM;
+                Environment.DIRECTORY_PICTURES), getString(R.string.app_name));
+        mClippeddImagePath = mediaStorageDir.getAbsolutePath() + File.separator + Config.AVATAR_IMAGE_LOCAL_STORAGE_NAEM;
         saveImage(bitmap, mClippeddImagePath);
+
+        progressDialog.dismiss();
+
         Intent intent = new Intent();
         intent.putExtra(CLIP_IMAGE_PATH, mClippeddImagePath);
         setResult(RESULT_OK, intent);
@@ -87,7 +95,6 @@ public class ClipImageActivity extends AppCompatActivity {
 
     /**
      * save the clipped image to local
-     *
      * @param bitmap
      * @param clippeddImagePath
      */
@@ -112,7 +119,6 @@ public class ClipImageActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Util.scanImageFile(this, clippeddImagePath);
     }
 
     private void initViews() {
