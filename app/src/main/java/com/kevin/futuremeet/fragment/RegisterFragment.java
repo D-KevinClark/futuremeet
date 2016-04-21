@@ -326,6 +326,10 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             }
 
             user.put(UserContract.USER_DETAIL_INFO, detailInfo);
+            user.put(UserContract.AVATAR, avatarFile);
+            user.put(UserContract.AGE, mBirthday);
+            user.put(UserContract.GENDER, mGender);
+
             try {
                 user.save();
             } catch (AVException e) {

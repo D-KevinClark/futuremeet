@@ -2,9 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/moment_editor"
-        android:title="@string/publish"
+        android:id="@+id/publish"
         android:icon="@drawable/plus_icon"
-        app:showAsAction="always"
-        />
+        android:title="@string/publish"
+        app:actionProviderClass="com.kevin.futuremeet.custom.PublishActionProvider"
+        app:showAsAction="always" />
+
 </menu>

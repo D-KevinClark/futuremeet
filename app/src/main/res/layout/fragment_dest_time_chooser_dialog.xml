@@ -59,7 +59,7 @@
             android:id="@+id/will_be_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/will_be"
+            android:text="@string/arrive"
             android:textSize="16dp" />
 
         <TextView
@@ -70,9 +70,7 @@
             android:layout_marginLeft="4dp"
             android:lines="1"
             android:singleLine="true"
-            android:text="肯德肯（湖滨）肯德肯（湖滨）肯德肯（湖滨）"
-            android:textSize="20dp"
-            tools:text="肯德肯（湖滨）" />
+            android:textSize="20dp" />
 
     </LinearLayout>
 

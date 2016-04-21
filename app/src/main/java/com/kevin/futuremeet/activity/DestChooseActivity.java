@@ -3,23 +3,30 @@ package com.kevin.futuremeet.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringDef;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +44,11 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.background.PublishPoiIntentServie;
 import com.kevin.futuremeet.fragment.DestTimeChooserDialog;
 import com.kevin.futuremeet.utility.Util;
 
@@ -81,11 +92,13 @@ public class DestChooseActivity extends AppCompatActivity implements
     public static final String CURRENT_LOCAITON = "current_location";
 
 
+
     @Override
     public void OnTimerPicked(Date date) {
-        // TODO: 2016/4/19 publish a future poi
+        PublishPoiIntentServie.startPublishPoi(this, mPoiName, mPoiAdress,
+                Double.valueOf(mPoiLng), Double.valueOf(mPoiLat), date);
+        finish();
     }
-
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({POI_NAME, POI_ADDRESS, POI_LNG, POI_LAT, POI_ARRIVE_TIME})
@@ -97,7 +110,11 @@ public class DestChooseActivity extends AppCompatActivity implements
     public static final String POI_LNG = "poi_lng";
     public static final String POI_LAT = "poi_lat";
     public static final String POI_ARRIVE_TIME = "poi_arrive_time";
-    public static final String POI_DETAIL_LABEL = "poi_detail_label";
+
+    private String mPoiName;
+    private String mPoiAdress;
+    private String mPoiLng;
+    private String mPoiLat;
 
 
     private static final int POI_SEARCH_PAGESIEZ = 20;//set the page size of the poi search result
@@ -151,6 +168,7 @@ public class DestChooseActivity extends AppCompatActivity implements
 
         }
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -325,15 +343,21 @@ public class DestChooseActivity extends AppCompatActivity implements
         mPoiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //in case that-is-all footer is clicked
+                if (position >= mPoiList.size()) {
+                    return;
+                }
                 Map<String, String> map = mPoiList.get(position);
-                String poiName = map.get(POI_NAME);
-                String poiAdress = map.get(POI_ADDRESS);
-                String poiLng = map.get(POI_LNG);
-                String poiLat = map.get(POI_LAT);
+                mPoiName = map.get(POI_NAME);
+                mPoiAdress = map.get(POI_ADDRESS);
+                mPoiLng = map.get(POI_LNG);
+                mPoiLat = map.get(POI_LAT);
 
+                Bundle bundle = new Bundle();
+                bundle.putString(POI_NAME, mPoiName);
                 DestTimeChooserDialog timeChooserDialog = new DestTimeChooserDialog();
+                timeChooserDialog.setArguments(bundle);
                 timeChooserDialog.show(getSupportFragmentManager(), null);
-                //// TODO: 2016/4/17 when user click a poi item
             }
         });
     }
@@ -425,14 +449,30 @@ public class DestChooseActivity extends AppCompatActivity implements
         } else {
             mToolbar.setTitle(R.string.is_locating);
         }
-        mToolbar.setNavigationIcon(R.drawable.list);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DestChooseActivity.this, CityChooseActivity.class);
-                startActivityForResult(intent, CITY_REQUEST_CODE);
+                finish();
             }
         });
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.dest_choose_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, CityChooseActivity.class);
+        startActivityForResult(intent, CITY_REQUEST_CODE);
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -447,6 +487,7 @@ public class DestChooseActivity extends AppCompatActivity implements
         if (requestCode == CITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             String cityName = data.getStringExtra(CURR_CITY_NAME);
             if (cityName != null && !cityName.equals("")) {
+                mCurrentCity=cityName;
                 setToolBarTitle(cityName);
             }
         }
@@ -467,6 +508,7 @@ public class DestChooseActivity extends AppCompatActivity implements
         if (mPoiList == null || !mIsPreviousPoiDataNeeded) mPoiList = new ArrayList<>();
 
         new PreparePoiDataTask().execute(poiResult.getAllPoi());
+
     }
 
     @Override

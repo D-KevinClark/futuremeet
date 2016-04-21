@@ -5,4 +5,7 @@ package com.kevin.futuremeet.beans;
  */
 public class UserContract {
     public static final String USER_DETAIL_INFO = "detailInfo";
+    public static final String GENDER="gender";
+    public static final String AGE="age";
+    public static final String AVATAR = "avatar";
 }

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_tab_height"
+    android:layout_height="wrap_content"
+    android:paddingTop="6dp"
+    android:paddingBottom="10dp"
+    android:alpha="0.8"
+    android:background="@android:color/white"
     android:gravity="center">
 
 
@@ -9,7 +13,7 @@
     <LinearLayout
         android:id="@+id/futuremeet_tab_layout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
@@ -33,7 +37,7 @@
     <LinearLayout
         android:id="@+id/news_tab_layout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
@@ -55,7 +59,7 @@
     <LinearLayout
         android:id="@+id/friends_tab_layout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
@@ -77,7 +81,7 @@
     <LinearLayout
         android:id="@+id/me_layout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">

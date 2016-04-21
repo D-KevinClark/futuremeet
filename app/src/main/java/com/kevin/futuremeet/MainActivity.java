@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kevin.futuremeet.background.PublishMomentIntentService;
+import com.kevin.futuremeet.background.PublishPoiIntentServie;
 import com.kevin.futuremeet.fragment.FriendsFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
@@ -92,13 +93,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mFutureText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
         }
 
-        //get the broadcast that indicate the status of the moments just published(if it's successful)
-        IntentFilter intentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
-        MomentUploadStatusReportReceiver reportReceiver = new MomentUploadStatusReportReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(reportReceiver, intentFilter);
+        //get the broadcast that indicate the status of the moments just published
+        IntentFilter momentIntentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
+        MomentUploadStatusReportReceiver momentReceiver = new MomentUploadStatusReportReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(momentReceiver, momentIntentFilter);
+
+        //get the broadcast that indicate the status of the poi just published
+        IntentFilter poiIntentFilter = new IntentFilter(PublishPoiIntentServie.ACTION_STATUS_REPORT);
+        PoiPublishStatusReportReceiver poiReceiver = new PoiPublishStatusReportReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(poiReceiver, poiIntentFilter);
 
     }
 
+    private class PoiPublishStatusReportReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                int status = intent.getIntExtra(PublishPoiIntentServie.EXTRA_STATUS, 0);
+                if (status == PublishPoiIntentServie.PUBLISH_OK) {
+                    Toast.makeText(MainActivity.this, R.string.poi_publish_success, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.poi_publish_failed, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 
 
     private class MomentUploadStatusReportReceiver extends BroadcastReceiver {

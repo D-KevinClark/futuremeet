@@ -20,7 +20,7 @@
     <string name="not_relevant_place_in_curr_city">该城市没有找到相关地点</string>
     <string name="is_searching_relevant_place">正在查找相关地点...</string>
     <string name="accentColor">#FF4081</string>
-    <string name="arrive">到</string>
+    <string name="arrive">到达</string>
     <string name="today">今天</string>
     <string name="tomorrow">明天</string>
     <string name="label">标签</string>
@@ -95,4 +95,7 @@
     <string name="from_now">距\n现\n在</string>
     <string name="minute_vertical">分\n钟</string>
     <string name="hour_vertical">小\n时</string>
+    <string name="poi_publish_success">未来地发布成功</string>
+    <string name="poi_publish_failed">未来地发布失败</string>
+    <string name="add_future_poi">添加未来地</string>
 </resources>

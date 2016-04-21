@@ -11,8 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.DestChooseActivity;
+import com.kevin.futuremeet.utility.Util;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -29,8 +32,11 @@ public class DestTimeChooserDialog extends DialogFragment {
     private int mBeginDay;
     private Calendar mCalendar = Calendar.getInstance();
 
+    private String mPoiName;
+
+
     //the min time distance from now on the user can set for their arrive time
-    private static final int MIN_TIME_DIS_FROM_NOW=20;
+    private static final int MIN_TIME_DIS_FROM_NOW = 20;
 
     public DestTimeChooserDialog() {
         // Required empty public constructor
@@ -40,24 +46,30 @@ public class DestTimeChooserDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            mPoiName = getArguments().getString(DestChooseActivity.POI_NAME);
+        }
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_dest_time_chooser_dialog, null);
         initViews(view);
         initEvents();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view)
-                .setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 })
-                .setPositiveButton(R.string.confirm,new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO: 2016/4/19
-                        Date date=new Date();
-                        mListener.OnTimerPicked(date);
+                        if (Util.isNetworkAvailabel(getContext())) {
+                            Date date = mCalendar.getTime();
+                            mListener.OnTimerPicked(date);
+                        } else {
+                            Toast.makeText(getContext(), R.string.please_check_network, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
         return builder.create();
@@ -94,6 +106,8 @@ public class DestTimeChooserDialog extends DialogFragment {
         mHourPicker = (NumberPicker) view.findViewById(R.id.hour_picker);
         mMinutePicker = (NumberPicker) view.findViewById(R.id.minute_picker);
 
+        mDestText.setText(mPoiName);
+
         mBeginDay = mCalendar.get(Calendar.DAY_OF_YEAR);
         setTimeBoardProperly(0, MIN_TIME_DIS_FROM_NOW);
 
@@ -126,7 +140,6 @@ public class DestTimeChooserDialog extends DialogFragment {
     }
 
 
-
     private void setTimeBoardProperly(int hourDelta, int minuteDelta) {
         if (hourDelta != 0)
             mCalendar.add(Calendar.HOUR_OF_DAY, hourDelta);
@@ -140,7 +153,7 @@ public class DestTimeChooserDialog extends DialogFragment {
         }
         int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = mCalendar.get(Calendar.MINUTE);
-        mHourText.setText(hour>9?(hour+ ""):("0"+hour));
-        mMinuteText.setText(minute>9?(minute+ ""):("0"+minute));
+        mHourText.setText(hour > 9 ? (hour + "") : ("0" + hour));
+        mMinuteText.setText(minute > 9 ? (minute + "") : ("0" + minute));
     }
 }
