@@ -1,6 +1,5 @@
 package com.kevin.futuremeet.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,17 +7,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.activity.MomentEditorActivity;
 
 
 public class FutureMeetFragment extends Fragment {
@@ -33,14 +29,13 @@ public class FutureMeetFragment extends Fragment {
     private ViewPager mViewPager;
 
 
+
     public FutureMeetFragment() {
         // Required empty public constructor
     }
 
-
     /**
      * get a instance of this fragment
-     *
      * @param param1
      * @param param2
      * @return
@@ -63,6 +58,7 @@ public class FutureMeetFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,9 +69,10 @@ public class FutureMeetFragment extends Fragment {
 
         mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-
         return view;
     }
+
+
 
     private void initToolbar(View view) {
         setHasOptionsMenu(true);

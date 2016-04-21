@@ -9,4 +9,5 @@ public class FuturePoiContract {
     public static final String POI_ADDRESS = "address";
     public static final String POI_LOCATION = "location";
     public static final String ARRIVE_TIME = "arriveTime";
+    public static final String USER_DETAIL_INFO = "userDetailInfo";
 }

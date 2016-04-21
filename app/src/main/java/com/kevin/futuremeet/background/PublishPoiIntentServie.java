@@ -1,16 +1,18 @@
 package com.kevin.futuremeet.background;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.beans.FuturePoiContract;
+import com.kevin.futuremeet.beans.UserContract;
 
-import java.sql.Time;
 import java.util.Date;
 
 public class PublishPoiIntentServie extends IntentService {
@@ -18,7 +20,7 @@ public class PublishPoiIntentServie extends IntentService {
     private static final String ACTION = "com.kevin.futuremeet.background.action.publish.poi";
 
     public static final String ACTION_STATUS_REPORT = "com.kevin.futuremeet.background.action.publish.status.report";
-    public static final String EXTRA_STATUS="com.kevin.futuremeet.background.action.publish.status";
+    public static final String EXTRA_STATUS = "com.kevin.futuremeet.background.action.publish.status";
     public static final int PUBLISH_OK = 110;
     public static final int PUBLISH_FAILED = 111;
 
@@ -29,7 +31,6 @@ public class PublishPoiIntentServie extends IntentService {
     private static final String EXTRA_POI_LNG = "com.kevin.futuremeet.background.extra.poi.lng";
     private static final String EXTRA_POI_LAT = "com.kevin.futuremeet.background.extra.poi.lat";
     private static final String EXTRA_POI_TIME = "com.kevin.futuremeet.background.extra.poi.time";
-
 
 
     public PublishPoiIntentServie() {
@@ -71,12 +72,22 @@ public class PublishPoiIntentServie extends IntentService {
     }
 
     private void handlePoiPublish(String poiName, String poiAddress, Double lng, Double lat, Date date) {
+        AVUser user = AVUser.getCurrentUser();
+
         AVObject object = new AVObject(FuturePoiContract.CLASS_NAME);
         object.put(FuturePoiContract.POI_NAME, poiName);
         object.put(FuturePoiContract.POI_ADDRESS, poiAddress);
         AVGeoPoint geoPoint = new AVGeoPoint(lat, lng);
         object.put(FuturePoiContract.POI_LOCATION, geoPoint);
         object.put(FuturePoiContract.ARRIVE_TIME, date);
+        object.put(FuturePoiContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
+
+
+        AVACL avacl = new AVACL();
+        avacl.setReadAccess(user, true);
+        avacl.setWriteAccess(user, true);
+        object.setACL(avacl);
+
         try {
             object.save();
             sendPublishStatusReport(PUBLISH_OK);
@@ -84,7 +95,6 @@ public class PublishPoiIntentServie extends IntentService {
             sendPublishStatusReport(PUBLISH_FAILED);
         }
     }
-
 
     private void sendPublishStatusReport(int status) {
         Intent intent = new Intent(ACTION_STATUS_REPORT)

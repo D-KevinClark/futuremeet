@@ -165,7 +165,6 @@ public class DestChooseActivity extends AppCompatActivity implements
             mPoiListView.setAdapter(mPoiListAdapter);
             mEmptyView.setVisibility(View.GONE);
             mPoiListView.setVisibility(View.VISIBLE);
-
         }
     }
 
@@ -343,7 +342,7 @@ public class DestChooseActivity extends AppCompatActivity implements
         mPoiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //in case that-is-all footer is clicked
+                //in case that-is-all footer is
                 if (position >= mPoiList.size()) {
                     return;
                 }
