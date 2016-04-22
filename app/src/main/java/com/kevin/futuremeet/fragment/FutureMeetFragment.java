@@ -1,5 +1,7 @@
 package com.kevin.futuremeet.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ import com.avos.avoscloud.AVGeoPoint;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.PoiPageFilterAdapter;
 import com.kevin.futuremeet.beans.FuturePoiBean;
+import com.kevin.futuremeet.beans.FuturePoiContract;
 import com.kevin.futuremeet.database.FuturePoiDBContract;
 import com.kevin.futuremeet.database.FuturePoiDBHelper;
 import com.kevin.futuremeet.utility.Util;
@@ -36,6 +39,7 @@ import com.kevin.futuremeet.utility.Util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -103,11 +107,18 @@ public class FutureMeetFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkIfPoiOutOfDate();
+    }
+
     /**
      * prepare the page filter panel
      */
     private void preparePagerFilter() {
         preparePoiData();
+        checkIfPoiOutOfDate();
         View pagerFilterPopWindowContent = getActivity().getLayoutInflater().inflate(R.layout.future_meet_page_filter, null);
         mPageFilterListView = (ListView) pagerFilterPopWindowContent.findViewById(R.id.page_filter_listview);
 
@@ -174,14 +185,39 @@ public class FutureMeetFragment extends Fragment {
             poiBean.setArriveTime(date);
 
             mFuturePoiList.add(poiBean);
-
-            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME)));
-            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS)));
-            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG)));
-            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT)));
-            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME)));
         }
     }
+
+    /**
+     * check to see if the future poi has out of date
+     */
+    private void checkIfPoiOutOfDate() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        FuturePoiDBHelper helper = new FuturePoiDBHelper(getContext());
+        SQLiteDatabase database = helper.getWritableDatabase();
+        for (int i = mFuturePoiList.size()-1; i >= 0; i--) {
+            FuturePoiBean poiBean = mFuturePoiList.get(i);
+            if (poiBean.getArriveTime().before(date)) {
+                mFuturePoiList.remove(poiBean);
+                String selection = FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME + " LIKE ?";
+                String[] selectionArgs = {poiBean.getPoiName()};
+                database.delete(FuturePoiDBContract.FuturePoiEntry.TABLE_NAME, selection, selectionArgs);
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.future_poi_out_of_date_reminder)
+                        .setMessage(poiBean.getPoiName() + getString(R.string.out_of_date_future_poi_have_cancled_for_u))
+                        .setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+        }
+        database.close();
+    }
+
+
 
     private void initViews(View view) {
         final int xoffset = getActivity().getResources().getDimensionPixelOffset(R.dimen.page_filter_anchor_x_offset);
@@ -190,7 +226,8 @@ public class FutureMeetFragment extends Fragment {
         mPageFilterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPageFilterPopupWindow.showAtLocation(getView(),Gravity.TOP|Gravity.LEFT,xoffset,yoffset);
+                checkIfPoiOutOfDate();
+                mPageFilterPopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.LEFT, xoffset, yoffset);
             }
         });
     }

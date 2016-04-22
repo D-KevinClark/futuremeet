@@ -98,4 +98,7 @@
     <string name="poi_publish_success">未来地发布成功</string>
     <string name="poi_publish_failed">未来地发布失败</string>
     <string name="add_future_poi">添加未来地</string>
+    <string name="future_poi_out_of_date_reminder">未来地过期提醒</string>
+    <string name="out_of_date_future_poi_have_cancled_for_u">" 已经过期，为您自动取消"</string>
+    <string name="OK">知道了</string>
 </resources>
