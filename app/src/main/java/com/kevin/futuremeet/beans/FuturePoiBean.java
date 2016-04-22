@@ -2,12 +2,13 @@ package com.kevin.futuremeet.beans;
 
 import com.avos.avoscloud.AVGeoPoint;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by carver on 2016/4/21.
  */
-public class FuturePoiBean {
+public class FuturePoiBean{
     private String poiName;
     private String poiAddress;
     private AVGeoPoint avGeoPoint;

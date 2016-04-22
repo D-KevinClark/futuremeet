@@ -30,7 +30,6 @@ public class PublishPoiIntentServie extends IntentService {
     public static final int PUBLISH_FAILED = 111;
 
 
-    // TODO: Rename parameters
     private static final String EXTRA_POI_NAME = "com.kevin.futuremeet.background.extra.poi.name";
     private static final String EXTRA_POI_ADDRESS = "com.kevin.futuremeet.background.extra.poi.address";
     private static final String EXTRA_POI_LNG = "com.kevin.futuremeet.background.extra.poi.lng";
@@ -42,13 +41,6 @@ public class PublishPoiIntentServie extends IntentService {
         super("PublishPoiIntentServie");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
     public static void startPublishPoi(Context context, String poiName, String poiAddress, Double lng, Double lat, Date time) {
         Intent intent = new Intent(context, PublishPoiIntentServie.class);
         intent.setAction(ACTION);

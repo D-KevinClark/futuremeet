@@ -58,6 +58,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MomentEditorActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="portrait" />
 
         <service

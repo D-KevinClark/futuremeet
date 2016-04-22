@@ -2,12 +2,15 @@ package com.kevin.futuremeet.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,15 +23,20 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVGeoPoint;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.DestChooseActivity;
+import com.kevin.futuremeet.activity.MomentEditorActivity;
 import com.kevin.futuremeet.adapter.PoiPageFilterAdapter;
 import com.kevin.futuremeet.beans.FuturePoiBean;
 import com.kevin.futuremeet.beans.FuturePoiContract;
@@ -59,6 +67,10 @@ public class FutureMeetFragment extends Fragment {
     private PoiPageFilterAdapter mPageFilterAdapter;
     private PopupWindow mPageFilterPopupWindow;
     private ArrayList<FuturePoiBean> mFuturePoiList = new ArrayList<>();
+
+    private PopupWindow mPublishChoicePopupWindow;
+
+    private CoordinatorLayout mCoordinatorLayout;
 
 
     public FutureMeetFragment() {
@@ -104,6 +116,7 @@ public class FutureMeetFragment extends Fragment {
         mTabLayout.setupWithViewPager(mViewPager);
 
         preparePagerFilter();
+        preparePublishChoosePopWindow();
         return view;
     }
 
@@ -111,6 +124,66 @@ public class FutureMeetFragment extends Fragment {
     public void onResume() {
         super.onResume();
         checkIfPoiOutOfDate();
+    }
+
+    public void preparePublishChoosePopWindow() {
+        String[] choice = {getString(R.string.publish_moment), getString(R.string.publish_future_poi)};
+
+        View publishChoicePopWindowContent = getActivity().getLayoutInflater()
+                .inflate(R.layout.publish_moment_or_poi_menu_pop_window_layout, null);
+        View publishMomentLayout = publishChoicePopWindowContent.findViewById(R.id.publish_moment_layout);
+        View publishPoiLayout = publishChoicePopWindowContent.findViewById(R.id.publish_poi_layout);
+
+        publishMomentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPublishChoicePopupWindow.dismiss();
+                tryToPublishMoment();
+            }
+        });
+
+        publishPoiLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPublishChoicePopupWindow.dismiss();
+                tryToPublishPoi();
+            }
+        });
+
+        mPublishChoicePopupWindow = new PopupWindow(publishChoicePopWindowContent, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        mPublishChoicePopupWindow.setTouchable(true);
+        mPublishChoicePopupWindow.setOutsideTouchable(true);
+        mPublishChoicePopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+    }
+
+    private void tryToPublishPoi() {
+        if (mFuturePoiList.size() >= 2) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.two_future_poi_at_most,
+                    Snackbar.LENGTH_SHORT);
+            snackbar.show();
+        } else {
+            Intent intent = new Intent(getContext(), DestChooseActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void tryToPublishMoment() {
+        if (mFuturePoiList.size() == 0) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout,
+                    getString(R.string.publish_poi_first_please), Snackbar.LENGTH_SHORT);
+            snackbar.setAction(getString(R.string.publish_now), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), DestChooseActivity.class);
+                    startActivity(intent);
+                }
+            });
+            snackbar.show();
+        } else {
+            Intent intent = new Intent(getContext(), MomentEditorActivity.class);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -196,7 +269,7 @@ public class FutureMeetFragment extends Fragment {
         Date date = calendar.getTime();
         FuturePoiDBHelper helper = new FuturePoiDBHelper(getContext());
         SQLiteDatabase database = helper.getWritableDatabase();
-        for (int i = mFuturePoiList.size()-1; i >= 0; i--) {
+        for (int i = mFuturePoiList.size() - 1; i >= 0; i--) {
             FuturePoiBean poiBean = mFuturePoiList.get(i);
             if (poiBean.getArriveTime().before(date)) {
                 mFuturePoiList.remove(poiBean);
@@ -218,18 +291,16 @@ public class FutureMeetFragment extends Fragment {
     }
 
 
-
     private void initViews(View view) {
-        final int xoffset = getActivity().getResources().getDimensionPixelOffset(R.dimen.page_filter_anchor_x_offset);
-        final int yoffset = getActivity().getResources().getDimensionPixelOffset(R.dimen.page_filter_anchor_y_offset);
         mPageFilterImageView = (ImageView) view.findViewById(R.id.page_filter_image);
         mPageFilterImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkIfPoiOutOfDate();
-                mPageFilterPopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.LEFT, xoffset, yoffset);
+                mPageFilterPopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.LEFT, 0, 50);
             }
         });
+        mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
     }
 
 
@@ -246,6 +317,11 @@ public class FutureMeetFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPublishChoicePopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.RIGHT, 0,50);
+        return true;
+    }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {
 

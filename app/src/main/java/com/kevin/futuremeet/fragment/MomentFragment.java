@@ -20,6 +20,8 @@ import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.custom.EndlessRecyclerViewScrollListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -41,6 +43,7 @@ public class MomentFragment extends Fragment {
     private MomentsRecyclerViewAdapter mMomentsAdater;
     private LinearLayoutManager mLinearLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
 
     // TODO: 2016/4/11 this number may need to change eventually
     private static final int MOMENT_SEARCH_PAGE_SIZE = 10;
@@ -127,6 +130,9 @@ public class MomentFragment extends Fragment {
         mMomentSearchQuery.setLimit(MOMENT_SEARCH_PAGE_SIZE);
         mMomentSearchQuery.orderByDescending(MomentContract.PUBLISH_TIME);
         mMomentSearchQuery.include(MomentContract.IMAGES);
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.PUBLISH_TIME, date);
         mMomentSearchQuery.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
@@ -136,10 +142,22 @@ public class MomentFragment extends Fragment {
                         return;//no need to add items just return
                     }
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
-                        mMomentsAdater.showAllMomentsLoadedFooter();
+                        //in case the first page got is less than the page size
+                        //which is when the adapter hasn't initialed yet
+                        if (mMomentsAdater != null) {
+                            mMomentsAdater.showAllMomentsLoadedFooter();
+                        } else {
+                            // TODO: 2016/4/22 increase the range
+                        }
                     }
                     mMomentList = list;
                     mMomentsAdater = new MomentsRecyclerViewAdapter(getContext(), mMomentList);
+                    mMomentsAdater.setOnMoreDataWantedListener(new MomentsRecyclerViewAdapter.OnMoreDataWantedListener() {
+                        @Override
+                        public void onMoreDataWanted() {
+                            increaseSerchRange();
+                        }
+                    });
                     mRecyclerView.setAdapter(mMomentsAdater);
                     if (mSwipeRefreshLayout.isRefreshing()) {
                         mSwipeRefreshLayout.setRefreshing(false);
@@ -186,4 +204,7 @@ public class MomentFragment extends Fragment {
     }
 
 
+    public void increaseSerchRange() {
+        // TODO: 2016/4/22
+    }
 }

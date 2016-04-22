@@ -11,5 +11,6 @@
         android:id="@+id/page_filter_listview"
         android:layout_width="184dp"
         android:layout_height="wrap_content"
+        android:listSelector="@drawable/normal_white_pressed_grey_selector"
         android:divider="@null" />
 </android.support.v7.widget.CardView>

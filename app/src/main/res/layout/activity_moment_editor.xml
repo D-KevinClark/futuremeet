@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -17,8 +17,7 @@
         android:id="@+id/moment_words_edit"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_below="@id/toolbar"
-        android:background="@null"
+        android:background="@android:color/white"
         android:gravity="top"
         android:hint="@string/what_u_want_to_say_to_them"
         android:lines="5"
@@ -29,18 +28,19 @@
 
     <TextView
         android:id="@+id/words_count_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/moment_words_edit"
-        android:layout_marginRight="4dp"
+        android:background="@android:color/white"
+        android:gravity="right"
+        android:paddingRight="4dp"
         android:text="0/100" />
 
     <LinearLayout
+        android:id="@+id/images_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/words_count_text"
-        android:layout_marginBottom="8dp"
+        android:background="@android:color/white"
+        android:paddingBottom="8dp"
         android:paddingLeft="3dp">
 
         <LinearLayout
@@ -50,13 +50,13 @@
             android:orientation="horizontal" />
 
         <RelativeLayout
-            android:layout_margin="5dp"
             android:id="@+id/add_pic_layout"
             android:layout_width="@dimen/moment_pics_size"
             android:layout_height="@dimen/moment_pics_size"
             android:layout_gravity="center_vertical"
-            android:clickable="true"
-            android:background="@drawable/grey_background_selector">
+            android:layout_margin="5dp"
+            android:background="@drawable/grey_background_selector"
+            android:clickable="true">
 
             <View
                 android:id="@+id/center_view"
@@ -81,6 +81,22 @@
                 android:textColor="#cccccc" />
 
         </RelativeLayout>
-
     </LinearLayout>
-</RelativeLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/white"
+        android:paddingBottom="4dp"
+        android:paddingLeft="@dimen/moment_editor_textview_side_padding"
+        android:paddingTop="4dp"
+        android:text="@string/choose_publish_poi" />
+
+    <ListView
+        android:id="@+id/future_poi_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white" />
+</LinearLayout>

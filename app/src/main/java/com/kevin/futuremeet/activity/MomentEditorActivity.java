@@ -1,6 +1,8 @@
 package com.kevin.futuremeet.activity;
 
 import android.app.ProgressDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,23 +12,39 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVGeoPoint;
+import com.baidu.location.Poi;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.adapter.PoiPageFilterAdapter;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
+import com.kevin.futuremeet.beans.FuturePoiBean;
+import com.kevin.futuremeet.database.FuturePoiDBContract;
+import com.kevin.futuremeet.database.FuturePoiDBHelper;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +58,12 @@ public class MomentEditorActivity extends AppCompatActivity {
     private TextView mWordsCount;
     private View mAddPicView;
     private LinearLayout mPicContainerLayout;
+    private ArrayList<AVGeoPoint> mSelectedFuturePois = new ArrayList<>();
+
+
+    private ListView mFuturePoiListView;
+    private ArrayList<FuturePoiBean> mFuturePoiList = new ArrayList<>();
+
 
     private Toolbar mToolBar;
 
@@ -53,15 +77,66 @@ public class MomentEditorActivity extends AppCompatActivity {
     public static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
 
 
+    /**
+     * read future poi data form database and set them to a list that back up the page filter listview adapter
+     */
+    private void preparePoiData() {
+        FuturePoiDBHelper helper = new FuturePoiDBHelper(this);
+        SQLiteDatabase database = helper.getReadableDatabase();
+        String[] projection = {
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME
+        };
+
+        String sortOrder =
+                FuturePoiDBContract.FuturePoiEntry._ID + " DESC";
+
+        Cursor c = database.query(
+                FuturePoiDBContract.FuturePoiEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+        while (c.moveToNext()) {
+            FuturePoiBean poiBean = new FuturePoiBean();
+            String poiName = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME));
+            String poiAdress = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS));
+            String poiLng = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG));
+            String poiLat = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT));
+            String poiArriveTime = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME));
+
+            AVGeoPoint avGeoPoint = new AVGeoPoint(Double.valueOf(poiLat), Double.valueOf(poiLng));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+            Date date = null;
+            try {
+                date = format.parse(poiArriveTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            poiBean.setPoiName(poiName);
+            poiBean.setPoiAddress(poiAdress);
+            poiBean.setAvGeoPoint(avGeoPoint);
+            poiBean.setArriveTime(date);
+
+            mFuturePoiList.add(poiBean);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment_editor);
+        preparePoiData();
         initView();
         initEvent();
     }
-
 
 
     @Override
@@ -76,17 +151,24 @@ public class MomentEditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.publish:
                 String content = mWordsEdit.getText().toString();
+                Log.i("mytag", mSelectedFuturePois.size()+" ");
+
                 if (TextUtils.isEmpty(content) && mSelectedImageConfigInfo.size() == 0) {
                     Toast.makeText(MomentEditorActivity.this, R.string.please_edit_content_first, Toast.LENGTH_SHORT).show();
                     return super.onOptionsItemSelected(item);
                 }
-                if (!Util.isNetworkAvailabel(MomentEditorActivity.this)) {
-                    Toast.makeText(MomentEditorActivity.this, "网络不可用,请检查", Toast.LENGTH_SHORT).show();
+                if (mSelectedFuturePois.size() == 0) {
+                    Toast.makeText(MomentEditorActivity.this, R.string.please_choose_future_poi, Toast.LENGTH_SHORT).show();
                     return super.onOptionsItemSelected(item);
                 }
+                if (!Util.isNetworkAvailabel(MomentEditorActivity.this)) {
+                    Toast.makeText(MomentEditorActivity.this,R.string.please_check_network, Toast.LENGTH_SHORT).show();
+                    return super.onOptionsItemSelected(item);
+                }
+
                 PublishMomentIntentService.startPublishMoment(this,
-                        mWordsEdit.getText().toString(), mSelectedImageConfigInfo);
-                Util.closeTheSoftKeyboard(this.getCurrentFocus(),MomentEditorActivity.this);
+                        mWordsEdit.getText().toString(), mSelectedImageConfigInfo,mSelectedFuturePois);
+                Util.closeTheSoftKeyboard(this.getCurrentFocus(), MomentEditorActivity.this);
                 finish();
                 break;
         }
@@ -126,6 +208,25 @@ public class MomentEditorActivity extends AppCompatActivity {
                 GalleryFinal.openGalleryMuti(GALLERY_OPEN_REQUEST_CODE, config, mOnGalleryResultCallback);
             }
         });
+
+
+        FuturePoiListAdapter adapter = new FuturePoiListAdapter();
+        mFuturePoiListView.setAdapter(adapter);
+
+        mFuturePoiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ImageView tickView = (ImageView) view.findViewById(R.id.tick_symbol);
+                if (tickView.getVisibility() != View.VISIBLE) {
+                    tickView.setVisibility(View.VISIBLE);
+                    mSelectedFuturePois.add(mFuturePoiList.get(position).getAvGeoPoint());
+                } else {
+                    tickView.setVisibility(View.INVISIBLE);
+                    mSelectedFuturePois.remove(mFuturePoiList.get(position).getAvGeoPoint());
+                }
+            }
+        });
+
     }
 
 
@@ -235,12 +336,66 @@ public class MomentEditorActivity extends AppCompatActivity {
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Util.closeTheSoftKeyboard(v,MomentEditorActivity.this);
+                Util.closeTheSoftKeyboard(v, MomentEditorActivity.this);
                 finish();
             }
         });
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.publish_moment);
+
+        mFuturePoiListView = (ListView) findViewById(R.id.future_poi_listview);
+
+    }
+
+
+    /**
+     * adapter to show the future poi
+     */
+    class FuturePoiListAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return mFuturePoiList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(MomentEditorActivity.this);
+            View view = inflater.inflate(R.layout.moment_editor_poi_list_item, null);
+            Calendar calendar = Calendar.getInstance();
+            int nowDay = calendar.get(Calendar.DAY_OF_YEAR);
+            FuturePoiBean futurerPoi = mFuturePoiList.get(position);
+            Date date = futurerPoi.getArriveTime();
+            calendar.setTime(date);
+            int futureDay = calendar.get(Calendar.DAY_OF_YEAR);
+            String firstLine;
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            String hourStr = hour > 9 ? hour + "" : "0" + hour;
+            int minute = calendar.get(Calendar.MINUTE);
+            String minuteStr = minute > 9 ? minute + "" : "0" + minute;
+
+            if (futureDay == nowDay) {
+                firstLine = getString(R.string.today) + " " + hourStr + ":" + minuteStr;
+            } else {
+                firstLine = getString(R.string.tomorrow) + " " + hourStr + ":" + minuteStr;
+            }
+            String secondline = futurerPoi.getPoiName();
+            TextView text1 = (TextView) view.findViewById(R.id.text1);
+            TextView text2 = (TextView) view.findViewById(R.id.text2);
+            text1.setText(firstLine);
+            text2.setText(secondline);
+            return view;
+        }
     }
 }

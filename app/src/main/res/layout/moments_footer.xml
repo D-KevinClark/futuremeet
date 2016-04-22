@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/poi_listview_footer_height"
         android:gravity="center"
-        android:text="@string/all_results_is_displayed"
+        android:text="@string/to_see_bigger_range"
         android:visibility="gone" />
 
     <LinearLayout

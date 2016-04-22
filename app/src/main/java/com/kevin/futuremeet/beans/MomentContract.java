@@ -8,4 +8,7 @@ public class MomentContract {
     public static final String CONTENT = "content";
     public static final String IMAGES = "images";
     public static final String PUBLISH_TIME="createdAt";
+    public static final String GEDER = "gender";
+    public static final String AGE = "age";
+    public static final String LOCATION = "location";
 }

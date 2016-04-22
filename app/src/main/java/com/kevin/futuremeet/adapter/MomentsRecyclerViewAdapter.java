@@ -26,7 +26,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     private LayoutInflater mLayoutInflater;
     private List<AVObject> mMomentsList;
 
-    private boolean mIsAllDataLoaded=false;
+    private boolean mIsAllDataLoaded = false;
 
     private static final int FOOTER_ITEM_TYPE = 100;
     private static final int NORMAL_ITEM_TYPE = 101;
@@ -47,13 +47,22 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         } else {
             View view = mLayoutInflater.inflate(R.layout.moments_footer, parent, false);
             FooterViewHolder footerViewHolder = new FooterViewHolder(view);
+            View allDataLoadedView = footerViewHolder.allLoadedView;
+            allDataLoadedView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mMoreDataWantedListener != null) {
+                        mMoreDataWantedListener.onMoreDataWanted();
+                    }
+                }
+            });
             return footerViewHolder;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == getItemCount()-1) {
+        if (position == getItemCount() - 1) {
             return FOOTER_ITEM_TYPE;
         } else {
             return NORMAL_ITEM_TYPE;
@@ -62,6 +71,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
     /**
      * get the real data item (exclude the footer) ,just a convenient method
+     *
      * @return
      */
     public int getDataItemCount() {
@@ -70,9 +80,9 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position == getItemCount()-1) {//this is footer
-            if (mIsAllDataLoaded) {
-                FooterViewHolder footerViewHolder= (FooterViewHolder) holder;
+        if (position == getItemCount() - 1) {//this is footer
+            if (mIsAllDataLoaded||getItemCount()==1) {//second condition is prepared for there is no data
+                FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
                 footerViewHolder.isLoadingView.setVisibility(View.GONE);
                 footerViewHolder.allLoadedView.setVisibility(View.VISIBLE);
             }
@@ -107,7 +117,6 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
                         .into(imageView);
             }
         }
-
     }
 
     public void setMomentsList(List<AVObject> moments) {
@@ -122,8 +131,8 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     /**
      * set the flag, so when the footer show, it shows in the proper way ,see the method "onBindViewHolder"
      */
-    public void showAllMomentsLoadedFooter(){
-        mIsAllDataLoaded=true;
+    public void showAllMomentsLoadedFooter() {
+        mIsAllDataLoaded = true;
     }
 
     public static class MomentViewHolder extends RecyclerView.ViewHolder {
@@ -148,5 +157,15 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             isLoadingView = itemView.findViewById(R.id.is_loading);
             allLoadedView = itemView.findViewById(R.id.all_result_showed);
         }
+    }
+
+    private OnMoreDataWantedListener mMoreDataWantedListener;
+
+    public void setOnMoreDataWantedListener(OnMoreDataWantedListener listener) {
+        mMoreDataWantedListener = listener;
+    }
+
+    public interface OnMoreDataWantedListener {
+        void onMoreDataWanted();
     }
 }
