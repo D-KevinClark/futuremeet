@@ -7,6 +7,7 @@ import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.ViewAnimationUtils;
 
+import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVGeoPoint;
@@ -148,6 +149,11 @@ public class PublishMomentIntentService extends IntentService {
             point.setLongitude(Double.parseDouble(geoPointMap.get(KEY_LNG)));
             point.setLatitude(Double.parseDouble(geoPointMap.get(KEY_LAT)));
             avObject.put(MomentContract.LOCATION, point);
+
+            AVACL avacl = new AVACL();
+            avacl.setPublicReadAccess(true);
+            avacl.setWriteAccess(user, true);
+            avObject.setACL(avacl);
 
             avObjects.add(avObject);
         }
