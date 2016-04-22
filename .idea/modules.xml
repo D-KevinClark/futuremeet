@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/futuremeet.iml" filepath="$PROJECT_DIR$/futuremeet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/futuremeet.iml" filepath="$PROJECT_DIR$/futuremeet.iml" />
     </modules>
   </component>
 </project>

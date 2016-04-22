@@ -1,8 +1,10 @@
 package com.kevin.futuremeet.background;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.avos.avoscloud.AVACL;
@@ -12,7 +14,10 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.beans.FuturePoiContract;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.database.FuturePoiDBContract;
+import com.kevin.futuremeet.database.FuturePoiDBHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class PublishPoiIntentServie extends IntentService {
@@ -90,6 +95,7 @@ public class PublishPoiIntentServie extends IntentService {
 
         try {
             object.save();
+            savePoiToDB(poiName,poiAddress,lng,lat,date);
             sendPublishStatusReport(PUBLISH_OK);
         } catch (AVException e) {
             sendPublishStatusReport(PUBLISH_FAILED);
@@ -101,5 +107,26 @@ public class PublishPoiIntentServie extends IntentService {
                 .putExtra(EXTRA_STATUS, status);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
+
+
+    private void savePoiToDB(String poiName, String poiAddress, Double lng, Double lat, Date date) {
+        FuturePoiDBHelper dbHelper = new FuturePoiDBHelper(getApplicationContext());
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME,poiName);
+        contentValues.put(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS,poiAddress);
+        contentValues.put(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG,lng);
+        contentValues.put(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT,lat);
+        contentValues.put(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME,dateFormat.format(date));
+
+        database.insert(FuturePoiDBContract.FuturePoiEntry.TABLE_NAME,null,contentValues);
+
+        database.close();
+
+    }
+
 
 }

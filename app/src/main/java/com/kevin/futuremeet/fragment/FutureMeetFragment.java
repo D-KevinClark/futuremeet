@@ -1,5 +1,10 @@
 package com.kevin.futuremeet.fragment;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,13 +13,30 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
+import com.avos.avoscloud.AVGeoPoint;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.adapter.PoiPageFilterAdapter;
+import com.kevin.futuremeet.beans.FuturePoiBean;
+import com.kevin.futuremeet.database.FuturePoiDBContract;
+import com.kevin.futuremeet.database.FuturePoiDBHelper;
+import com.kevin.futuremeet.utility.Util;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class FutureMeetFragment extends Fragment {
@@ -27,7 +49,12 @@ public class FutureMeetFragment extends Fragment {
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    private ImageView mPageFilterImageView;
 
+    private ListView mPageFilterListView;
+    private PoiPageFilterAdapter mPageFilterAdapter;
+    private PopupWindow mPageFilterPopupWindow;
+    private ArrayList<FuturePoiBean> mFuturePoiList = new ArrayList<>();
 
 
     public FutureMeetFragment() {
@@ -36,6 +63,7 @@ public class FutureMeetFragment extends Fragment {
 
     /**
      * get a instance of this fragment
+     *
      * @param param1
      * @param param2
      * @return
@@ -64,14 +92,108 @@ public class FutureMeetFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_future_meet, container, false);
         initToolbar(view);
+        initViews(view);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
         mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
+
+        preparePagerFilter();
         return view;
     }
 
+    /**
+     * prepare the page filter panel
+     */
+    private void preparePagerFilter() {
+        preparePoiData();
+        View pagerFilterPopWindowContent = getActivity().getLayoutInflater().inflate(R.layout.future_meet_page_filter, null);
+        mPageFilterListView = (ListView) pagerFilterPopWindowContent.findViewById(R.id.page_filter_listview);
+
+        View header = getActivity().getLayoutInflater().inflate(R.layout.poi_page_filter_listview_header, null);
+        mPageFilterListView.addHeaderView(header);
+
+
+        mPageFilterAdapter = new PoiPageFilterAdapter(getActivity(), mFuturePoiList);
+        mPageFilterListView.setAdapter(mPageFilterAdapter);
+
+
+        mPageFilterPopupWindow = new PopupWindow(pagerFilterPopWindowContent, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        mPageFilterPopupWindow.setTouchable(true);
+        mPageFilterPopupWindow.setOutsideTouchable(true);
+        mPageFilterPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+    }
+
+    /**
+     * read future poi data form database and set them to a list that back up the page filter listview adapter
+     */
+    private void preparePoiData() {
+        FuturePoiDBHelper helper = new FuturePoiDBHelper(getContext());
+        SQLiteDatabase database = helper.getReadableDatabase();
+        String[] projection = {
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT,
+                FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME
+        };
+
+        String sortOrder =
+                FuturePoiDBContract.FuturePoiEntry._ID + " DESC";
+
+        Cursor c = database.query(
+                FuturePoiDBContract.FuturePoiEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+        while (c.moveToNext()) {
+            FuturePoiBean poiBean = new FuturePoiBean();
+            String poiName = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME));
+            String poiAdress = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS));
+            String poiLng = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG));
+            String poiLat = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT));
+            String poiArriveTime = c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME));
+
+            AVGeoPoint avGeoPoint = new AVGeoPoint(Double.valueOf(poiLat), Double.valueOf(poiLng));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+            Date date = null;
+            try {
+                date = format.parse(poiArriveTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            poiBean.setPoiName(poiName);
+            poiBean.setPoiAddress(poiAdress);
+            poiBean.setAvGeoPoint(avGeoPoint);
+            poiBean.setArriveTime(date);
+
+            mFuturePoiList.add(poiBean);
+
+            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_NAME)));
+            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ADDRESS)));
+            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LNG)));
+            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_LAT)));
+            Log.i("mytag", c.getString(c.getColumnIndex(FuturePoiDBContract.FuturePoiEntry.COLUMN_NAME_POI_ARRIVE_TIME)));
+        }
+    }
+
+    private void initViews(View view) {
+        final int xoffset = getActivity().getResources().getDimensionPixelOffset(R.dimen.page_filter_anchor_x_offset);
+        final int yoffset = getActivity().getResources().getDimensionPixelOffset(R.dimen.page_filter_anchor_y_offset);
+        mPageFilterImageView = (ImageView) view.findViewById(R.id.page_filter_image);
+        mPageFilterImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPageFilterPopupWindow.showAtLocation(getView(),Gravity.TOP|Gravity.LEFT,xoffset,yoffset);
+            }
+        });
+    }
 
 
     private void initToolbar(View view) {
@@ -119,6 +241,28 @@ public class FutureMeetFragment extends Fragment {
             } else {
                 return getResources().getString(R.string.people_fragment_page_title);
             }
+        }
+    }
+
+    /**
+     * update the poi page filter
+     */
+    public void updatePoiPageFilter() {
+        new UpdataPoiPageFilterTask().execute();
+    }
+
+    private class UpdataPoiPageFilterTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mFuturePoiList.clear();
+            preparePagerFilter();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            mPageFilterAdapter.notifyDataSetChanged();
         }
     }
 }
