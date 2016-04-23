@@ -12,7 +12,6 @@
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="poi_listview_footer_height">48dp</dimen>
     <dimen name="dialog_content_margin">24dp</dimen>
-    <dimen name="moment_pics_size">80dp</dimen>
     <dimen name="moment_pic_layout_size">90dp</dimen>
     <dimen name="moment_editor_textview_side_padding">8dp</dimen>
     <dimen name="moment_avatar_size_moment">48dp</dimen>
@@ -20,4 +19,5 @@
     <dimen name="moment_images_margin_right">8dp</dimen>
     <dimen name="avatar_select_image_size">80dp</dimen>
     <dimen name="avatar_cropper_size">300dp</dimen>
+    <dimen name="moment_editor_images_size">80dp</dimen>
 </resources>

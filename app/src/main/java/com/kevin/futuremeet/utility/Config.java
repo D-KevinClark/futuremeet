@@ -5,6 +5,7 @@ package com.kevin.futuremeet.utility;
  */
 public class Config {
     public static final int MINIMUM_FUTURE_ARRIVE_TIME_FROM_NOW = 30;
+    public static final int QUERY_STEP_RANGE = 1; //km
 
     public static final String PREF_SHOW_FUTUREMEET_FRAGMENT = "show_future_meet_fragment";
     public static final String PREF_FUTURE_POI_ADRESS = "future_poi_address";

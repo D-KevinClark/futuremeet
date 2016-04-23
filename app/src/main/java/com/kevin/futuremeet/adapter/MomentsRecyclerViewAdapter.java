@@ -46,12 +46,14 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             return viewHodler;
         } else {
             View view = mLayoutInflater.inflate(R.layout.moments_footer, parent, false);
-            FooterViewHolder footerViewHolder = new FooterViewHolder(view);
+            final FooterViewHolder footerViewHolder = new FooterViewHolder(view);
             View allDataLoadedView = footerViewHolder.allLoadedView;
             allDataLoadedView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mMoreDataWantedListener != null) {
+                        footerViewHolder.isLoadingView.setVisibility(View.VISIBLE);
+                        footerViewHolder.allLoadedView.setVisibility(View.GONE);
                         mMoreDataWantedListener.onMoreDataWanted();
                     }
                 }
@@ -81,7 +83,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == getItemCount() - 1) {//this is footer
-            if (mIsAllDataLoaded||getItemCount()==1) {//second condition is prepared for there is no data
+            if (mIsAllDataLoaded) {
                 FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
                 footerViewHolder.isLoadingView.setVisibility(View.GONE);
                 footerViewHolder.allLoadedView.setVisibility(View.VISIBLE);
@@ -94,7 +96,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             }
             String content = mMomentsList.get(position).getString(MomentContract.CONTENT);
             List<AVFile> images = mMomentsList.get(position).getList(MomentContract.IMAGES);
-            int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.moment_pics_size);
+            int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_size);
             int imageViewMarginRight = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_margin_right);
             moementHolder.contentTextView.setText(content);
 

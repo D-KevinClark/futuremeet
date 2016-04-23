@@ -10,8 +10,8 @@
         android:clickable="true"
         android:id="@+id/pic_image"
         android:scaleType="centerCrop"
-        android:layout_width="@dimen/moment_pics_size"
-        android:layout_height="@dimen/moment_pics_size"
+        android:layout_width="@dimen/moment_editor_images_size"
+        android:layout_height="@dimen/moment_editor_images_size"
         android:layout_centerInParent="true" />
 
     <ImageView

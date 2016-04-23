@@ -25,11 +25,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.avos.avoscloud.AVGeoPoint;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.DestChooseActivity;
 import com.kevin.futuremeet.activity.MomentEditorActivity;
@@ -66,6 +72,10 @@ public class FutureMeetFragment extends Fragment {
 
     private CoordinatorLayout mCoordinatorLayout;
 
+    private static final String TAG = FutureMeetFragment.class.getSimpleName();
+
+    private MomentFragment mMomentFragment = null;
+    private PeopleFragment mPeopleFragment = null;
 
     public FutureMeetFragment() {
         // Required empty public constructor
@@ -108,11 +118,16 @@ public class FutureMeetFragment extends Fragment {
 
         mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-
         preparePagerFilter();
         preparePublishChoosePopWindow();
+
+        getChildFragment();
+        //begin to locate
+        initLocationFunc();
+        mLocationClient.start();
         return view;
     }
+
 
     @Override
     public void onResume() {
@@ -202,7 +217,71 @@ public class FutureMeetFragment extends Fragment {
         mPageFilterPopupWindow.setTouchable(true);
         mPageFilterPopupWindow.setOutsideTouchable(true);
         mPageFilterPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+
+        mPageFilterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    if (mCurrentGeoPoint == null) {
+                        Snackbar.make(mCoordinatorLayout,
+                                getString(R.string.not_get_current_location_yet), Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+                    performSearch(mCurrentGeoPoint);
+                    mPageFilterPopupWindow.dismiss();
+                } else {
+                    performSearch(mFuturePoiList.get(position - 1).getAvGeoPoint());
+                    mPageFilterPopupWindow.dismiss();
+                }
+            }
+        });
     }
+
+
+    private LocationClient mLocationClient = null;
+    private AVGeoPoint mCurrentGeoPoint = null;
+
+    /**
+     * A listener for the location result,deal the Location Info here
+     */
+    private BDLocationListener myLocationListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            if (bdLocation.getLocType() == BDLocation.TypeNetWorkLocation) {
+                mCurrentGeoPoint = new AVGeoPoint();
+                mCurrentGeoPoint.setLongitude(bdLocation.getLongitude());
+                mCurrentGeoPoint.setLatitude(bdLocation.getLatitude());
+                mLocationClient.stop();
+                performSearch(mCurrentGeoPoint);
+            } else {
+                Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private void performSearch(AVGeoPoint avGeoPoint) {
+        getChildFragment();
+        if (mMomentFragment != null && mPeopleFragment != null && avGeoPoint != null) {
+            mMomentFragment.performSearch(mCurrentGeoPoint);
+            mPeopleFragment.performSearch(mCurrentGeoPoint);
+        }
+    }
+
+
+    /**
+     * set some option to the LocationClient,like Mode,or Address needed,after this function you can
+     * call LocationClient.start() immediately
+     */
+    private void initLocationFunc() {
+        mLocationClient = new LocationClient(getActivity().getApplicationContext());
+        LocationClientOption locationClientOption = new LocationClientOption();
+        locationClientOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
+        locationClientOption.setIsNeedAddress(true);
+        mLocationClient.setLocOption(locationClientOption);
+        mLocationClient.registerLocationListener(myLocationListener);
+    }
+
 
     /**
      * read future poi data form database and set them to a list that back up the page filter listview adapter
@@ -254,6 +333,7 @@ public class FutureMeetFragment extends Fragment {
             mFuturePoiList.add(poiBean);
         }
     }
+
 
     /**
      * check to see if the future poi has out of date
@@ -313,8 +393,16 @@ public class FutureMeetFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mPublishChoicePopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.RIGHT, 0,50);
+        mPublishChoicePopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.RIGHT, 0, 50);
         return true;
+    }
+
+
+    public void getChildFragment() {
+        mMomentFragment = (MomentFragment) getChildFragmentManager()
+                .findFragmentByTag(makeFragmentName(R.id.viewpager, 0));
+        mPeopleFragment = (PeopleFragment) getChildFragmentManager()
+                .findFragmentByTag(makeFragmentName(R.id.viewpager, 1));
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -349,6 +437,17 @@ public class FutureMeetFragment extends Fragment {
                 return getResources().getString(R.string.people_fragment_page_title);
             }
         }
+    }
+
+    /**
+     * a helper to get the tag of the fragment in the fragment adapter
+     *
+     * @param viewPagerId
+     * @param index
+     * @return
+     */
+    private static String makeFragmentName(int viewPagerId, int index) {
+        return "android:switcher:" + viewPagerId + ":" + index;
     }
 
     /**

@@ -1,10 +1,14 @@
 package com.kevin.futuremeet.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +20,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -40,13 +46,16 @@ import com.kevin.futuremeet.utility.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
@@ -75,6 +84,72 @@ public class MomentEditorActivity extends AppCompatActivity {
 
     private static final int GALLERY_OPEN_REQUEST_CODE = 100;
     public static final int GALLERY_MITI_PIC_MAX_SIZE = 3;
+
+    private LinearLayout mRootLayout;
+    private int mStatusBarHeight;
+    private boolean mIsKeyBoardShowed;
+
+
+    // 获取状态栏高度
+    public static int getStatusBarHeight(Context context) {
+        try {
+            Class<?> c = Class.forName("com.android.internal.R$dimen");
+            Object obj = c.newInstance();
+            Field field = c.getField("status_bar_height");
+            int x = Integer.parseInt(field.get(obj).toString());
+            return context.getResources().getDimensionPixelSize(x);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+
+        @Override
+        public void onGlobalLayout() {
+            // 应用可以显示的区域。此处包括应用占用的区域，
+            // 以及ActionBar和状态栏，但不含设备底部的虚拟按键。
+            Rect r = new Rect();
+            mRootLayout.getWindowVisibleDisplayFrame(r);
+
+            // 屏幕高度。这个高度不含虚拟按键的高度
+            int screenHeight = mRootLayout.getRootView().getHeight();
+
+            int heightDiff = screenHeight - (r.bottom - r.top);
+
+            // 在不显示软键盘时，heightDiff等于状态栏的高度
+            // 在显示软键盘时，heightDiff会变大，等于软键盘加状态栏的高度。
+            // 所以heightDiff大于状态栏高度时表示软键盘出现了，
+            // 这时可算出软键盘的高度，即heightDiff减去状态栏的高度
+//            if(keyboardHeight == 0 && heightDiff > statusBarHeight){
+//                keyboardHeight = heightDiff - statusBarHeight;
+//            }
+
+            if (mIsKeyBoardShowed) {
+                // 如果软键盘是弹出的状态，并且heightDiff小于等于状态栏高度，
+                // 说明这时软键盘已经收起
+                if (heightDiff <= mStatusBarHeight) {
+                    mIsKeyBoardShowed = false;
+                    onHideKeyboard();
+                }
+            } else {
+                // 如果软键盘是收起的状态，并且heightDiff大于状态栏高度，
+                // 说明这时软键盘已经弹出
+                if (heightDiff > mStatusBarHeight) {
+                    mIsKeyBoardShowed = true;
+                    onShowKeyboard();
+                }
+            }
+        }
+    };
+
+    private void onShowKeyboard() {
+    }
+
+    private void onHideKeyboard() {
+        restoreSelectionState();
+    }
 
 
     /**
@@ -136,8 +211,19 @@ public class MomentEditorActivity extends AppCompatActivity {
         preparePoiData();
         initView();
         initEvent();
+        mStatusBarHeight = getStatusBarHeight(getApplicationContext());
+        mRootLayout.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            mRootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(globalLayoutListener);
+        } else {
+            mRootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,7 +237,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.publish:
                 String content = mWordsEdit.getText().toString();
-                Log.i("mytag", mSelectedFuturePois.size()+" ");
+                Log.i("mytag", mSelectedFuturePois.size() + " ");
 
                 if (TextUtils.isEmpty(content) && mSelectedImageConfigInfo.size() == 0) {
                     Toast.makeText(MomentEditorActivity.this, R.string.please_edit_content_first, Toast.LENGTH_SHORT).show();
@@ -162,12 +248,12 @@ public class MomentEditorActivity extends AppCompatActivity {
                     return super.onOptionsItemSelected(item);
                 }
                 if (!Util.isNetworkAvailabel(MomentEditorActivity.this)) {
-                    Toast.makeText(MomentEditorActivity.this,R.string.please_check_network, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MomentEditorActivity.this, R.string.please_check_network, Toast.LENGTH_SHORT).show();
                     return super.onOptionsItemSelected(item);
                 }
 
                 PublishMomentIntentService.startPublishMoment(this,
-                        mWordsEdit.getText().toString(), mSelectedImageConfigInfo,mSelectedFuturePois);
+                        mWordsEdit.getText().toString(), mSelectedImageConfigInfo, mSelectedFuturePois);
                 Util.closeTheSoftKeyboard(this.getCurrentFocus(), MomentEditorActivity.this);
                 finish();
                 break;
@@ -220,13 +306,40 @@ public class MomentEditorActivity extends AppCompatActivity {
                 if (tickView.getVisibility() != View.VISIBLE) {
                     tickView.setVisibility(View.VISIBLE);
                     mSelectedFuturePois.add(mFuturePoiList.get(position).getAvGeoPoint());
+                    mSelectedPosition.add(position);
                 } else {
                     tickView.setVisibility(View.INVISIBLE);
                     mSelectedFuturePois.remove(mFuturePoiList.get(position).getAvGeoPoint());
+                    mSelectedPosition.remove(position);
                 }
             }
         });
 
+        mRootLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Util.closeTheSoftKeyboard(v,MomentEditorActivity.this);
+                return false;
+            }
+        });
+    }
+
+
+    /**
+     * the code below is because when the soft keyboard show out, it hide the future poi listview,
+     * and when is hide ,my listview's item's selected state lost, which I don't know why
+     */
+    private Set<Integer> mSelectedPosition = new HashSet<>();
+
+    private void restoreSelectionState() {
+        int size = mFuturePoiList.size();
+        for (int i = 0; i < size; i++) {
+            if (mSelectedPosition.contains(i)) {
+                View view = mFuturePoiListView.getChildAt(i);
+                ImageView tickView = (ImageView) view.findViewById(R.id.tick_symbol);
+                tickView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 
@@ -241,6 +354,7 @@ public class MomentEditorActivity extends AppCompatActivity {
             if (resultList.size() + mSelectedImageConfigInfo.size() == GALLERY_MITI_PIC_MAX_SIZE) {
                 mAddPicView.setVisibility(View.GONE);
             }
+
             mSelectedPicNum = resultList.size();
             //get the size of the imageview
             final int width = getResources().getDimensionPixelSize(R.dimen.moment_pic_layout_size);
@@ -345,6 +459,9 @@ public class MomentEditorActivity extends AppCompatActivity {
         actionBar.setTitle(R.string.publish_moment);
 
         mFuturePoiListView = (ListView) findViewById(R.id.future_poi_listview);
+
+
+        mRootLayout = (LinearLayout) findViewById(R.id.root_layout);
 
     }
 

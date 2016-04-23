@@ -101,11 +101,12 @@
     <string name="future_poi_out_of_date_reminder">未来地过期提醒</string>
     <string name="out_of_date_future_poi_have_cancled_for_u">" 已经过期，已为您自动取消"</string>
     <string name="OK">知道了</string>
-    <string name="to_see_bigger_range">查看更远范围</string>
+    <string name="to_see_bigger_range">点击查看更远范围</string>
     <string name="choose_publish_poi">选择发布地点</string>
     <string name="please_choose_future_poi">请选择发布地点</string>
     <string name="publish_future_poi">发布未来地</string>
     <string name="two_future_poi_at_most">最多只能发布两个未来地</string>
     <string name="publish_poi_first_please">请先发布未来地</string>
     <string name="publish_now">现在发布</string>
+    <string name="not_get_current_location_yet">尚未获得当前位置</string>
 </resources>

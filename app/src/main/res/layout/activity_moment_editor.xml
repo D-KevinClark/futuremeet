@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/root_layout"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -51,8 +52,8 @@
 
         <RelativeLayout
             android:id="@+id/add_pic_layout"
-            android:layout_width="@dimen/moment_pics_size"
-            android:layout_height="@dimen/moment_pics_size"
+            android:layout_width="@dimen/moment_editor_images_size"
+            android:layout_height="@dimen/moment_editor_images_size"
             android:layout_gravity="center_vertical"
             android:layout_margin="5dp"
             android:background="@drawable/grey_background_selector"
