@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -231,7 +232,9 @@ public class FutureMeetFragment extends Fragment {
                     performSearch(mCurrentGeoPoint);
                     mPageFilterPopupWindow.dismiss();
                 } else {
-                    performSearch(mFuturePoiList.get(position - 1).getAvGeoPoint());
+                    AVGeoPoint point=mFuturePoiList.get(position - 1).getAvGeoPoint();
+                    Log.i(TAG, "onItemClick: " + point.getLongitude() + "  " + point.getLatitude());
+                    performSearch(point);
                     mPageFilterPopupWindow.dismiss();
                 }
             }
@@ -263,8 +266,8 @@ public class FutureMeetFragment extends Fragment {
     private void performSearch(AVGeoPoint avGeoPoint) {
         getChildFragment();
         if (mMomentFragment != null && mPeopleFragment != null && avGeoPoint != null) {
-            mMomentFragment.performSearch(mCurrentGeoPoint);
-            mPeopleFragment.performSearch(mCurrentGeoPoint);
+            mMomentFragment.performSearch(avGeoPoint);
+            mPeopleFragment.performSearch(avGeoPoint);
         }
     }
 
@@ -278,6 +281,7 @@ public class FutureMeetFragment extends Fragment {
         LocationClientOption locationClientOption = new LocationClientOption();
         locationClientOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
         locationClientOption.setIsNeedAddress(true);
+        locationClientOption.setCoorType("bd09ll");
         mLocationClient.setLocOption(locationClientOption);
         mLocationClient.registerLocationListener(myLocationListener);
     }

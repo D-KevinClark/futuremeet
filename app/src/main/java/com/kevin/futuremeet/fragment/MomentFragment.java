@@ -188,6 +188,7 @@ public class MomentFragment extends Fragment {
         });
     }
 
+
     private void initViews(View root) {
         mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
         mLinearLayoutManager = new LinearLayoutManager(getContext());

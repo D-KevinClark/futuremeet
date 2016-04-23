@@ -19,7 +19,7 @@
             app:popupTheme="@style/Theme.AppCompat.Light">
             <ImageView
                 android:id="@+id/page_filter_image"
-                android:src="@android:drawable/ic_menu_add"
+                android:background="@drawable/page_filter_drop_down_selector"
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,7 +80,7 @@ public class PublishMomentIntentService extends IntentService {
             geoPointMap.put(KEY_LAT, lat);
             futurePois.add(geoPointMap);
         }
-        
+
         intent.putExtra(EXTRA_fUTURE_POIS, futurePois);
         context.startService(intent);
     }
@@ -91,7 +92,7 @@ public class PublishMomentIntentService extends IntentService {
             final String content = intent.getStringExtra(EXTRA_CONTENT);
             final HashMap<String, String> imageInfoMap = (HashMap<String, String>)
                     intent.getSerializableExtra(EXTRA_IMAEGS);
-            final ArrayList<HashMap<String,String>> futurePois = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra(EXTRA_fUTURE_POIS);
+            final ArrayList<HashMap<String, String>> futurePois = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra(EXTRA_fUTURE_POIS);
             handleMomentPublish(content, imageInfoMap, futurePois);
         }
     }
@@ -104,7 +105,7 @@ public class PublishMomentIntentService extends IntentService {
      * @param imageInfoMap
      */
     private void handleMomentPublish(String content, HashMap<String, String> imageInfoMap,
-                                     ArrayList<HashMap<String,String>> futurePois) {
+                                     ArrayList<HashMap<String, String>> futurePois) {
         //record tha handles to the image upload Thread so it can be interrupted
         ArrayList<Thread> imageUploadThreads = new ArrayList<>();
 
@@ -134,15 +135,17 @@ public class PublishMomentIntentService extends IntentService {
         //upload the moment content with all the images has been uploaded
         AVUser user = AVUser.getCurrentUser();
         Date birthday = user.getDate(UserContract.AGE);
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
 
 
         ArrayList<AVObject> avObjects = new ArrayList<>();
 
-        for (HashMap<String,String> geoPointMap : futurePois) {
+        for (HashMap<String, String> geoPointMap : futurePois) {
             AVObject avObject = new AVObject(MomentContract.CLASS_NAME);
             avObject.put(MomentContract.CONTENT, content);
             avObject.put(MomentContract.GEDER, user.get(UserContract.GENDER));
-            avObject.put(MomentContract.AGE, birthday.getYear());
+            avObject.put(MomentContract.AGE, currentYear - 1900 - birthday.getYear());
             avObject.addAll(MomentContract.IMAGES, fileList);
 
             AVGeoPoint point = new AVGeoPoint();

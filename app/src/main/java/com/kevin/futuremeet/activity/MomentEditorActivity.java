@@ -77,6 +77,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     private Toolbar mToolBar;
 
 
+
     //a map to record the selected pic info , for the delete operation,
     // the key and value is the same which will be the image file path
     private HashMap<String, String> mSelectedImageConfigInfo = new HashMap<>();
@@ -298,7 +299,6 @@ public class MomentEditorActivity extends AppCompatActivity {
 
         FuturePoiListAdapter adapter = new FuturePoiListAdapter();
         mFuturePoiListView.setAdapter(adapter);
-
         mFuturePoiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -318,7 +318,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         mRootLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Util.closeTheSoftKeyboard(v,MomentEditorActivity.this);
+                Util.closeTheSoftKeyboard(v, MomentEditorActivity.this);
                 return false;
             }
         });
@@ -490,6 +490,11 @@ public class MomentEditorActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(MomentEditorActivity.this);
             View view = inflater.inflate(R.layout.moment_editor_poi_list_item, null);
+            if (mFuturePoiList.size() == 1) {
+                View image = view.findViewById(R.id.tick_symbol);
+                image.setVisibility(View.VISIBLE);
+                mFuturePoiListView.setEnabled(false);
+            }
             Calendar calendar = Calendar.getInstance();
             int nowDay = calendar.get(Calendar.DAY_OF_YEAR);
             FuturePoiBean futurerPoi = mFuturePoiList.get(position);
