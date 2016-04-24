@@ -50,13 +50,17 @@ public class MomentFragment extends Fragment {
     private RecyclerView mRecyclerView;
 
     private List<AVObject> mMomentList = new ArrayList<>();
-    private MomentsRecyclerViewAdapter mMomentsAdater;
+    private MomentsRecyclerViewAdapter mMomentsAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     // TODO: 2016/4/11 this number may need to change eventually
     private static final int MOMENT_SEARCH_PAGE_SIZE = 10;
+
+    private AVGeoPoint mCurrentSearchCenterGeoPoint = null;
+
+    private double mCurrentSearchDistanceRange;
 
 
     //make it a private field , every time a new query is required a new instance will be created,
@@ -123,8 +127,6 @@ public class MomentFragment extends Fragment {
     }
 
     private void initQueryBasic() {
-
-
         mMomentSearchQuery = new AVQuery<>(MomentContract.CLASS_NAME);
         mMomentSearchQuery.setLimit(MOMENT_SEARCH_PAGE_SIZE);
         mMomentSearchQuery.orderByDescending(MomentContract.PUBLISH_TIME);
@@ -132,7 +134,6 @@ public class MomentFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.PUBLISH_TIME, date);
-
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int gender = sharedPreferences.getInt(Config.SEARCH_CONDITION_GENDER, 0);
@@ -157,8 +158,6 @@ public class MomentFragment extends Fragment {
 
         mMomentSearchQuery.whereGreaterThanOrEqualTo(MomentContract.ARRIVE_TIME, minDate);
         mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.ARRIVE_TIME, maxDate);
-
-
         // TODO: 2016/4/10 maybe use LeanCloud cache strategy, Think this later....
     }
 
@@ -167,20 +166,21 @@ public class MomentFragment extends Fragment {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
-                    mMomentList = list;
-                    mMomentsAdater = new MomentsRecyclerViewAdapter(getContext(), mMomentList);
-                    if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
-                        mMomentsAdater.showAllMomentsLoadedFooter();
-                    }
-                    mMomentsAdater.setOnMoreDataWantedListener(new MomentsRecyclerViewAdapter.OnMoreDataWantedListener() {
-                        @Override
-                        public void onMoreDataWanted() {
-                            increaseSerchRange();
-                        }
-                    });
-                    mRecyclerView.setAdapter(mMomentsAdater);
                     if (mSwipeRefreshLayout.isRefreshing()) {
                         mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                    mMomentList = list;
+                    mMomentsAdapter = new MomentsRecyclerViewAdapter(getContext(), mMomentList);
+                    mMomentsAdapter.setOnMoreDataWantedListener(new MomentsRecyclerViewAdapter.OnMoreDataWantedListener() {
+                        @Override
+                        public void onMoreDataWanted() {
+                            increaseSearchRange();
+                        }
+                    });
+                    mRecyclerView.setAdapter(mMomentsAdapter);
+
+                    if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
+                        mMomentsAdapter.showAllMomentsLoadedFooter();
                     }
                 } else {
                     if (mSwipeRefreshLayout.isRefreshing()) {
@@ -192,11 +192,17 @@ public class MomentFragment extends Fragment {
         });
     }
 
+
     public void performSearch(AVGeoPoint avGeoPoint, Date targetDate) {
+        mCurrentSearchDistanceRange = Config.QUERY_STEP_RANGE;
+        mCurrentSearchCenterGeoPoint = avGeoPoint;
         mCurrentTargetDate = targetDate;
         mSwipeRefreshLayout.setRefreshing(true);
+
         initQueryBasic();
-        mMomentSearchQuery.whereWithinKilometers(MomentContract.LOCATION, avGeoPoint, Config.QUERY_STEP_RANGE);
+        mMomentSearchQuery.whereWithinKilometers(MomentContract.LOCATION,
+                mCurrentSearchCenterGeoPoint, mCurrentSearchDistanceRange);
+
         performNewQuery();
     }
 
@@ -206,19 +212,24 @@ public class MomentFragment extends Fragment {
         Log.i(TAG, "onStop: ");
     }
 
+    private boolean mShouldTriggerRecyclerViewScrollListenr = true;
+
+
     private void initEvents() {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override
             public void onLoadMore() {
-                paginationQueryOfMoments();
+                    paginationQueryOfMoments(false);
             }
         });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                initQueryBasic();
-                performNewQuery();
+                FutureMeetFragment fragment = (FutureMeetFragment) getParentFragment();
+                if (fragment != null) {
+                    fragment.onMomentRefresh();
+                }
             }
         });
     }
@@ -235,25 +246,41 @@ public class MomentFragment extends Fragment {
     }
 
 
+
     /**
      * a query of more moment for the pagination mechanism
+     * @param isSearchRangeIncreased if is increasing the search range
      */
-    private void paginationQueryOfMoments() {
+    private void paginationQueryOfMoments(boolean isSearchRangeIncreased) {
+
         if (mMomentSearchQuery == null) {
             return;
         }
-        final int currItemsNum = mMomentsAdater.getDataItemCount();
-        mMomentSearchQuery.skip(currItemsNum);
+
+        final int currItemsNum = mMomentsAdapter.getDataItemCount();
+
+        if (isSearchRangeIncreased) {
+            double minDis = mCurrentSearchDistanceRange + 0.001;
+            double maxDis = mCurrentSearchDistanceRange + Config.QUERY_STEP_RANGE;
+            mCurrentSearchDistanceRange = maxDis;
+            mMomentSearchQuery.whereWithinKilometers(MomentContract.LOCATION,
+                    mCurrentSearchCenterGeoPoint,
+                    maxDis,
+                    minDis);
+        } else {
+            mMomentSearchQuery.skip(currItemsNum);
+        }
+
         mMomentSearchQuery.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
-                        mMomentsAdater.showAllMomentsLoadedFooter();
+                        mMomentsAdapter.showAllMomentsLoadedFooter();
                     }
                     mMomentList.addAll(list);
-                    mMomentsAdater.setMomentsList(mMomentList);
-                    mMomentsAdater.notifyItemRangeInserted(currItemsNum, list.size());
+                    mMomentsAdapter.setMomentsList(mMomentList);
+                    mMomentsAdapter.notifyItemRangeInserted(currItemsNum, list.size());
                 } else {
                     Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
                 }
@@ -261,8 +288,7 @@ public class MomentFragment extends Fragment {
         });
     }
 
-
-    public void increaseSerchRange() {
-        // TODO: 2016/4/22
+    public void increaseSearchRange() {
+        paginationQueryOfMoments(true);
     }
 }

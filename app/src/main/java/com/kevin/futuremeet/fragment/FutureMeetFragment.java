@@ -398,6 +398,14 @@ public class FutureMeetFragment extends Fragment {
         mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
     }
 
+    public void onMomentRefresh() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        if (mMomentFragment != null && mCurrentGeoPoint != null) {
+            mMomentFragment.performSearch(mCurrentGeoPoint, date);
+        }
+    }
+
 
     private void initToolbar(View view) {
         setHasOptionsMenu(true);

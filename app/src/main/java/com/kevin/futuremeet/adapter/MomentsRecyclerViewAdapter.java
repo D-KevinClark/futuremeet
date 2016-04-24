@@ -26,7 +26,10 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     private LayoutInflater mLayoutInflater;
     private List<AVObject> mMomentsList;
 
+    private FooterViewHolder mFooterViewHolder;
+
     private boolean mIsAllDataLoaded = false;
+
 
     private static final int FOOTER_ITEM_TYPE = 100;
     private static final int NORMAL_ITEM_TYPE = 101;
@@ -47,6 +50,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         } else {
             View view = mLayoutInflater.inflate(R.layout.moments_footer, parent, false);
             final FooterViewHolder footerViewHolder = new FooterViewHolder(view);
+            mFooterViewHolder = footerViewHolder;
             View allDataLoadedView = footerViewHolder.allLoadedView;
             allDataLoadedView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -85,6 +89,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         if (position == getItemCount() - 1) {//this is footer
             if (mIsAllDataLoaded) {
                 FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
+                mFooterViewHolder = footerViewHolder;
                 footerViewHolder.isLoadingView.setVisibility(View.GONE);
                 footerViewHolder.allLoadedView.setVisibility(View.VISIBLE);
             }
@@ -123,6 +128,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMomentsList(List<AVObject> moments) {
         mMomentsList = moments;
+
     }
 
     @Override
@@ -135,6 +141,10 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
      */
     public void showAllMomentsLoadedFooter() {
         mIsAllDataLoaded = true;
+        if (mFooterViewHolder != null) {
+            mFooterViewHolder.allLoadedView.setVisibility(View.VISIBLE);
+            mFooterViewHolder.isLoadingView.setVisibility(View.GONE);
+        }
     }
 
     public static class MomentViewHolder extends RecyclerView.ViewHolder {
