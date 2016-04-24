@@ -81,7 +81,7 @@ public class SearchConditionSelectionDialog extends DialogFragment implements Vi
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(Config.SEARCH_CONDITION_AGE_RANGE, mAgeRange);
         editor.putInt(Config.SEARCH_CONDITION_GENDER, mGender);
-        editor.putInt(Config.PREF_FUTURE_POI_ARRIVE_TIME, mArriveTimeRange);
+        editor.putInt(Config.SEARCH_CONDITION_TIME_RANGE, mArriveTimeRange);
         editor.commit();
     }
 
