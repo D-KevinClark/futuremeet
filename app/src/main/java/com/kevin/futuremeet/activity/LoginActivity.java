@@ -115,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (e == null) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
+                    finish();
                 } else {
                     new AlertDialog.Builder(LoginActivity.this)
                             .setTitle(R.string.login_fail)

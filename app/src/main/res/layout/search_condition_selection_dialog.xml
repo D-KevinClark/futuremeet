@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/dialog_content_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gender" />
+
+    <LinearLayout
+        android:background="@drawable/grey_strok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/all_gender_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/all"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/female_gender_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/female"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/male_gender_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/male"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/age_difference_age" />
+
+    <LinearLayout
+        android:background="@drawable/grey_strok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/two_birth_year_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/two_year_of_age"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/five_birth_year_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/five_birth_year_of_age"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/ten_birth_year_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/ten_year_of_age"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/no_limit_birth_year_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/no_limit"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/arrive_time_year_of_age" />
+
+    <LinearLayout
+        android:background="@drawable/grey_strok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+
+        <TextView
+            android:id="@+id/half_hour_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/half_an_hour"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/one_hour_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/one_hour"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/two_hour_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/two_hour"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+
+        <TextView
+            android:id="@+id/five_hour_range_text"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_condition_selector"
+            android:gravity="center"
+            android:text="@string/five_hour"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+    </LinearLayout>
+
+
+</LinearLayout>

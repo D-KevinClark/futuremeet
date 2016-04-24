@@ -17,4 +17,10 @@ public class Config {
 
     public static final String AVATAR_IMAGE_LOCAL_STORAGE_NAEM = "avatar_local.jpg";
 
+
+    public static final String SEARCH_CONDITION_GENDER = "search_condition_gender";
+    public static final String SEARCH_CONDITION_TIME_RANGE = "search_condition_time_range";
+    public static final String SEARCH_CONDITION_AGE_RANGE = "search_condition_age_range";
+
+
 }

@@ -73,6 +73,8 @@ public class FutureMeetFragment extends Fragment {
 
     private CoordinatorLayout mCoordinatorLayout;
 
+    private AVGeoPoint mCurrentGeoPoint;
+
     private static final String TAG = FutureMeetFragment.class.getSimpleName();
 
     private MomentFragment mMomentFragment = null;
@@ -223,18 +225,21 @@ public class FutureMeetFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    if (mCurrentGeoPoint == null) {
+                    if (mPositionGeoPoint == null) {
                         Snackbar.make(mCoordinatorLayout,
                                 getString(R.string.not_get_current_location_yet), Snackbar.LENGTH_SHORT)
                                 .show();
                         return;
                     }
-                    performSearch(mCurrentGeoPoint);
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+                    performSearch(mPositionGeoPoint, date);
                     mPageFilterPopupWindow.dismiss();
                 } else {
-                    AVGeoPoint point=mFuturePoiList.get(position - 1).getAvGeoPoint();
-                    Log.i(TAG, "onItemClick: " + point.getLongitude() + "  " + point.getLatitude());
-                    performSearch(point);
+                    FuturePoiBean futurePoiBean = mFuturePoiList.get(position - 1);
+                    AVGeoPoint point = futurePoiBean.getAvGeoPoint();
+                    Date date = futurePoiBean.getArriveTime();
+                    performSearch(point, date);
                     mPageFilterPopupWindow.dismiss();
                 }
             }
@@ -243,7 +248,7 @@ public class FutureMeetFragment extends Fragment {
 
 
     private LocationClient mLocationClient = null;
-    private AVGeoPoint mCurrentGeoPoint = null;
+    private AVGeoPoint mPositionGeoPoint = null;
 
     /**
      * A listener for the location result,deal the Location Info here
@@ -252,22 +257,34 @@ public class FutureMeetFragment extends Fragment {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             if (bdLocation.getLocType() == BDLocation.TypeNetWorkLocation) {
-                mCurrentGeoPoint = new AVGeoPoint();
-                mCurrentGeoPoint.setLongitude(bdLocation.getLongitude());
-                mCurrentGeoPoint.setLatitude(bdLocation.getLatitude());
+                mPositionGeoPoint = new AVGeoPoint();
+                mPositionGeoPoint.setLongitude(bdLocation.getLongitude());
+                mPositionGeoPoint.setLatitude(bdLocation.getLatitude());
                 mLocationClient.stop();
-                performSearch(mCurrentGeoPoint);
+                Calendar calendar = Calendar.getInstance();
+                Date date = calendar.getTime();
+                performSearch(mPositionGeoPoint, date);
             } else {
                 Toast.makeText(getContext(), R.string.location_failure, Toast.LENGTH_SHORT).show();
             }
         }
     };
 
-    private void performSearch(AVGeoPoint avGeoPoint) {
+    /**
+     *
+     * @param avGeoPoint
+     * @param date the date of the arrive time,if is now ,just pass null
+     */
+    private void performSearch(AVGeoPoint avGeoPoint, Date date) {
         getChildFragment();
+        if (avGeoPoint != null) {
+            mCurrentGeoPoint = avGeoPoint;
+        } else {
+            avGeoPoint = mCurrentGeoPoint;
+        }
         if (mMomentFragment != null && mPeopleFragment != null && avGeoPoint != null) {
-            mMomentFragment.performSearch(avGeoPoint);
-            mPeopleFragment.performSearch(avGeoPoint);
+            mMomentFragment.performSearch(avGeoPoint,date);
+            mPeopleFragment.performSearch(avGeoPoint,date);
         }
     }
 
@@ -397,7 +414,22 @@ public class FutureMeetFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mPublishChoicePopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.RIGHT, 0, 50);
+        switch (item.getItemId()) {
+            case R.id.publish:
+                mPublishChoicePopupWindow.showAtLocation(getView(), Gravity.TOP | Gravity.RIGHT, 0, 50);
+                break;
+            case R.id.filter:
+                SearchConditionSelectionDialog searchConditionSelectionDialog = new SearchConditionSelectionDialog();
+                searchConditionSelectionDialog.setOnSearchConditionChangeListner(new SearchConditionSelectionDialog.OnSearchConditionChangeListener() {
+                    @Override
+                    public void onSearchConditionChange() {
+                        Calendar calendar = Calendar.getInstance();
+                        Date date = calendar.getTime();
+                        performSearch(null, date);//pass null will perform the search based on the  current location
+                    }
+                });
+                searchConditionSelectionDialog.show(getChildFragmentManager(), null);
+        }
         return true;
     }
 

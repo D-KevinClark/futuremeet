@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import com.avos.avoscloud.AVGeoPoint;
 import com.kevin.futuremeet.R;
 
+import java.util.Date;
+
 public class PeopleFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,7 +86,7 @@ public class PeopleFragment extends Fragment {
         Log.i(TAG, "onStop: ");
     }
 
-    public void performSearch(AVGeoPoint avGeoPoint) {
+    public void performSearch(AVGeoPoint avGeoPoint,Date date) {
         // TODO: 2016/4/23
     }
 

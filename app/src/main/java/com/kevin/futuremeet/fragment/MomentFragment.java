@@ -1,6 +1,8 @@
 package com.kevin.futuremeet.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,10 +17,12 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.MomentsRecyclerViewAdapter;
 import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.custom.EndlessRecyclerViewScrollListener;
 import com.kevin.futuremeet.utility.Config;
 
@@ -33,14 +37,13 @@ public class MomentFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private static final String TAG = MomentContract.class.getSimpleName();
-
 
 
     //    private OnFragmentInteractionListener mListener;
@@ -58,7 +61,9 @@ public class MomentFragment extends Fragment {
 
     //make it a private field , every time a new query is required a new instance will be created,
     //but when search more page with a same query , it should not be newed
-    private AVQuery<AVObject> mMomentSearchQuery=null;
+    private AVQuery<AVObject> mMomentSearchQuery = null;
+
+    private Date mCurrentTargetDate = null;
 
 
     public MomentFragment() {
@@ -66,7 +71,7 @@ public class MomentFragment extends Fragment {
     }
 
     /**
-    /**
+     * /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
@@ -92,7 +97,7 @@ public class MomentFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Log.i(TAG, "onCreate: ");
-        
+
     }
 
     @Override
@@ -118,6 +123,8 @@ public class MomentFragment extends Fragment {
     }
 
     private void initQueryBasic() {
+
+
         mMomentSearchQuery = new AVQuery<>(MomentContract.CLASS_NAME);
         mMomentSearchQuery.setLimit(MOMENT_SEARCH_PAGE_SIZE);
         mMomentSearchQuery.orderByDescending(MomentContract.PUBLISH_TIME);
@@ -125,6 +132,33 @@ public class MomentFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.PUBLISH_TIME, date);
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int gender = sharedPreferences.getInt(Config.SEARCH_CONDITION_GENDER, 0);
+        if (gender != 0) {
+            mMomentSearchQuery.whereEqualTo(MomentContract.GEDER, gender);
+        }
+
+        int ageRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_AGE_RANGE, 1000);
+        int cuurentYear = calendar.get(Calendar.YEAR);
+        int userAge = cuurentYear - 1900 - AVUser.getCurrentUser().getDate(UserContract.AGE).getYear();
+        mMomentSearchQuery.whereGreaterThanOrEqualTo(MomentContract.AGE, userAge - ageRange);
+        mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.AGE, userAge + ageRange);
+
+        int arriveTimeRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_TIME_RANGE, 120);
+        calendar.setTime(mCurrentTargetDate);
+        calendar.add(Calendar.MINUTE, arriveTimeRange);
+        Date maxDate = calendar.getTime();
+
+        calendar.setTime(mCurrentTargetDate);
+        calendar.add(Calendar.MINUTE, -arriveTimeRange);
+        Date minDate = calendar.getTime();
+
+        mMomentSearchQuery.whereGreaterThanOrEqualTo(MomentContract.ARRIVE_TIME, minDate);
+        mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.ARRIVE_TIME, maxDate);
+
+
         // TODO: 2016/4/10 maybe use LeanCloud cache strategy, Think this later....
     }
 
@@ -158,7 +192,8 @@ public class MomentFragment extends Fragment {
         });
     }
 
-    public void performSearch(AVGeoPoint avGeoPoint) {
+    public void performSearch(AVGeoPoint avGeoPoint, Date targetDate) {
+        mCurrentTargetDate = targetDate;
         mSwipeRefreshLayout.setRefreshing(true);
         initQueryBasic();
         mMomentSearchQuery.whereWithinKilometers(MomentContract.LOCATION, avGeoPoint, Config.QUERY_STEP_RANGE);
@@ -198,7 +233,6 @@ public class MomentFragment extends Fragment {
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorAccent,
                 R.color.colorPrimary, R.color.colorAccentLight);
     }
-
 
 
     /**

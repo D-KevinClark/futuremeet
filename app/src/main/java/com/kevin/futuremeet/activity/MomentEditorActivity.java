@@ -67,7 +67,7 @@ public class MomentEditorActivity extends AppCompatActivity {
     private TextView mWordsCount;
     private View mAddPicView;
     private LinearLayout mPicContainerLayout;
-    private ArrayList<AVGeoPoint> mSelectedFuturePois = new ArrayList<>();
+    private ArrayList<FuturePoiBean> mSelectedFuturePois = new ArrayList<>();
 
 
     private ListView mFuturePoiListView;
@@ -212,6 +212,11 @@ public class MomentEditorActivity extends AppCompatActivity {
         preparePoiData();
         initView();
         initEvent();
+
+        if (mFuturePoiList.size() == 1) {
+            mSelectedFuturePois.add(mFuturePoiList.get(0));
+        }
+
         mStatusBarHeight = getStatusBarHeight(getApplicationContext());
         mRootLayout.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
@@ -305,11 +310,11 @@ public class MomentEditorActivity extends AppCompatActivity {
                 ImageView tickView = (ImageView) view.findViewById(R.id.tick_symbol);
                 if (tickView.getVisibility() != View.VISIBLE) {
                     tickView.setVisibility(View.VISIBLE);
-                    mSelectedFuturePois.add(mFuturePoiList.get(position).getAvGeoPoint());
+                    mSelectedFuturePois.add(mFuturePoiList.get(position));
                     mSelectedPosition.add(position);
                 } else {
                     tickView.setVisibility(View.INVISIBLE);
-                    mSelectedFuturePois.remove(mFuturePoiList.get(position).getAvGeoPoint());
+                    mSelectedFuturePois.remove(mFuturePoiList.get(position));
                     mSelectedPosition.remove(position);
                 }
             }
@@ -391,7 +396,7 @@ public class MomentEditorActivity extends AppCompatActivity {
                 }
             }
             mProgressDialog = new ProgressDialog(MomentEditorActivity.this);
-            mProgressDialog.setMessage("正在处理图片...");
+            mProgressDialog.setMessage(getString(R.string.dealing_with_images));
             mProgressDialog.show();
 
         }
@@ -464,6 +469,7 @@ public class MomentEditorActivity extends AppCompatActivity {
         mRootLayout = (LinearLayout) findViewById(R.id.root_layout);
 
     }
+
 
 
     /**

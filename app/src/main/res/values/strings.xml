@@ -109,4 +109,16 @@
     <string name="publish_poi_first_please">请先发布未来地</string>
     <string name="publish_now">现在发布</string>
     <string name="not_get_current_location_yet">尚未获得当前位置</string>
+    <string name="all">全部</string>
+    <string name="two_year_of_age">2岁</string>
+    <string name="five_birth_year_of_age">5岁</string>
+    <string name="ten_year_of_age">10岁</string>
+    <string name="no_limit">不限</string>
+    <string name="age_difference_age">年龄相差范围</string>
+    <string name="arrive_time_year_of_age">到达时间相差范围</string>
+    <string name="two_hour">2小时</string>
+    <string name="half_an_hour">30分钟</string>
+    <string name="one_hour">1小时</string>
+    <string name="five_hour">5小时</string>
+    <string name="dealing_with_images">正在处理图片...</string>
 </resources>

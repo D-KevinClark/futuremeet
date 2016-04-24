@@ -24,8 +24,9 @@ import com.kevin.futuremeet.fragment.FriendsFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
+import com.kevin.futuremeet.fragment.SearchConditionSelectionDialog;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     FrameLayout mFragmentContainer;
 
@@ -109,14 +110,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private class PoiPublishStatusReportReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null&&intent.getAction().equals(PublishPoiIntentServie.ACTION_STATUS_REPORT)) {
+            if (intent != null && intent.getAction().equals(PublishPoiIntentServie.ACTION_STATUS_REPORT)) {
                 int status = intent.getIntExtra(PublishPoiIntentServie.EXTRA_STATUS, 0);
                 if (status == PublishPoiIntentServie.PUBLISH_OK) {
                     Toast.makeText(MainActivity.this, R.string.poi_publish_success, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, R.string.poi_publish_failed, Toast.LENGTH_LONG).show();
                 }
-                FutureMeetFragment futureMeetFragment= (FutureMeetFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_FUTUREMEET);
+                FutureMeetFragment futureMeetFragment = (FutureMeetFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_FUTUREMEET);
                 if (futureMeetFragment != null) {
                     futureMeetFragment.updatePoiPageFilter();
                 }
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null&&intent.getAction().equals(PublishMomentIntentService.STATUS_REPORT_ACTION)) {
+            if (intent != null && intent.getAction().equals(PublishMomentIntentService.STATUS_REPORT_ACTION)) {
                 int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS, 0);
                 if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
                     Toast.makeText(MainActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();

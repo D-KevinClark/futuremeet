@@ -13,6 +13,7 @@ import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
+import com.kevin.futuremeet.beans.FuturePoiBean;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.Util;
@@ -37,6 +38,7 @@ public class PublishMomentIntentService extends IntentService {
     private static final String EXTRA_CONTENT = "com.kevin.futuremeet.background.extra.content";
     private static final String EXTRA_IMAEGS = "com.kevin.futuremeet.background.extra.images";
     public static final String EXTRA_fUTURE_POIS = "com.kevin.futuremeet.background.extra.pois";
+    public static final String EXTRA_FUTURE_ARRIVE_TIEM = "com.kevin.futuremeet.background.extra.arrive.times";
 
     public static final String STATUS_REPORT_ACTION = "com.kevin.futuremeet.background.action.status.report";
     public static final String EXTRA_STATUS = "com.kevin.futuremeet.background.extra.status";
@@ -66,22 +68,26 @@ public class PublishMomentIntentService extends IntentService {
 
 
     public static void startPublishMoment(Context context, String content, HashMap<String, String> imageInfoMap,
-                                          ArrayList<AVGeoPoint> futurePoiList) {
+                                          ArrayList<FuturePoiBean> futurePoiList) {
         Intent intent = new Intent(context, PublishMomentIntentService.class);
         intent.putExtra(EXTRA_CONTENT, content);
         intent.putExtra(EXTRA_IMAEGS, imageInfoMap);
         ArrayList<HashMap<String, String>> futurePois = new ArrayList<>();
+        ArrayList<Date> futureArriveTimeList = new ArrayList<>();
 
-        for (AVGeoPoint geoPoint : futurePoiList) {
-            String lng = String.valueOf(geoPoint.getLongitude());
-            String lat = String.valueOf(geoPoint.getLatitude());
+        for (FuturePoiBean futurePoiBean : futurePoiList) {
+            String lng = String.valueOf(futurePoiBean.getAvGeoPoint().getLongitude());
+            String lat = String.valueOf(futurePoiBean.getAvGeoPoint().getLatitude());
             HashMap<String, String> geoPointMap = new HashMap<>();
             geoPointMap.put(KEY_LNG, lng);
             geoPointMap.put(KEY_LAT, lat);
             futurePois.add(geoPointMap);
+            futureArriveTimeList.add(futurePoiBean.getArriveTime());
         }
 
+        intent.putExtra(EXTRA_FUTURE_ARRIVE_TIEM, futureArriveTimeList);
         intent.putExtra(EXTRA_fUTURE_POIS, futurePois);
+
         context.startService(intent);
     }
 
@@ -93,7 +99,8 @@ public class PublishMomentIntentService extends IntentService {
             final HashMap<String, String> imageInfoMap = (HashMap<String, String>)
                     intent.getSerializableExtra(EXTRA_IMAEGS);
             final ArrayList<HashMap<String, String>> futurePois = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra(EXTRA_fUTURE_POIS);
-            handleMomentPublish(content, imageInfoMap, futurePois);
+            final ArrayList<Date> arriveTimes = (ArrayList<Date>) intent.getSerializableExtra(EXTRA_FUTURE_ARRIVE_TIEM);
+            handleMomentPublish(content, imageInfoMap, futurePois, arriveTimes);
         }
     }
 
@@ -105,7 +112,7 @@ public class PublishMomentIntentService extends IntentService {
      * @param imageInfoMap
      */
     private void handleMomentPublish(String content, HashMap<String, String> imageInfoMap,
-                                     ArrayList<HashMap<String, String>> futurePois) {
+                                     ArrayList<HashMap<String, String>> futurePois, ArrayList<Date> futureArriveTimes) {
         //record tha handles to the image upload Thread so it can be interrupted
         ArrayList<Thread> imageUploadThreads = new ArrayList<>();
 
@@ -141,6 +148,7 @@ public class PublishMomentIntentService extends IntentService {
 
         ArrayList<AVObject> avObjects = new ArrayList<>();
 
+        int i = 0;
         for (HashMap<String, String> geoPointMap : futurePois) {
             AVObject avObject = new AVObject(MomentContract.CLASS_NAME);
             avObject.put(MomentContract.CONTENT, content);
@@ -152,6 +160,9 @@ public class PublishMomentIntentService extends IntentService {
             point.setLongitude(Double.parseDouble(geoPointMap.get(KEY_LNG)));
             point.setLatitude(Double.parseDouble(geoPointMap.get(KEY_LAT)));
             avObject.put(MomentContract.LOCATION, point);
+            avObject.put(MomentContract.ARRIVE_TIME, futureArriveTimes.get(i++));
+
+            avObject.put(MomentContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
 
             AVACL avacl = new AVACL();
             avacl.setPublicReadAccess(true);
