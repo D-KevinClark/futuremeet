@@ -8,4 +8,5 @@ public class UserContract {
     public static final String GENDER="gender";
     public static final String AGE="age";
     public static final String AVATAR = "avatar";
+    public static final String INSTALLATION_ID = "installationID";
 }

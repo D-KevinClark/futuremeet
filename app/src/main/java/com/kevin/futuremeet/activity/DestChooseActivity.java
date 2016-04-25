@@ -44,9 +44,6 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.background.PublishPoiIntentServie;
 import com.kevin.futuremeet.fragment.DestTimeChooserDialog;
@@ -457,7 +454,6 @@ public class DestChooseActivity extends AppCompatActivity implements
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
-
     }
 
     @Override

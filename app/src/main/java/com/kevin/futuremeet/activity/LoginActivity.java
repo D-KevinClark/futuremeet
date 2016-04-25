@@ -17,10 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.SaveCallback;
 import com.kevin.futuremeet.MainActivity;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.Util;
 
 public class LoginActivity extends AppCompatActivity {
@@ -104,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         String phone = mPhoneTextview.getText().toString();
         String password = mPasswordTextview.getText().toString();
 
+
         AVUser.loginByMobilePhoneNumberInBackground(phone, password, new LogInCallback<AVUser>() {
             @Override
             public void done(AVUser avUser, AVException e) {
@@ -116,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
+
                 } else {
                     new AlertDialog.Builder(LoginActivity.this)
                             .setTitle(R.string.login_fail)

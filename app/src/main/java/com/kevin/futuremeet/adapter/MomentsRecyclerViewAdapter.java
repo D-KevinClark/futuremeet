@@ -3,22 +3,34 @@ package com.kevin.futuremeet.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVGeoPoint;
+import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVPush;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.SendCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.beans.InstallationContract;
 import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.UserContract;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -116,14 +128,13 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             }
             return;
         } else {
-
-            MomentViewHolder momentHolder = (MomentViewHolder) holder;
-            AVObject moment = mMomentsList.get(position);
+            final MomentViewHolder momentHolder = (MomentViewHolder) holder;
+            final AVObject moment = mMomentsList.get(position);
 
             String content = moment.getString(MomentContract.CONTENT);
             momentHolder.contentText.setText(content);
 
-            String username = moment.getString(MomentContract.USER_NAME);
+            final String username = moment.getString(MomentContract.USER_NAME);
             momentHolder.usernameText.setText(username);
 
             int gender = moment.getInt(UserContract.GENDER);
@@ -137,7 +148,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             momentHolder.userAgeText.setText(age + "");
 
             AVGeoPoint geoPoint = moment.getAVGeoPoint(MomentContract.LOCATION);
-            String distance=getProperDistanceFormat(geoPoint.distanceInKilometersTo(mCurrentGeoPoint));
+            String distance = getProperDistanceFormat(geoPoint.distanceInKilometersTo(mCurrentGeoPoint));
             momentHolder.distanceText.setText(distance);
 
             Date date = moment.getDate(MomentContract.ARRIVE_TIME);
@@ -146,9 +157,40 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             Date publishDate = moment.getDate(MomentContract.PUBLISH_TIME);
             momentHolder.publishTimeText.setText(getProperPublishTimeFormate(publishDate));
 
+            momentHolder.likeNumebrText.setText(moment.get(MomentContract.LIKE_COUNTER)+"");
+
+            momentHolder.likeLayoutView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    AVObject like = new AVObject(MomentLikeContrast.CLASS_NAME);
+                    like.put(MomentLikeContrast.FROM_USER_DETAILINFO,
+                            AVUser.getCurrentUser().get(UserContract.USER_DETAIL_INFO));
+                    like.put(MomentLikeContrast.MOMENT, moment);
+                    like.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(AVException e) {
+                            moment.increment(MomentContract.LIKE_COUNTER);
+                            moment.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(AVException e) {
+                                    if (e == null) {
+                                        TextView likeCounterText = (TextView) v.findViewById(R.id.like_number_text);
+                                        likeCounterText.setText("" + moment.get(MomentContract.LIKE_COUNTER));
+                                    } else {
+                                        Log.i("mytag", "done: " + e.getMessage());
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+
             if (momentHolder.imagesContainer.getChildCount() != 0) {
                 momentHolder.imagesContainer.removeAllViews();
             }
+
             List<AVFile> images = mMomentsList.get(position).getList(MomentContract.IMAGES);
             int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_size);
             int imageViewMarginRight = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_margin_right);
@@ -160,7 +202,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
                 ImageView imageView = new ImageView(mContext);
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageSize, imageSize);
-                layoutParams.setMargins(0,imagesMarginTop, imageViewMarginRight, 0);
+                layoutParams.setMargins(0, imagesMarginTop, imageViewMarginRight, 0);
                 imageView.setLayoutParams(layoutParams);
                 momentHolder.imagesContainer.addView(imageView);
                 //down load a thumbnail to save the network traffic
@@ -174,12 +216,13 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+
     private String getProperDistanceFormat(double distanceInKilometer) {
-        int distanceInMeter= (int) Math.floor(distanceInKilometer + 1000);
+        int distanceInMeter = (int) Math.floor(distanceInKilometer + 1000);
         if (distanceInMeter < 1000) {
             return distanceInMeter + mContext.getString(R.string.meter);
         } else {
-            return String.valueOf(distanceInKilometer).substring(0, 4)+"km";
+            return String.valueOf(distanceInKilometer).substring(0, 4) + "km";
         }
     }
 
@@ -198,7 +241,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         String properFormat = null;
 
         if (mTargetJulianDay == mCurrentJulianDay) {
-            int minuteOffset = (int) Math.abs((targetTimeInMilliSecond - nowTimeInMilliSecond) /(60*1000));
+            int minuteOffset = (int) Math.abs((targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000));
             if (minuteOffset <= 59) {
                 properFormat = minuteOffset + mContext.getString(R.string.minute_ago);
             } else {
@@ -217,7 +260,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         long targetTimeInMilliSecond = date.getTime();
         String earlyOrLate = null;
 
-        long minuteOffset = (targetTimeInMilliSecond - nowTimeInMilliSecond) / (60*1000);
+        long minuteOffset = (targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000);
         if (minuteOffset == 0) {
             return mContext.getString(R.string.arrive_at_same_time);
         } else if (minuteOffset < 0) {
@@ -238,7 +281,6 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMomentsList(List<AVObject> moments) {
         mMomentsList = moments;
-
     }
 
     @Override
@@ -272,6 +314,8 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         public final TextView likeNumebrText;
         public final TextView commentNumberText;
         public final ImageView genderImage;
+        public final View likeLayoutView;
+        public final View commentLayoutView;
 
 
         public MomentViewHolder(View itemView) {
@@ -289,6 +333,8 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             likeNumebrText = (TextView) itemView.findViewById(R.id.like_number_text);
             commentNumberText = (TextView) itemView.findViewById(R.id.comment_number_text);
             genderImage = (ImageView) itemView.findViewById(R.id.gender_imageview);
+            likeLayoutView = itemView.findViewById(R.id.like_layout);
+            commentLayoutView = itemView.findViewById(R.id.comment_layout);
         }
     }
 
@@ -304,13 +350,16 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+
     private OnMoreDataWantedListener mMoreDataWantedListener;
+
+    public interface OnMoreDataWantedListener {
+        void onMoreDataWanted();
+    }
 
     public void setOnMoreDataWantedListener(OnMoreDataWantedListener listener) {
         mMoreDataWantedListener = listener;
     }
 
-    public interface OnMoreDataWantedListener {
-        void onMoreDataWanted();
-    }
+
 }

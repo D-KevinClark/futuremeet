@@ -17,9 +17,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVInstallation;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.PushService;
+import com.avos.avoscloud.SaveCallback;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.background.PublishPoiIntentServie;
 import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.fragment.FriendsFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
@@ -105,6 +111,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PoiPublishStatusReportReceiver poiReceiver = new PoiPublishStatusReportReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(poiReceiver, poiIntentFilter);
 
+        registerPushiService();
+    }
+
+    /**
+     * register for the push service
+     */
+    private void registerPushiService() {
+        PushService.setDefaultPushCallback(this, MainActivity.class);
+        AVInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    AVUser user = AVUser.getCurrentUser();
+                    user.put(UserContract.INSTALLATION_ID
+                            , AVInstallation.getCurrentInstallation().getInstallationId());
+                    user.saveInBackground();
+                }
+            }
+        });
     }
 
     private class PoiPublishStatusReportReceiver extends BroadcastReceiver {

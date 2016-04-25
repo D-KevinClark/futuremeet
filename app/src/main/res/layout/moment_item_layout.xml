@@ -2,8 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@android:color/white"
     android:orientation="horizontal"
-    android:padding="@dimen/activity_horizontal_margin">
+    android:paddingBottom="4dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_horizontal_margin">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,6 +20,8 @@
             android:layout_height="@dimen/moment_avatar_size_moment"
             android:src="@drawable/grey_background_selector" />
     </LinearLayout>
+
+    <!--todo clear all the text in the textview-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,7 +84,6 @@
             android:layout_marginTop="6dp"
             android:background="@android:color/darker_gray" />
 
-
         <TextView
             android:id="@+id/moment_content_textview"
             android:layout_width="wrap_content"
@@ -98,51 +104,80 @@
             android:layout_marginTop="8dp">
 
             <TextView
-                android:layout_centerVertical="true"
                 android:id="@+id/publish_time_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:text="13:24" />
 
-            <TextView
-                android:layout_marginLeft="2dp"
-                android:layout_centerVertical="true"
-                android:id="@+id/comment_number_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="24" />
-
-            <ImageView
-                android:layout_marginLeft="36dp"
-                android:layout_centerVertical="true"
-                android:id="@+id/comment_imageview"
-                android:layout_toLeftOf="@id/comment_number_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/comment_icon" />
-
-            <TextView
-                android:layout_marginLeft="2dp"
-                android:layout_centerVertical="true"
-                android:id="@+id/like_number_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/comment_imageview"
-                android:text="12" />
+            <RelativeLayout
+                android:id="@+id/comment_layout"
+                android:layout_width="@dimen/like_or_comment_layout_width"
+                android:layout_height="@dimen/like_or_comment_layout_height"
+                android:layout_alignParentRight="true">
 
 
-            <ImageView
-                android:layout_centerVertical="true"
-                android:id="@+id/like_imageview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/like_number_text"
-                android:src="@drawable/like_icon" />
+                <View
+                    android:id="@+id/center_view1"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:id="@+id/comment_imageview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="1dp"
+                    android:layout_toLeftOf="@id/center_view1"
+                    android:src="@drawable/comment_icon" />
+
+                <TextView
+                    android:id="@+id/comment_number_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="1dp"
+                    android:layout_toRightOf="@id/center_view1"
+                    android:text="24" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/like_layout"
+                android:layout_width="@dimen/like_or_comment_layout_width"
+                android:layout_height="@dimen/like_or_comment_layout_height"
+                android:layout_marginRight="24dp"
+                android:layout_toLeftOf="@id/comment_layout">
+
+                <View
+                    android:id="@+id/center_view2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:id="@+id/like_imageview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="1dp"
+                    android:layout_toLeftOf="@id/center_view2"
+                    android:src="@drawable/like_icon" />
+
+                <TextView
+                    android:id="@+id/like_number_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="1dp"
+                    android:layout_toRightOf="@id/center_view2"
+                    android:text="12" />
+
+            </RelativeLayout>
 
 
         </RelativeLayout>
-
 
     </LinearLayout>
 

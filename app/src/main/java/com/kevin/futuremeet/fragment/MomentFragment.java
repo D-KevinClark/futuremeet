@@ -9,8 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -183,6 +186,7 @@ public class MomentFragment extends Fragment {
                     mMomentsAdapter.setCurrentTargetDate(mCurrentTargetDate);
 
                     mRecyclerView.setAdapter(mMomentsAdapter);
+
 
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
                         mMomentsAdapter.showAllMomentsLoadedFooter();

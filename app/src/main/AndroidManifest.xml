@@ -41,6 +41,17 @@
             android:enabled="true"
             android:process=":remote" />
 
+        <receiver android:name="com.avos.avoscloud.AVBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.avos.avoscloud.PushService"
+            android:exported="true"/>
+
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="8HhHiBI9sqT8UMHVG29nbbCI" />
