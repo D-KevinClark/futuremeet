@@ -161,7 +161,7 @@ public class PublishMomentIntentService extends IntentService {
             point.setLatitude(Double.parseDouble(geoPointMap.get(KEY_LAT)));
             avObject.put(MomentContract.LOCATION, point);
             avObject.put(MomentContract.ARRIVE_TIME, futureArriveTimes.get(i++));
-
+            avObject.put(MomentContract.USER_NAME, user.getUsername());
             avObject.put(MomentContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
 
             AVACL avacl = new AVACL();

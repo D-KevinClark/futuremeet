@@ -177,6 +177,11 @@ public class MomentFragment extends Fragment {
                             increaseSearchRange();
                         }
                     });
+
+                    //set this to calculate the data for each item
+                    mMomentsAdapter.setCurrentGeoPoint(mCurrentSearchCenterGeoPoint);
+                    mMomentsAdapter.setCurrentTargetDate(mCurrentTargetDate);
+
                     mRecyclerView.setAdapter(mMomentsAdapter);
 
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
@@ -211,10 +216,6 @@ public class MomentFragment extends Fragment {
         super.onStop();
         Log.i(TAG, "onStop: ");
     }
-
-    private boolean mShouldTriggerRecyclerViewScrollListenr = true;
-
-
     private void initEvents() {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override

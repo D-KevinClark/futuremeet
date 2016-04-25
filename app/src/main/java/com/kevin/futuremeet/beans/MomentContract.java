@@ -13,4 +13,5 @@ public class MomentContract {
     public static final String LOCATION = "location";
     public static final String ARRIVE_TIME = "arrive_time";
     public static final String USER_DETAIL_INFO = "userDetailInfo";
+    public static final String USER_NAME = "user_name";
 }

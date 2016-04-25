@@ -121,4 +121,11 @@
     <string name="one_hour">1小时</string>
     <string name="five_hour">5小时</string>
     <string name="dealing_with_images">正在处理图片...</string>
+    <string name="early_arrive">早到</string>
+    <string name="late_arrive">晚到</string>
+    <string name="minute_ago">分钟前</string>
+    <string name="arrive_at_same_time">同时到达</string>
+    <string name="yesterday">昨天</string>
+    <string name="the_day_before_yesterday">前天</string>
+    <string name="meter">m</string>
 </resources>
