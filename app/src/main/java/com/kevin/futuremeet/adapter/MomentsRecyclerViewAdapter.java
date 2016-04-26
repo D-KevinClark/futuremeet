@@ -214,7 +214,7 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 
     private String getProperDistanceFormat(double distanceInKilometer) {
-        int distanceInMeter = (int) Math.floor(distanceInKilometer + 1000);
+        int distanceInMeter = (int) Math.floor(distanceInKilometer * 1000);
         if (distanceInMeter < 1000) {
             return distanceInMeter + mContext.getString(R.string.meter);
         } else {
@@ -238,7 +238,9 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
         if (mTargetJulianDay == mCurrentJulianDay) {
             int minuteOffset = (int) Math.abs((targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000));
-            if (minuteOffset <= 59) {
+            if (minuteOffset == 0) {
+                properFormat = mContext.getString(R.string.just_now);
+            }else if (minuteOffset <= 59) {
                 properFormat = minuteOffset + mContext.getString(R.string.minute_ago);
             } else {
                 properFormat = mContext.getString(R.string.today) + simpleDateFormat.format(date);
@@ -270,8 +272,9 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
             return earlyOrLate + minuteOffset + mContext.getString(R.string.minute);
         } else {
             int hour = (int) (minuteOffset / 60);
+            int minute = (int) (minuteOffset % 60);
             return earlyOrLate + hour + mContext.getString(R.string.hour)
-                    + minuteOffset + mContext.getString(R.string.minute);
+                    + minute + mContext.getString(R.string.minute);
         }
     }
 
