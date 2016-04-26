@@ -9,29 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVGeoPoint;
-import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVPush;
-import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
-import com.avos.avoscloud.SendCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.beans.InstallationContract;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.UserContract;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -169,18 +161,22 @@ public class MomentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
                     like.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(AVException e) {
-                            moment.increment(MomentContract.LIKE_COUNTER);
-                            moment.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(AVException e) {
-                                    if (e == null) {
-                                        TextView likeCounterText = (TextView) v.findViewById(R.id.like_number_text);
-                                        likeCounterText.setText("" + moment.get(MomentContract.LIKE_COUNTER));
-                                    } else {
-                                        Log.i("mytag", "done: " + e.getMessage());
+                            if (e == null) {
+                                moment.increment(MomentContract.LIKE_COUNTER);
+                                moment.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(AVException e) {
+                                        if (e == null) {
+                                            TextView likeCounterText = (TextView) v.findViewById(R.id.like_number_text);
+                                            likeCounterText.setText("" + moment.get(MomentContract.LIKE_COUNTER));
+                                        } else {
+                                            Log.i("mytag", "done: " + e.getMessage());
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            } else {
+                                // TODO: 2016/4/26 moment like entity save failed
+                            }
                         }
                     });
                 }

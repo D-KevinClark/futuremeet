@@ -11,21 +11,20 @@ import com.kevin.futuremeet.MainActivity;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.beans.UserContract;
 
-public class StartActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         AVUser user = AVUser.getCurrentUser();
-        Intent intent;
+        Intent startIntent;
         if (user == null) {
-            intent = new Intent(this, LoginActivity.class);
+            startIntent = new Intent(this, LoginActivity.class);
         } else {
-
-            intent = new Intent(this, MainActivity.class);
+            startIntent = new Intent(this, MainActivity.class);
         }
-        startActivity(intent);
+        startActivity(startIntent);
         finish();
     }
 }

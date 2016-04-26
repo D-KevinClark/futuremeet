@@ -32,25 +32,19 @@
         android:name=".FMApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        android:installLocation="preferExternal"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:installLocation="preferExternal">
+        android:theme="@style/AppTheme">
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
 
-        <receiver android:name="com.avos.avoscloud.AVBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
-        <service android:name="com.avos.avoscloud.PushService"
-            android:exported="true"/>
+        <service
+            android:name="com.avos.avoscloud.PushService"
+            android:exported="true" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -59,8 +53,7 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden">
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
         <activity
             android:name=".activity.CityChooseActivity"
             android:screenOrientation="portrait" />
@@ -85,19 +78,30 @@
             android:name=".activity.DestChooseActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
 
         <service
             android:name=".background.PublishPoiIntentServie"
             android:exported="false" />
 
-        <activity android:name=".activity.StartActivity">
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".receiver.MessageReceive"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="com.kevin.futuremeet.action.message.UPDATE_STATUS" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

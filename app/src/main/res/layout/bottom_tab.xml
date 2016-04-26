@@ -2,12 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="6dp"
-    android:paddingBottom="10dp"
     android:alpha="0.8"
     android:background="@android:color/white"
     android:gravity="center">
-
 
 
     <LinearLayout
@@ -16,7 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/bottom_tab_padding_bottom"
+        android:paddingTop="@dimen/bottom_tab_padding_top">
 
         <ImageView
             android:id="@+id/futuremeet_image"
@@ -33,28 +32,39 @@
     </LinearLayout>
 
 
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/news_tab_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:paddingBottom="@dimen/bottom_tab_padding_bottom"
+        android:paddingTop="@dimen/bottom_tab_padding_top">
+
+
 
         <ImageView
+            android:layout_centerHorizontal="true"
             android:id="@+id/news_image"
             android:layout_width="@dimen/bottom_tab_image_size"
             android:layout_height="@dimen/bottom_tab_image_size"
             android:src="@drawable/news" />
 
         <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/news_image"
             android:id="@+id/news_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/message"
             android:textSize="@dimen/bottom_tab_text_size" />
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/news_badge_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/news_image"
+            android:src="@drawable/red_dot" />
+    </RelativeLayout>
+
 
     <LinearLayout
         android:id="@+id/friends_tab_layout"
@@ -62,7 +72,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/bottom_tab_padding_bottom"
+        android:paddingTop="@dimen/bottom_tab_padding_top">
 
         <ImageView
             android:id="@+id/friends_image"
@@ -84,7 +96,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/bottom_tab_padding_bottom"
+        android:paddingTop="@dimen/bottom_tab_padding_top">
 
         <ImageView
             android:id="@+id/me_image"

@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.kevin.futuremeet.activity.StartActivity">
+    tools:context=".activity.SplashActivity">
     <TextView
         android:text="starting......"
         android:layout_width="wrap_content"

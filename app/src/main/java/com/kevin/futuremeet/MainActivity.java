@@ -4,16 +4,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,22 +26,21 @@ import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SaveCallback;
 import com.kevin.futuremeet.background.PublishMomentIntentService;
 import com.kevin.futuremeet.background.PublishPoiIntentServie;
-import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.fragment.FriendsFragment;
 import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
-import com.kevin.futuremeet.fragment.SearchConditionSelectionDialog;
+import com.kevin.futuremeet.utility.Config;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     FrameLayout mFragmentContainer;
 
-    LinearLayout mFriendsLayout;
-    LinearLayout mFutureLayout;
-    LinearLayout mNewsLayout;
-    LinearLayout mMeLayout;
+    View mFriendsLayout;
+    View mFutureLayout;
+    View mNewsLayout;
+    View mMeLayout;
 
     ImageView mFriendsImage;
     ImageView mFutureImage;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FutureMeetFragment mFutureMeetFragment;
     NewsFragment mNewsFragment;
     MeFragment mMeFragment;
+
+    ImageView mNewsBadgeImage;
 
     private static final String TAG_FRAGMENT_ME = "tag_me_fragment";
     private static final String TAG_FRAGMENT_NEARBY = "tag_nearby_fragment";
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initViews();
         initEvents();
+
 
         //these code is prepared for the case that activity is killed by the system for resource
         //if so, the UI instance may still be in the memory but we lost the reference to them,
@@ -101,17 +105,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mFutureText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
         }
 
+        registerPushiService();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
         //get the broadcast that indicate the status of the moments just published
         IntentFilter momentIntentFilter = new IntentFilter(PublishMomentIntentService.STATUS_REPORT_ACTION);
         MomentUploadStatusReportReceiver momentReceiver = new MomentUploadStatusReportReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(momentReceiver, momentIntentFilter);
+        manager.registerReceiver(momentReceiver, momentIntentFilter);
 
         //get the broadcast that indicate the status of the poi just published
         IntentFilter poiIntentFilter = new IntentFilter(PublishPoiIntentServie.ACTION_STATUS_REPORT);
         PoiPublishStatusReportReceiver poiReceiver = new PoiPublishStatusReportReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(poiReceiver, poiIntentFilter);
+        manager.registerReceiver(poiReceiver, poiIntentFilter);
 
-        registerPushiService();
+        IntentFilter newsIntentFilter = new IntentFilter(Config.INTNET_ACTION_NEWS);
+        NewsReceive newsReceive = new NewsReceive();
+        manager.registerReceiver(newsReceive, newsIntentFilter);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
+
+        MomentUploadStatusReportReceiver momentReceiver = new MomentUploadStatusReportReceiver();
+        manager.unregisterReceiver(momentReceiver);
+
+        PoiPublishStatusReportReceiver poiReceiver = new PoiPublishStatusReportReceiver();
+        manager.unregisterReceiver(poiReceiver);
+
+        NewsReceive newsReceive = new NewsReceive();
+        manager.unregisterReceiver(newsReceive);
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i("mytag", "onNewIntent: ");
     }
 
     /**
@@ -166,6 +203,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * change the news badge according the pref
+     */
+    private void updateNewsBadge() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        if (preferences.getBoolean(Config.PREF_KEY_IF_ANY_NEW_MESSAGE, false)) {
+            mNewsBadgeImage.setVisibility(View.VISIBLE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(Config.PREF_KEY_IF_ANY_NEW_MESSAGE, false);
+            editor.apply();
+        }
+    }
+
+    /**
+     * lisener if there any news and change the news badge accordingly
+     */
+    private class NewsReceive extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction().equals(Config.INTNET_ACTION_NEWS)) {
+                updateNewsBadge();
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateNewsBadge();
+    }
+
     private void initEvents() {
         mFriendsLayout.setOnClickListener(this);
         mFutureLayout.setOnClickListener(this);
@@ -184,15 +252,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNewsImage = (ImageView) findViewById(R.id.news_image);
         mMeImage = (ImageView) findViewById(R.id.me_image);
 
-        mFriendsLayout = (LinearLayout) findViewById(R.id.friends_tab_layout);
-        mFutureLayout = (LinearLayout) findViewById(R.id.futuremeet_tab_layout);
-        mNewsLayout = (LinearLayout) findViewById(R.id.news_tab_layout);
-        mMeLayout = (LinearLayout) findViewById(R.id.me_layout);
+        mFriendsLayout = findViewById(R.id.friends_tab_layout);
+        mFutureLayout = findViewById(R.id.futuremeet_tab_layout);
+        mNewsLayout = findViewById(R.id.news_tab_layout);
+        mMeLayout = findViewById(R.id.me_layout);
 
         mFriendsText = (TextView) findViewById(R.id.friends_text);
         mFutureText = (TextView) findViewById(R.id.futuremeet_text);
         mNewsText = (TextView) findViewById(R.id.news_text);
         mUserText = (TextView) findViewById(R.id.me_text);
+
+        mNewsBadgeImage = (ImageView) findViewById(R.id.news_badge_image);
     }
 
 
@@ -222,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mFriendsText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.futuremeet_tab_layout:
+
                 mSelectedTabLayoutID = R.id.futuremeet_tab_layout;
                 if (mFutureMeetFragment == null) {
                     mFutureMeetFragment = FutureMeetFragment.newInstance(null, null);
@@ -233,6 +304,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mFutureText.setTextColor(Color.parseColor(getString(R.string.accentColor)));
                 break;
             case R.id.news_tab_layout:
+
+                if (mNewsBadgeImage.getVisibility() == View.VISIBLE) {
+                    mNewsBadgeImage.setVisibility(View.INVISIBLE);
+                }
+
                 mSelectedTabLayoutID = R.id.news_tab_layout;
                 if (mNewsFragment == null) {
                     mNewsFragment = NewsFragment.newInstance(null, null);

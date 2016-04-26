@@ -16,4 +16,11 @@ public class Config {
     public static final String SEARCH_CONDITION_AGE_RANGE = "search_condition_age_range";
 
 
+    public static final String PREF_KEY_IF_ANY_NEW_MESSAGE = "pre_if_any_new_message";
+    public static final String PREF_KEY_LIKE_NUMBER = "pre_like_message";
+    public static final String PREF_KEY_COMMENT_NUMBER = "pre_comment_message";
+
+    public static final String INTNET_ACTION_NEWS = "com.kevin.futuremeet.ACTION.have.news";
+
+
 }
