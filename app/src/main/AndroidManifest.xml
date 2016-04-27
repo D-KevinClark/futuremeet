@@ -41,7 +41,6 @@
             android:enabled="true"
             android:process=":remote" />
 
-
         <service
             android:name="com.avos.avoscloud.PushService"
             android:exported="true" />
