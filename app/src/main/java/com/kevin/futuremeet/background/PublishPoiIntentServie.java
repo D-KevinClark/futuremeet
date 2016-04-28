@@ -13,11 +13,16 @@ import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.beans.FuturePoiContract;
+import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.beans.PeopleContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.database.FuturePoiDBContract;
 import com.kevin.futuremeet.database.FuturePoiDBHelper;
+import com.kevin.futuremeet.fragment.PeopleFragment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class PublishPoiIntentServie extends IntentService {
@@ -71,23 +76,39 @@ public class PublishPoiIntentServie extends IntentService {
     private void handlePoiPublish(String poiName, String poiAddress, Double lng, Double lat, Date date) {
         AVUser user = AVUser.getCurrentUser();
 
-        AVObject object = new AVObject(FuturePoiContract.CLASS_NAME);
-        object.put(FuturePoiContract.POI_NAME, poiName);
-        object.put(FuturePoiContract.POI_ADDRESS, poiAddress);
-        AVGeoPoint geoPoint = new AVGeoPoint(lat, lng);
-        object.put(FuturePoiContract.POI_LOCATION, geoPoint);
-        object.put(FuturePoiContract.ARRIVE_TIME, date);
-        object.put(FuturePoiContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
+        Date birthday = user.getDate(UserContract.AGE);
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
 
+        AVObject futurePoi = new AVObject(FuturePoiContract.CLASS_NAME);
+        futurePoi.put(FuturePoiContract.POI_NAME, poiName);
+        futurePoi.put(FuturePoiContract.POI_ADDRESS, poiAddress);
+        AVGeoPoint geoPoint = new AVGeoPoint(lat, lng);
+        futurePoi.put(FuturePoiContract.POI_LOCATION, geoPoint);
+        futurePoi.put(FuturePoiContract.ARRIVE_TIME, date);
+        futurePoi.put(FuturePoiContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
+
+        AVObject people = new AVObject(PeopleContract.CLASS_NAME);
+        people.put(PeopleContract.USER_NAME, user.getUsername());
+        people.put(PeopleContract.GENDER, user.get(UserContract.GENDER));
+        people.put(PeopleContract.AGE, currentYear - 1900 - birthday.getYear());
+        people.put(PeopleContract.AVATAR, user.get(UserContract.AVATAR));
+        people.put(PeopleContract.ARRIVE_TIME,date);
+        people.put(PeopleContract.LOCATION, geoPoint);
 
         AVACL avacl = new AVACL();
         avacl.setReadAccess(user, true);
         avacl.setWriteAccess(user, true);
-        object.setACL(avacl);
+        futurePoi.setACL(avacl);
+        people.setACL(avacl);
+
+        ArrayList<AVObject> objects = new ArrayList<>();
+        objects.add(futurePoi);
+        objects.add(people);
 
         try {
-            object.save();
-            savePoiToDB(poiName,poiAddress,lng,lat,date);
+            AVObject.saveAll(objects);
+            savePoiToDB(poiName, poiAddress, lng, lat, date);
             sendPublishStatusReport(PUBLISH_OK);
         } catch (AVException e) {
             sendPublishStatusReport(PUBLISH_FAILED);

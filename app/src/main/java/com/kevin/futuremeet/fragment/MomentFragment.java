@@ -9,11 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -53,6 +50,7 @@ public class MomentFragment extends Fragment {
     private RecyclerView mRecyclerView;
 
     private List<AVObject> mMomentList = new ArrayList<>();
+
     private MomentsRecyclerViewAdapter mMomentsAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -189,7 +187,7 @@ public class MomentFragment extends Fragment {
 
 
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
-                        mMomentsAdapter.showAllMomentsLoadedFooter();
+                        mMomentsAdapter.showAllDataLoadedFooter();
                     }
                 } else {
                     if (mSwipeRefreshLayout.isRefreshing()) {
@@ -281,10 +279,10 @@ public class MomentFragment extends Fragment {
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
                     if (list.size() < MOMENT_SEARCH_PAGE_SIZE) {
-                        mMomentsAdapter.showAllMomentsLoadedFooter();
+                        mMomentsAdapter.showAllDataLoadedFooter();
                     }
                     mMomentList.addAll(list);
-                    mMomentsAdapter.setMomentsList(mMomentList);
+                    mMomentsAdapter.setDatasList(mMomentList);
                     mMomentsAdapter.notifyItemRangeInserted(currItemsNum, list.size());
                 } else {
                     Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();

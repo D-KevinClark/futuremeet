@@ -163,6 +163,7 @@ public class PublishMomentIntentService extends IntentService {
             avObject.put(MomentContract.ARRIVE_TIME, futureArriveTimes.get(i++));
             avObject.put(MomentContract.USER_NAME, user.getUsername());
             avObject.put(MomentContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
+            avObject.put(MomentContract.AVATAR, user.get(UserContract.AVATAR));
 
             AVACL avacl = new AVACL();
             avacl.setPublicReadAccess(true);

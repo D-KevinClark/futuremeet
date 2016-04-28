@@ -406,6 +406,14 @@ public class FutureMeetFragment extends Fragment {
         }
     }
 
+    public void onPeopleRefresh() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        if (mPeopleFragment != null && mCurrentGeoPoint != null) {
+            mPeopleFragment.performSearch(mCurrentGeoPoint, date);
+        }
+    }
+
 
     private void initToolbar(View view) {
         setHasOptionsMenu(true);

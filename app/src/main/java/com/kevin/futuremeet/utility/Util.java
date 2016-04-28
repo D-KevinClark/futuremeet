@@ -7,13 +7,18 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.kevin.futuremeet.R;
+
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by carver on 2016/3/30.
@@ -191,12 +196,66 @@ public class Util {
 
     /**
      * make the saved file can be seen in the gallery immediately
+     *
      * @param context
      * @param filePath
      */
-    public static final void scanImageFile(Context context,String filePath) {
+    public static final void scanImageFile(Context context, String filePath) {
         Uri uri = Uri.parse("file://" + filePath);
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
+
+
+    /**
+     * @param distanceInKilometer
+     * @return
+     */
+    public static final String getProperDistanceFormat(Context context, double distanceInKilometer) {
+        int distanceInMeter = (int) Math.floor(distanceInKilometer * 1000);
+        if (distanceInMeter < 1000) {
+            return distanceInMeter + context.getString(R.string.meter);
+        } else {
+            return String.valueOf(distanceInKilometer).substring(0, 4) + "km";
+        }
+    }
+
+    /**
+     * @param context
+     * @param date
+     * @return
+     */
+    public static String getProperPublishTimeFormate(Context context, Date date) {
+        long nowTimeInMilliSecond = System.currentTimeMillis();
+        long targetTimeInMilliSecond = date.getTime();
+
+        Time time = new Time();
+        time.setToNow();
+
+        int mCurrentJulianDay = Time.getJulianDay(nowTimeInMilliSecond, time.gmtoff);
+        int mTargetJulianDay = Time.getJulianDay(targetTimeInMilliSecond, time.gmtoff);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+
+        String properFormat = null;
+
+        if (mTargetJulianDay == mCurrentJulianDay) {
+            int minuteOffset = (int) Math.abs((targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000));
+            if (minuteOffset == 0) {
+                properFormat = context.getString(R.string.just_now);
+            } else if (minuteOffset <= 59) {
+                properFormat = minuteOffset + context.getString(R.string.minute_ago);
+            } else {
+                properFormat = context.getString(R.string.today) + simpleDateFormat.format(date);
+            }
+        } else if (mTargetJulianDay == mCurrentJulianDay - 1) {
+            properFormat = context.getString(R.string.yesterday) + simpleDateFormat.format(date);
+        } else if (mTargetJulianDay == mCurrentJulianDay - 2) {
+            properFormat = context.getString(R.string.the_day_before_yesterday) + simpleDateFormat.format(date);
+        }
+        return properFormat;
+    }
+
+
+
 
 }

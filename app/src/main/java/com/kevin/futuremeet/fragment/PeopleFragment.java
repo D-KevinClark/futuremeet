@@ -1,18 +1,35 @@
 package com.kevin.futuremeet.fragment;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVGeoPoint;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.FindCallback;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.adapter.PeopleRecyclerViewAdapter;
+import com.kevin.futuremeet.beans.PeopleContract;
+import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.custom.EndlessRecyclerViewScrollListener;
+import com.kevin.futuremeet.utility.Config;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class PeopleFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -25,6 +42,30 @@ public class PeopleFragment extends Fragment {
     private String mParam2;
 
     private static final String TAG = PeopleFragment.class.getName();
+
+    //    private OnFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
+
+    private List<AVObject> mPeopleList = new ArrayList<>();
+
+    private PeopleRecyclerViewAdapter mPeoplesAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+
+    // TODO: 2016/4/11 this number may need to change eventually
+    private static final int PEOPLE_SEARCH_PAGE_SIZE = 10;
+
+    private AVGeoPoint mCurrentSearchCenterGeoPoint = null;
+
+    private double mCurrentSearchDistanceRange;
+
+
+    //make it a private field , every time a new query is required a new instance will be created,
+    //but when search more page with a same query , it should not be newed
+    private AVQuery<AVObject> mPeopleSearchQuery = null;
+
+    private Date mCurrentTargetDate = null;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -63,9 +104,11 @@ public class PeopleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_people, container, false);
+        initViews(view);
+        initEvents();
         Log.i(TAG, "onCreateView: ");
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_people, container, false);
+        return view;
     }
 
     @Override
@@ -80,52 +123,171 @@ public class PeopleFragment extends Fragment {
         Log.i(TAG, "onStart: ");
     }
 
+
+    private void initQueryBasic() {
+        mPeopleSearchQuery = new AVQuery<>(PeopleContract.CLASS_NAME);
+        mPeopleSearchQuery.setLimit(PEOPLE_SEARCH_PAGE_SIZE);
+        mPeopleSearchQuery.orderByDescending(PeopleContract.PUBLISH_TIME);
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.PUBLISH_TIME, date);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int gender = sharedPreferences.getInt(Config.SEARCH_CONDITION_GENDER, 0);
+        if (gender != 0) {
+            mPeopleSearchQuery.whereEqualTo(PeopleContract.GENDER, gender);
+        }
+
+        int ageRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_AGE_RANGE, 1000);
+        int cuurentYear = calendar.get(Calendar.YEAR);
+        int userAge = cuurentYear - 1900 - AVUser.getCurrentUser().getDate(UserContract.AGE).getYear();
+        mPeopleSearchQuery.whereGreaterThanOrEqualTo(PeopleContract.AGE, userAge - ageRange);
+        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.AGE, userAge + ageRange);
+
+        int arriveTimeRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_TIME_RANGE, 120);
+        calendar.setTime(mCurrentTargetDate);
+        calendar.add(Calendar.MINUTE, arriveTimeRange);
+        Date maxDate = calendar.getTime();
+
+        calendar.setTime(mCurrentTargetDate);
+        calendar.add(Calendar.MINUTE, -arriveTimeRange);
+        Date minDate = calendar.getTime();
+
+        mPeopleSearchQuery.whereGreaterThanOrEqualTo(PeopleContract.ARRIVE_TIME, minDate);
+        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.ARRIVE_TIME, maxDate);
+        // TODO: 2016/4/10 maybe use LeanCloud cache strategy, Think this later....
+    }
+
+    private void performNewQuery() {
+        mPeopleSearchQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                    mPeopleList = list;
+                    mPeoplesAdapter = new PeopleRecyclerViewAdapter(getContext(), mPeopleList);
+                    mPeoplesAdapter.setOnMoreDataWantedListener(new PeopleRecyclerViewAdapter.OnMoreDataWantedListener() {
+                        @Override
+                        public void onMoreDataWanted() {
+                            increaseSearchRange();
+                        }
+                    });
+
+                    //set this to calculate the data for each item
+                    mPeoplesAdapter.setCurrentGeoPoint(mCurrentSearchCenterGeoPoint);
+                    mPeoplesAdapter.setCurrentTargetDate(mCurrentTargetDate);
+
+                    mRecyclerView.setAdapter(mPeoplesAdapter);
+
+
+                    if (list.size() < PEOPLE_SEARCH_PAGE_SIZE) {
+                        mPeoplesAdapter.showAllDataLoadedFooter();
+                    }
+                } else {
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                    Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    public void performSearch(AVGeoPoint avGeoPoint, Date targetDate) {
+        mCurrentSearchDistanceRange = Config.QUERY_STEP_RANGE;
+        mCurrentSearchCenterGeoPoint = avGeoPoint;
+        mCurrentTargetDate = targetDate;
+        mSwipeRefreshLayout.setRefreshing(true);
+
+        initQueryBasic();
+        mPeopleSearchQuery.whereWithinKilometers(PeopleContract.LOCATION,
+                mCurrentSearchCenterGeoPoint, mCurrentSearchDistanceRange);
+
+        performNewQuery();
+    }
+
     @Override
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop: ");
     }
+    private void initEvents() {
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                paginationQueryOfPeoples(false);
+            }
+        });
 
-    public void performSearch(AVGeoPoint avGeoPoint,Date date) {
-        // TODO: 2016/4/23
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                FutureMeetFragment fragment = (FutureMeetFragment) getParentFragment();
+                if (fragment != null) {
+                    fragment.onPeopleRefresh();
+                }
+            }
+        });
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+
+    private void initViews(View root) {
+        mRecyclerView = (RecyclerView) root.findViewById(R.id.recyclerview);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorAccent,
+                R.color.colorPrimary, R.color.colorAccentLight);
+    }
+
+
+
+    /**
+     * a query of more people for the pagination mechanism
+     * @param isSearchRangeIncreased if is increasing the search range
+     */
+    private void paginationQueryOfPeoples(boolean isSearchRangeIncreased) {
+
+        if (mPeopleSearchQuery == null) {
+            return;
+        }
+
+        final int currItemsNum = mPeoplesAdapter.getDataItemCount();
+
+        if (isSearchRangeIncreased) {
+            double minDis = mCurrentSearchDistanceRange + 0.001;
+            double maxDis = mCurrentSearchDistanceRange + Config.QUERY_STEP_RANGE;
+            mCurrentSearchDistanceRange = maxDis;
+            mPeopleSearchQuery.whereWithinKilometers(PeopleContract.LOCATION,
+                    mCurrentSearchCenterGeoPoint,
+                    maxDis,
+                    minDis);
+        } else {
+            mPeopleSearchQuery.skip(currItemsNum);
+        }
+
+        mPeopleSearchQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (list.size() < PEOPLE_SEARCH_PAGE_SIZE) {
+                        mPeoplesAdapter.showAllDataLoadedFooter();
+                    }
+                    mPeopleList.addAll(list);
+                    mPeoplesAdapter.setDatasList(mPeopleList);
+                    mPeoplesAdapter.notifyItemRangeInserted(currItemsNum, list.size());
+                } else {
+                    Toast.makeText(getContext(), R.string.search_failed_please_check_network, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void increaseSearchRange() {
+        paginationQueryOfPeoples(true);
+    }
 }
