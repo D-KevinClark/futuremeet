@@ -3,16 +3,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/dest_choose_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        android:elevation="@dimen/toolbar_elevation"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-    </android.support.v7.widget.Toolbar>
-
+    <include layout="@layout/toolbar_main" />
 
     <LinearLayout
         android:layout_width="match_parent"

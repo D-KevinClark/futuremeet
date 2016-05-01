@@ -130,4 +130,25 @@
     <string name="meter">m</string>
     <string name="someone_like_you_moment">有人赞了你</string>
     <string name="just_now">刚刚</string>
+    <string name="school_or_firm">学校/公司</string>
+    <string name="personal_info">个人信息</string>
+    <string name="occupation">职业</string>
+    <string name="home_town">家乡</string>
+    <string name="idiograph">个人签名</string>
+    <string name="personal_label">标签</string>
+    <string name="my_life">我的生活</string>
+    <string name="keep_personal">保密</string>
+    <string name="input_area_info">输入地区信息</string>
+    <string name="input_occupation_info">输入职业信息</string>
+    <string name="input_school_or_company_info">输入公司或学校信息</string>
+    <string name="area">地区</string>
+    <string name="input_idiograph">输入个人签名</string>
+    <string name="selflabel">个人标签</string>
+    <string name="music">音乐</string>
+    <string name="food">食物</string>
+    <string name="sport">运动</string>
+    <string name="tv">影视</string>
+    <string name="literature">书和动漫</string>
+    <string name="self_info_update_success">个人信息更新成功</string>
+    <string name="update_failed_please_check_network">更新失败，请检查网络</string>
 </resources>

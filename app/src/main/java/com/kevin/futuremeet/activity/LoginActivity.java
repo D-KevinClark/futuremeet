@@ -112,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(AVUser avUser, AVException e) {
 
+
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
@@ -137,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        mToolbar = (Toolbar) findViewById(R.id.login_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.login);
         setSupportActionBar(mToolbar);
         mPhoneInputLayout = (TextInputLayout) findViewById(R.id.phone_input_layout);

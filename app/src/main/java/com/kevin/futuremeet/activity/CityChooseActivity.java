@@ -174,7 +174,7 @@ public class CityChooseActivity extends AppCompatActivity implements
     }
 
     private void initToolBar() {
-        toolbar = (Toolbar) findViewById(R.id.city_choose_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

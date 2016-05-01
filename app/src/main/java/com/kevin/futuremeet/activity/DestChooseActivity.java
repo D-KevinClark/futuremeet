@@ -437,7 +437,7 @@ public class DestChooseActivity extends AppCompatActivity implements
     }
 
     private void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.dest_choose_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         String currCity = getCurrentCityfromPrefs();
         if (currCity != null) {

@@ -49,6 +49,7 @@ public class FMApplication extends Application {
 
         //initial the LeanCloud
         AVOSCloud.initialize(this,"Q0Uvxfqo7eW0EJCW0JPjTJID-gzGzoHsz","18gnqT4d6IAdD7vKxRBXOaFd");
+        AVOSCloud.setLastModifyEnabled(true);
     }
 
 }

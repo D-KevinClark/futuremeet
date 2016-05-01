@@ -22,5 +22,16 @@ public class Config {
 
     public static final String INTNET_ACTION_NEWS = "com.kevin.futuremeet.ACTION.have.news";
 
+    public static final String CATEGORY_JSON_KEY_LITERATURE = "literature";
+    public static final String CATEGORY_JSON_KEY_SELELABEL = "selflabel";
+    public static final String CATEGORY_JSON_KEY_MUSIC = "music";
+    public static final String CATEGORY_JSON_KEY_FOOD= "food";
+    public static final String CATEGORY_JSON_KEY_SPORT= "sport";
+    public static final String CATEGORY_JSON_KEY_TV= "tv";
+    public static final String CATEGORY_JSON_KEY_COUNTRY= "country";
+    public static final String CATEGORY_JSON_KEY_PROVINCE = "province";
+    public static final String CATEGORY_JSON_KEY_OCCUPATION= "occupation";
+
+
 
 }

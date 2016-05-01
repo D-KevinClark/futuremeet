@@ -40,7 +40,6 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-
         <service
             android:name="com.avos.avoscloud.PushService"
             android:exported="true" />
@@ -52,7 +51,7 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".activity.CityChooseActivity"
             android:screenOrientation="portrait" />
@@ -65,7 +64,8 @@
             android:name=".background.PublishMomentIntentService"
             android:exported="false" />
 
-        <activity android:name=".activity.TestActivity" />
+        <activity android:name=".activity.TestActivity">
+        </activity>
         <activity
             android:name=".activity.RegisterActivity"
             android:screenOrientation="portrait"
@@ -77,7 +77,9 @@
             android:name=".activity.DestChooseActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activity.LoginActivity" />
+
+        <activity android:name=".activity.LoginActivity" >
+        </activity>
 
         <service
             android:name=".background.PublishPoiIntentServie"
@@ -86,6 +88,7 @@
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

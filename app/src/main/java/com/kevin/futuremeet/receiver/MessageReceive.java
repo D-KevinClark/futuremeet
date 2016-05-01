@@ -13,6 +13,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVQuery;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.SplashActivity;
 import com.kevin.futuremeet.utility.Config;
@@ -36,9 +38,10 @@ public class MessageReceive extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("mytag", "onReceive: ");
+        Log.i("mytag", "onReceive: begin "+intent.getAction());
         mContext = context;
         if (intent.getAction().equals(TAG_ACTION)) {
+            Log.i("mytag", "onReceive: "+TAG_ACTION);
             try {
                 JSONObject jsonObject = new JSONObject(intent.getExtras().getString(TAG_DATA));
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
