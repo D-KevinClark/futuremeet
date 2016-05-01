@@ -10,9 +10,10 @@ import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.fragment.RegisterFragment;
 import com.kevin.futuremeet.fragment.VerifyCodeFragment;
 
-public class RegisterActivity extends AppCompatActivity implements RegisterFragment.OnRegisterListener {
+public class RegisterActivity extends AppCompatActivity implements RegisterFragment.OnRegisteListener {
 
     private Toolbar mToobar;
+
 
 
     @Override
@@ -27,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterFragm
             RegisterFragment registerFragment = RegisterFragment.newInstance(null, null);
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, registerFragment, RegisterFragment.TAG_REGISTER_FRAGMENT)
+                    .add(R.id.fragment_container,registerFragment, RegisterFragment.TAG_REGISTER_FRAGMENT)
                     .commit();
         }
     }
@@ -42,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterFragm
      * register succeed, show the verify code confirm fragment
      */
     @Override
-    public void onRegisterSuccess() {
+    public void onResisteSuccess() {
         VerifyCodeFragment verifyCodeFragment = VerifyCodeFragment.newInstance(null, null);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, verifyCodeFragment).commit();
     }

@@ -29,7 +29,6 @@ import android.widget.Toast;
 import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
-import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.R;
@@ -79,7 +78,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private int mGender = 0;//1---male  2----female
     private Date mBirthday = null;
 
-    private OnRegisterListener mListener;
+    private OnRegisteListener mListener;
 
 
     public RegisterFragment() {
@@ -298,9 +297,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             }
 
 
-
-
-
             //save the avatar
             String imagePath = params[0];
             ByteArrayOutputStream outputStream = Util.decodeImageFileForUpload(imagePath, mContext);
@@ -310,10 +306,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             } catch (AVException e) {
                 return REGISTER_FAILED;
             }
-
-
-
-
 
             //save the user detail info
             AVObject detailInfo = new AVObject(UserDetailContract.CLASS_NAME);
@@ -332,7 +324,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             } catch (AVException e) {
                 return REGISTER_FAILED;
             }
-
 
             user.put(UserContract.USER_DETAIL_INFO, detailInfo);
             user.put(UserContract.AVATAR, avatarFile);
@@ -375,7 +366,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                         })
                         .show();
             } else if (mListener != null) {
-                mListener.onRegisterSuccess();
+                mListener.onResisteSuccess();
             }
         }
     }
@@ -483,8 +474,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnRegisterListener) {
-            mListener = (OnRegisterListener) context;
+        if (context instanceof OnRegisteListener) {
+            mListener = (OnRegisteListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -497,7 +488,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         mListener = null;
     }
 
-    public interface OnRegisterListener {
-        void onRegisterSuccess();
+    public interface OnRegisteListener {
+        void onResisteSuccess();
     }
 }

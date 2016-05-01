@@ -154,6 +154,7 @@ public class PublishMomentIntentService extends IntentService {
             avObject.put(MomentContract.CONTENT, content);
             avObject.put(MomentContract.GEDER, user.get(UserContract.GENDER));
             avObject.put(MomentContract.AGE, currentYear - 1900 - birthday.getYear());
+            avObject.put(MomentContract.AVATAR, user.get(UserContract.AVATAR));
             avObject.addAll(MomentContract.IMAGES, fileList);
 
             AVGeoPoint point = new AVGeoPoint();
@@ -163,7 +164,7 @@ public class PublishMomentIntentService extends IntentService {
             avObject.put(MomentContract.ARRIVE_TIME, futureArriveTimes.get(i++));
             avObject.put(MomentContract.USER_NAME, user.getUsername());
             avObject.put(MomentContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
-            avObject.put(MomentContract.AVATAR, user.get(UserContract.AVATAR));
+
 
             AVACL avacl = new AVACL();
             avacl.setPublicReadAccess(true);

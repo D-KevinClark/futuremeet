@@ -4,12 +4,15 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.kevin.futuremeet.utility.Config;
+
 /**
  * Created by carver on 2016/4/22.
  */
 public class FuturePoiDBHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "futurepoi.db";
+    private static final String DATABASE_NAME = "futuremeet.db";
     private static final int DATABASE_VERSIION = 1;
+
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
 

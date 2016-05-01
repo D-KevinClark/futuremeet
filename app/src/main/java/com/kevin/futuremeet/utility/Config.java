@@ -8,6 +8,8 @@ public class Config {
     public static final int QUERY_STEP_RANGE = 1; //km
 
 
+
+
     public static final String AVATAR_IMAGE_LOCAL_STORAGE_NAEM = "avatar_local.jpg";
 
 

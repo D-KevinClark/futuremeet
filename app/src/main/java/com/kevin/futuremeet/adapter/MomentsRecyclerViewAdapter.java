@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +19,11 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.UserDetailInfoActivity;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.utility.Util;
 
 import java.util.Date;
@@ -95,6 +98,17 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter{
                 .load(url)
                 .asBitmap()
                 .into(momentHolder.avatarImage);
+        momentHolder.avatarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 2016/5/1 add check to see if is "me"
+                String userDetailInfoID=moment.getAVObject(MomentContract.USER_DETAIL_INFO).getObjectId();
+                Intent intent = new Intent(mContext, UserDetailInfoActivity.class);
+                intent.putExtra(UserDetailInfoActivity.EXTRA_USER_DETAIL_ID, userDetailInfoID);
+                mContext.startActivity(intent);
+            }
+        });
+
 
         momentHolder.likeLayoutView.setOnClickListener(new View.OnClickListener() {
             @Override

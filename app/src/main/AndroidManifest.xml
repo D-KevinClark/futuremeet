@@ -77,9 +77,7 @@
             android:name=".activity.DestChooseActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <activity android:name=".activity.LoginActivity" >
-        </activity>
+        <activity android:name=".activity.LoginActivity"></activity>
 
         <service
             android:name=".background.PublishPoiIntentServie"
@@ -104,6 +102,7 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".activity.UserDetailInfoActivity"></activity>
     </application>
 
 </manifest>

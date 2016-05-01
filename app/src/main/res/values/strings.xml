@@ -151,4 +151,7 @@
     <string name="literature">书和动漫</string>
     <string name="self_info_update_success">个人信息更新成功</string>
     <string name="update_failed_please_check_network">更新失败，请检查网络</string>
+    <string name="follow_success">关注成功</string>
+    <string name="folllow_failed">关注失败</string>
+    <string name="you_have_already_follow_this_person">你已经关注过这个人</string>
 </resources>

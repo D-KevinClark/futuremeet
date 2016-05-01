@@ -1,0 +1,17 @@
+package com.kevin.futuremeet.database;
+
+import android.provider.BaseColumns;
+
+/**
+ * Created by carver on 2016/5/1.
+ */
+public class FollowerDBContract {
+    public FollowerDBContract() {
+
+    }
+
+    public static class FollowerEntry implements BaseColumns {
+        public static final String TABLE_NAME = "follower";
+        public static final String FOLLOWER_DETAIL_INFO_ID = "follower_detail_info_id";
+    }
+}
