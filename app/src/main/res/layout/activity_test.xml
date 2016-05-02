@@ -1,10 +1,12 @@
-<!--<EditText--><!--android:id="@+id/lngitude"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content" />--><!--<EditText--><!--android:id="@+id/latitude"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content" />--><!--<EditText--><!--android:id="@+id/order_number"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content" />--><!--<Button--><!--android:text="send"--><!--android:id="@+id/send_button"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content" />-->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
-<!--<Button--><!--android:text="show"--><!--android:id="@+id/show_button"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content" />--><!--<TextView--><!--android:id="@+id/result_textview"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content" />--><!--<fragment--><!--android:id="@+id/fragment"--><!--android:name="com.kevin.futuremeet.fragment.MeFragment"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--xmlns:android="http://schemas.android.com/apk/res/android" />-->
-<Button
-    android:onClick="onClick"
-    android:text="lunch"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
-
+    <fragment
+        android:id="@+id/fragment_container"
+        android:name="com.kevin.futuremeet.fragment.GoodFriendsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

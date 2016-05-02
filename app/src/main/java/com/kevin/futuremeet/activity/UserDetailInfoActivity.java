@@ -27,7 +27,8 @@ import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.beans.RelationShip;
+import com.kevin.futuremeet.beans.RelationShipContract;
+import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.database.FollowerDBContract;
@@ -42,7 +43,7 @@ import java.util.List;
 public class UserDetailInfoActivity extends AppCompatActivity {
 
 
-    public static final String EXTRA_USER_DETAIL_ID = "detail_id";
+    public static final String EXTRA_USER_BASIC_INFO_ID = "basic_info_id";
     private static final String TAG = UserDetailInfoActivity.class.getSimpleName();
 
 
@@ -65,9 +66,9 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
 
-    private String mUserDetailInfoId;
+    private String mUserBasiclInfoId;
 
-    private AVObject mUserDetailInfoAvobject;
+    private AVObject mUserBasicInfoAvobject;
 
 
     @Override
@@ -84,23 +85,24 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     }
 
     private void showUserInfo() {
+        AVObject userDetailInfoObj = mUserBasicInfoAvobject.getAVObject(UserBasicInfoContract.DETAIL_INFO);
         ArrayList<String> selfLabelList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFER_SELFLABEL);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFER_SELFLABEL);
         ArrayList<String> musicList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFER_MUSIC);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFER_MUSIC);
         ArrayList<String> foodList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFER_FOOD);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFER_FOOD);
         ArrayList<String> sportList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFERS_SPORT);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFERS_SPORT);
         ArrayList<String> tvList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFERS_TV);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFERS_TV);
         ArrayList<String> literatureList = (ArrayList<String>)
-                mUserDetailInfoAvobject.getList(UserDetailContract.USER_FREFER_LITERATURE);
+                userDetailInfoObj.getList(UserDetailContract.USER_FREFER_LITERATURE);
 
-        String occupation = mUserDetailInfoAvobject.getString(UserDetailContract.OCCUPATION);
-        String shoolOrfirm = mUserDetailInfoAvobject.getString(UserDetailContract.SCHOOL_OR_FIRM);
-        String hometown = mUserDetailInfoAvobject.getString(UserDetailContract.HOMETOWN);
-        String idiograph = mUserDetailInfoAvobject.getString(UserDetailContract.IDIOGRAPH);
+        String occupation = userDetailInfoObj.getString(UserDetailContract.OCCUPATION);
+        String shoolOrfirm = userDetailInfoObj.getString(UserDetailContract.SCHOOL_OR_FIRM);
+        String hometown = userDetailInfoObj.getString(UserDetailContract.HOMETOWN);
+        String idiograph = userDetailInfoObj.getString(UserDetailContract.IDIOGRAPH);
 
         mOccupationText.setText(occupation);
         mSchoolOrFirmText.setText(shoolOrfirm);
@@ -159,7 +161,7 @@ public class UserDetailInfoActivity extends AppCompatActivity {
             }
 
         // TODO: 2016/5/1 change the loading policy here later
-        AVFile avatar = mUserDetailInfoAvobject.getAVFile(UserDetailContract.AVATAR);
+        AVFile avatar = mUserBasicInfoAvobject.getAVFile(UserBasicInfoContract.AVATAR);
         String url = avatar.getUrl();
         Glide.with(this)
                 .load(url)
@@ -181,8 +183,8 @@ public class UserDetailInfoActivity extends AppCompatActivity {
         Cursor cursor=database.query(
                 FollowerDBContract.FollowerEntry.TABLE_NAME,
                 null,
-                FollowerDBContract.FollowerEntry.FOLLOWER_DETAIL_INFO_ID + "=? ",
-                new String[]{mUserDetailInfoId},
+                FollowerDBContract.FollowerEntry.FOLLOWER_BASIC_INFO_ID + "=? ",
+                new String[]{mUserBasiclInfoId},
                 null,
                 null,
                 null
@@ -198,27 +200,28 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     }
 
     private void saveNewRelationToServer() {
-        final String currentUserDetailInfoID =  AVUser.getCurrentUser().getAVObject(UserContract.USER_DETAIL_INFO).getObjectId();
-        AVQuery<AVObject> query = new AVQuery<>(RelationShip.CLASS_NAME);
+        final String currentUserBasicInfoID =  AVUser.getCurrentUser().getAVObject(UserContract.USER_BASIC_INFO).getObjectId();
+        AVQuery<AVObject> query = new AVQuery<>(RelationShipContract.CLASS_NAME);
 
-        final AVObject userDetailInfoAVobj = AVObject.createWithoutData(UserDetailContract.CLASS_NAME,mUserDetailInfoId);
-        final AVObject currUserDetailInfoAVobj = AVObject.createWithoutData(UserDetailContract.CLASS_NAME, currentUserDetailInfoID);
-        query.whereEqualTo(RelationShip.FROM, userDetailInfoAVobj);
-        query.whereEqualTo(RelationShip.TO, currUserDetailInfoAVobj);
+        final AVObject userBasicInfoAVobj = AVObject.createWithoutData(UserBasicInfoContract.CLASS_NAME,mUserBasiclInfoId);
+        final AVObject currUserBasicInfoAVobj = AVObject.createWithoutData(UserBasicInfoContract.CLASS_NAME, currentUserBasicInfoID);
+        query.whereEqualTo(RelationShipContract.FROM, userBasicInfoAVobj);
+        query.whereEqualTo(RelationShipContract.TO, currUserBasicInfoAVobj);
 
         query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
                     if (list.size() == 0) {
-                        AVObject objNew = new AVObject(RelationShip.CLASS_NAME);
-                        objNew.put(RelationShip.FROM, currUserDetailInfoAVobj);
-                        objNew.put(RelationShip.TO, userDetailInfoAVobj);
-                        objNew.put(RelationShip.TYPE, RelationShip.TYPE_SINGLE_SIDE);
+                        AVObject objNew = new AVObject(RelationShipContract.CLASS_NAME);
+                        objNew.put(RelationShipContract.FROM, currUserBasicInfoAVobj);
+                        objNew.put(RelationShipContract.TO, userBasicInfoAVobj);
+                        objNew.put(RelationShipContract.TYPE, RelationShipContract.TYPE_SINGLE_SIDE);
                         objNew.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(AVException e) {
                                 if (e == null) {
+                                    saveNewRelationToLocalDB();
                                     Toast.makeText(UserDetailInfoActivity.this, R.string.follow_success, Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(UserDetailInfoActivity.this, R.string.folllow_failed, Toast.LENGTH_SHORT).show();
@@ -227,15 +230,16 @@ public class UserDetailInfoActivity extends AppCompatActivity {
                         });
                     } else {
                         AVObject objOrig = list.get(0);
-                        AVObject objNew = new AVObject(RelationShip.CLASS_NAME);
-                        objNew.put(RelationShip.FROM, currUserDetailInfoAVobj);
-                        objNew.put(RelationShip.TO, userDetailInfoAVobj);
-                        objNew.put(RelationShip.TYPE, RelationShip.TYPE_BOTH_SIDE);
-                        objOrig.put(RelationShip.TYPE, RelationShip.TYPE_BOTH_SIDE);
+                        AVObject objNew = new AVObject(RelationShipContract.CLASS_NAME);
+                        objNew.put(RelationShipContract.FROM, currUserBasicInfoAVobj);
+                        objNew.put(RelationShipContract.TO, userBasicInfoAVobj);
+                        objNew.put(RelationShipContract.TYPE, RelationShipContract.TYPE_BOTH_SIDE);
+                        objOrig.put(RelationShipContract.TYPE, RelationShipContract.TYPE_BOTH_SIDE);
                         AVObject.saveAllInBackground(Arrays.asList(objNew, objOrig), new SaveCallback() {
                             @Override
                             public void done(AVException e) {
                                 if (e == null) {
+                                    saveNewRelationToLocalDB();
                                     Toast.makeText(UserDetailInfoActivity.this, R.string.follow_success, Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(UserDetailInfoActivity.this, R.string.folllow_failed, Toast.LENGTH_SHORT).show();
@@ -248,14 +252,14 @@ public class UserDetailInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        saveNewRelationToLocalDB();
+
     }
 
     private void saveNewRelationToLocalDB() {
         SQLiteOpenHelper helper = new FollowerDBHelper(this);
         SQLiteDatabase database=helper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(FollowerDBContract.FollowerEntry.FOLLOWER_DETAIL_INFO_ID, mUserDetailInfoId);
+        values.put(FollowerDBContract.FollowerEntry.FOLLOWER_BASIC_INFO_ID, mUserBasiclInfoId);
         database.insert(
                 FollowerDBContract.FollowerEntry.TABLE_NAME,
                 null,
@@ -293,12 +297,15 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     }
 
     public void prepereUserDetailInfo() {
-        AVQuery<AVObject> query = new AVQuery<>(UserDetailContract.CLASS_NAME);
-        mUserDetailInfoId = getIntent().getStringExtra(EXTRA_USER_DETAIL_ID);
-        query.getInBackground(mUserDetailInfoId, new GetCallback<AVObject>() {
+        AVQuery<AVObject> query = new AVQuery<>(UserBasicInfoContract.CLASS_NAME);
+        mUserBasiclInfoId = getIntent().getStringExtra(EXTRA_USER_BASIC_INFO_ID);
+
+        query.include(UserBasicInfoContract.DETAIL_INFO);
+
+        query.getInBackground(mUserBasiclInfoId, new GetCallback<AVObject>() {
             @Override
             public void done(AVObject object, AVException e) {
-                mUserDetailInfoAvobject = object;
+                mUserBasicInfoAvobject = object;
                 showUserInfo();
             }
         });

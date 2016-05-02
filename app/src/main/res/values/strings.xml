@@ -154,4 +154,7 @@
     <string name="follow_success">关注成功</string>
     <string name="folllow_failed">关注失败</string>
     <string name="you_have_already_follow_this_person">你已经关注过这个人</string>
+    <string name="good_friends">好友</string>
+    <string name="followee">关注</string>
+    <string name="follower">粉丝</string>
 </resources>

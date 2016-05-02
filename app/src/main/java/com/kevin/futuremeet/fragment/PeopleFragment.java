@@ -21,7 +21,8 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.adapter.PeopleRecyclerViewAdapter;
-import com.kevin.futuremeet.beans.PeopleContract;
+import com.kevin.futuremeet.beans.FuturePoiBean;
+import com.kevin.futuremeet.beans.FuturePoiContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.custom.EndlessRecyclerViewScrollListener;
 import com.kevin.futuremeet.utility.Config;
@@ -63,7 +64,7 @@ public class PeopleFragment extends Fragment {
 
     //make it a private field , every time a new query is required a new instance will be created,
     //but when search more page with a same query , it should not be newed
-    private AVQuery<AVObject> mPeopleSearchQuery = null;
+    private AVQuery<AVObject> mFuturePoiSearchQuery = null;
 
     private Date mCurrentTargetDate = null;
 
@@ -111,38 +112,29 @@ public class PeopleFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume: ");
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i(TAG, "onStart: ");
-    }
 
 
     private void initQueryBasic() {
-        mPeopleSearchQuery = new AVQuery<>(PeopleContract.CLASS_NAME);
-        mPeopleSearchQuery.setLimit(PEOPLE_SEARCH_PAGE_SIZE);
-        mPeopleSearchQuery.orderByDescending(PeopleContract.PUBLISH_TIME);
+        mFuturePoiSearchQuery = new AVQuery<>(FuturePoiContract.CLASS_NAME);
+        mFuturePoiSearchQuery.setLimit(PEOPLE_SEARCH_PAGE_SIZE);
+        mFuturePoiSearchQuery.include(FuturePoiContract.USER_BASIC_INFO);
+        
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.PUBLISH_TIME, date);
+        mFuturePoiSearchQuery.whereLessThanOrEqualTo(FuturePoiContract.PUBLISH_TIME, date);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int gender = sharedPreferences.getInt(Config.SEARCH_CONDITION_GENDER, 0);
         if (gender != 0) {
-            mPeopleSearchQuery.whereEqualTo(PeopleContract.GENDER, gender);
+            mFuturePoiSearchQuery.whereEqualTo(FuturePoiContract.USER_GENDER, gender);
         }
 
         int ageRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_AGE_RANGE, 1000);
         int cuurentYear = calendar.get(Calendar.YEAR);
         int userAge = cuurentYear - 1900 - AVUser.getCurrentUser().getDate(UserContract.AGE).getYear();
-        mPeopleSearchQuery.whereGreaterThanOrEqualTo(PeopleContract.AGE, userAge - ageRange);
-        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.AGE, userAge + ageRange);
+        mFuturePoiSearchQuery.whereGreaterThanOrEqualTo(FuturePoiContract.USER_AGE, userAge - ageRange);
+        mFuturePoiSearchQuery.whereLessThanOrEqualTo(FuturePoiContract.USER_AGE, userAge + ageRange);
 
         int arriveTimeRange = sharedPreferences.getInt(Config.SEARCH_CONDITION_TIME_RANGE, 120);
         calendar.setTime(mCurrentTargetDate);
@@ -153,13 +145,13 @@ public class PeopleFragment extends Fragment {
         calendar.add(Calendar.MINUTE, -arriveTimeRange);
         Date minDate = calendar.getTime();
 
-        mPeopleSearchQuery.whereGreaterThanOrEqualTo(PeopleContract.ARRIVE_TIME, minDate);
-        mPeopleSearchQuery.whereLessThanOrEqualTo(PeopleContract.ARRIVE_TIME, maxDate);
+        mFuturePoiSearchQuery.whereGreaterThanOrEqualTo(FuturePoiContract.ARRIVE_TIME, minDate);
+        mFuturePoiSearchQuery.whereLessThanOrEqualTo(FuturePoiContract.ARRIVE_TIME, maxDate);
         // TODO: 2016/4/10 maybe use LeanCloud cache strategy, Think this later....
     }
 
     private void performNewQuery() {
-        mPeopleSearchQuery.findInBackground(new FindCallback<AVObject>() {
+        mFuturePoiSearchQuery.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
@@ -203,7 +195,7 @@ public class PeopleFragment extends Fragment {
         mSwipeRefreshLayout.setRefreshing(true);
 
         initQueryBasic();
-        mPeopleSearchQuery.whereWithinKilometers(PeopleContract.LOCATION,
+        mFuturePoiSearchQuery.whereWithinKilometers(FuturePoiContract.POI_LOCATION,
                 mCurrentSearchCenterGeoPoint, mCurrentSearchDistanceRange);
 
         performNewQuery();
@@ -252,7 +244,7 @@ public class PeopleFragment extends Fragment {
      */
     private void paginationQueryOfPeoples(boolean isSearchRangeIncreased) {
 
-        if (mPeopleSearchQuery == null) {
+        if (mFuturePoiSearchQuery == null) {
             return;
         }
 
@@ -262,15 +254,15 @@ public class PeopleFragment extends Fragment {
             double minDis = mCurrentSearchDistanceRange + 0.001;
             double maxDis = mCurrentSearchDistanceRange + Config.QUERY_STEP_RANGE;
             mCurrentSearchDistanceRange = maxDis;
-            mPeopleSearchQuery.whereWithinKilometers(PeopleContract.LOCATION,
+            mFuturePoiSearchQuery.whereWithinKilometers(FuturePoiContract.POI_LOCATION,
                     mCurrentSearchCenterGeoPoint,
                     maxDis,
                     minDis);
         } else {
-            mPeopleSearchQuery.skip(currItemsNum);
+            mFuturePoiSearchQuery.skip(currItemsNum);
         }
 
-        mPeopleSearchQuery.findInBackground(new FindCallback<AVObject>() {
+        mFuturePoiSearchQuery.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {

@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mPasswordTextview;
     private Button mLoginButton;
     private Toolbar mToolbar;
+    private Button mRegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initEvents() {
+
+        mRegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
         mPhoneTextview.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -146,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         mPhoneTextview = (TextView) findViewById(R.id.phone_edittext);
         mPasswordTextview = (TextView) findViewById(R.id.password_edittext);
         mLoginButton = (Button) findViewById(R.id.login_button);
+        mRegisterButton = (Button) findViewById(R.id.go_register_button);
     }
 
 

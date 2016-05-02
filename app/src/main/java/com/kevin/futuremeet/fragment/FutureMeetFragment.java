@@ -116,11 +116,13 @@ public class FutureMeetFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_future_meet, container, false);
         initToolbar(view);
         initViews(view);
+
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
         mViewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
+
         preparePagerFilter();
         preparePublishChoosePopWindow();
 

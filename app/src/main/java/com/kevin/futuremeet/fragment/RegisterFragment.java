@@ -33,12 +33,12 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.ClipImageActivity;
+import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.utility.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.security.acl.Acl;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -300,7 +300,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             //save the avatar
             String imagePath = params[0];
             ByteArrayOutputStream outputStream = Util.decodeImageFileForUpload(imagePath, mContext);
-            final AVFile avatarFile = new AVFile(UserDetailContract.AVATAR, outputStream.toByteArray());
+            final AVFile avatarFile = new AVFile(UserContract.AVATAR, outputStream.toByteArray());
+
             try {
                 avatarFile.save();
             } catch (AVException e) {
@@ -308,23 +309,29 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             }
 
             //save the user detail info
-            AVObject detailInfo = new AVObject(UserDetailContract.CLASS_NAME);
-            detailInfo.put(UserDetailContract.GENDER, mGender);
-            detailInfo.put(UserDetailContract.AGE, mBirthday);
-            detailInfo.put(UserDetailContract.AVATAR, avatarFile);
+            AVObject basicInfo = new AVObject(UserBasicInfoContract.CLASS_NAME);
+            basicInfo.put(UserBasicInfoContract.USERNAME, user.getUsername());
+            basicInfo.put(UserBasicInfoContract.GENDER, mGender);
+            basicInfo.put(UserBasicInfoContract.AGE, mBirthday);
+            basicInfo.put(UserBasicInfoContract.AVATAR, avatarFile);
+
+            AVObject detailInfo = AVObject.create(UserDetailContract.CLASS_NAME);
+            basicInfo.put(UserBasicInfoContract.DETAIL_INFO, detailInfo);
 
             //only the this user hava the write access to this user detail info record
             AVACL avacl = new AVACL();
             avacl.setWriteAccess(user, true);
             avacl.setPublicReadAccess(true);
             detailInfo.setACL(avacl);
+            basicInfo.setACL(avacl);
 
             try {
-                detailInfo.save();
+                basicInfo.save();
             } catch (AVException e) {
                 return REGISTER_FAILED;
             }
 
+            user.put(UserContract.USER_BASIC_INFO, basicInfo);
             user.put(UserContract.USER_DETAIL_INFO, detailInfo);
             user.put(UserContract.AVATAR, avatarFile);
             user.put(UserContract.AGE, mBirthday);

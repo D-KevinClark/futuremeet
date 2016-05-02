@@ -22,8 +22,8 @@ import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.UserDetailInfoActivity;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
+import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
-import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.utility.Util;
 
 import java.util.Date;
@@ -61,11 +61,12 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter{
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         final MomentViewHolder momentHolder = (MomentViewHolder) holder;
         final AVObject moment = mAvobjectList.get(position);
+        final AVObject userBasicInfo = moment.getAVObject(MomentContract.USER_BASIC_INFO);
 
         String content = moment.getString(MomentContract.CONTENT);
         momentHolder.contentText.setText(content);
 
-        final String username = moment.getString(MomentContract.USER_NAME);
+        final String username = userBasicInfo.getString(UserBasicInfoContract.USERNAME);
         momentHolder.usernameText.setText(username);
 
         int gender = moment.getInt(UserContract.GENDER);
@@ -92,7 +93,7 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter{
 
 
         int size=mContext.getResources().getDimensionPixelSize(R.dimen.moment_avatar_size_moment);
-        AVFile avatar = moment.getAVFile(MomentContract.AVATAR);
+        AVFile avatar = userBasicInfo.getAVFile(UserBasicInfoContract.AVATAR);
         String url = avatar.getThumbnailUrl(false, size, size, 100, "jpg");
         Glide.with(mContext)
                 .load(url)
@@ -102,9 +103,9 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter{
             @Override
             public void onClick(View v) {
                 // TODO: 2016/5/1 add check to see if is "me"
-                String userDetailInfoID=moment.getAVObject(MomentContract.USER_DETAIL_INFO).getObjectId();
+                String userBasicInfoId=userBasicInfo.getObjectId();
                 Intent intent = new Intent(mContext, UserDetailInfoActivity.class);
-                intent.putExtra(UserDetailInfoActivity.EXTRA_USER_DETAIL_ID, userDetailInfoID);
+                intent.putExtra(UserDetailInfoActivity.EXTRA_USER_BASIC_INFO_ID, userBasicInfoId);
                 mContext.startActivity(intent);
             }
         });

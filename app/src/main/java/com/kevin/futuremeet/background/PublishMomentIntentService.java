@@ -15,6 +15,7 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.kevin.futuremeet.beans.FuturePoiBean;
 import com.kevin.futuremeet.beans.MomentContract;
+import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.Util;
 
@@ -152,18 +153,19 @@ public class PublishMomentIntentService extends IntentService {
         for (HashMap<String, String> geoPointMap : futurePois) {
             AVObject avObject = new AVObject(MomentContract.CLASS_NAME);
             avObject.put(MomentContract.CONTENT, content);
+
             avObject.put(MomentContract.GEDER, user.get(UserContract.GENDER));
             avObject.put(MomentContract.AGE, currentYear - 1900 - birthday.getYear());
-            avObject.put(MomentContract.AVATAR, user.get(UserContract.AVATAR));
             avObject.addAll(MomentContract.IMAGES, fileList);
-
             AVGeoPoint point = new AVGeoPoint();
             point.setLongitude(Double.parseDouble(geoPointMap.get(KEY_LNG)));
             point.setLatitude(Double.parseDouble(geoPointMap.get(KEY_LAT)));
             avObject.put(MomentContract.LOCATION, point);
             avObject.put(MomentContract.ARRIVE_TIME, futureArriveTimes.get(i++));
-            avObject.put(MomentContract.USER_NAME, user.getUsername());
-            avObject.put(MomentContract.USER_DETAIL_INFO, user.get(UserContract.USER_DETAIL_INFO));
+
+            String userBasicInfoId = user.getAVObject(UserContract.USER_BASIC_INFO).getObjectId();
+            AVObject userBasicInfo = AVObject.createWithoutData(UserBasicInfoContract.CLASS_NAME, userBasicInfoId);
+            avObject.put(MomentContract.USER_BASIC_INFO,userBasicInfo);
 
 
             AVACL avacl = new AVACL();

@@ -12,6 +12,6 @@ public class FollowerDBContract {
 
     public static class FollowerEntry implements BaseColumns {
         public static final String TABLE_NAME = "follower";
-        public static final String FOLLOWER_DETAIL_INFO_ID = "follower_detail_info_id";
+        public static final String FOLLOWER_BASIC_INFO_ID = "follower_basic_info_id";
     }
 }

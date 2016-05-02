@@ -75,16 +75,6 @@ public class MomentFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MomentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MomentFragment newInstance(String param1, String param2) {
         MomentFragment fragment = new MomentFragment();
         Bundle args = new Bundle();
@@ -101,8 +91,6 @@ public class MomentFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        Log.i(TAG, "onCreate: ");
-
     }
 
     @Override
@@ -111,27 +99,16 @@ public class MomentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_moments, container, false);
         initViews(view);
         initEvents();
-        Log.i(TAG, "onCreateView: ");
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume: ");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i(TAG, "onStart: ");
-    }
 
     private void initQueryBasic() {
         mMomentSearchQuery = new AVQuery<>(MomentContract.CLASS_NAME);
         mMomentSearchQuery.setLimit(MOMENT_SEARCH_PAGE_SIZE);
         mMomentSearchQuery.orderByDescending(MomentContract.PUBLISH_TIME);
         mMomentSearchQuery.include(MomentContract.IMAGES);
+        mMomentSearchQuery.include(MomentContract.USER_BASIC_INFO);
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         mMomentSearchQuery.whereLessThanOrEqualTo(MomentContract.PUBLISH_TIME, date);
@@ -213,11 +190,6 @@ public class MomentFragment extends Fragment {
         performNewQuery();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i(TAG, "onStop: ");
-    }
     private void initEvents() {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override

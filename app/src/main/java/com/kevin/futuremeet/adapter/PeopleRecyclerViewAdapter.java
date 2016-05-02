@@ -13,7 +13,8 @@ import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.beans.PeopleContract;
+import com.kevin.futuremeet.beans.FuturePoiContract;
+import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.Util;
 
@@ -52,9 +53,10 @@ public class PeopleRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         final PeopleViewHolder peopleViewHolder = (PeopleViewHolder) holder;
         final AVObject people = mAvobjectList.get(position);
+        final AVObject userBasicInfo = people.getAVObject(FuturePoiContract.USER_BASIC_INFO);
 
 
-        final String username = people.getString(PeopleContract.USER_NAME);
+        final String username = userBasicInfo.getString(UserBasicInfoContract.USERNAME);
         peopleViewHolder.usernameText.setText(username);
 
         int gender = people.getInt(UserContract.GENDER);
@@ -67,15 +69,15 @@ public class PeopleRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
         int age = people.getInt(UserContract.AGE);
         peopleViewHolder.userAgeText.setText(age + "");
 
-        AVGeoPoint geoPoint = people.getAVGeoPoint(PeopleContract.LOCATION);
+        AVGeoPoint geoPoint = people.getAVGeoPoint(FuturePoiContract.POI_LOCATION);
         String distance = Util.getProperDistanceFormat(mContext, geoPoint.distanceInKilometersTo(mCurrentGeoPoint));
         peopleViewHolder.distanceText.setText(distance);
 
-        Date date = people.getDate(PeopleContract.ARRIVE_TIME);
+        Date date = people.getDate(FuturePoiContract.ARRIVE_TIME);
         peopleViewHolder.arriveTimeDiffText.setText(getProperTimeDiffFormat(date));
 
         int size=mContext.getResources().getDimensionPixelSize(R.dimen.people_avatar_size);
-        AVFile avatar = people.getAVFile(PeopleContract.AVATAR);
+        AVFile avatar = userBasicInfo.getAVFile(UserBasicInfoContract.AVATAR);
         String url = avatar.getThumbnailUrl(false, size, size, 100, "jpg");
         Glide.with(mContext)
                 .load(url)
