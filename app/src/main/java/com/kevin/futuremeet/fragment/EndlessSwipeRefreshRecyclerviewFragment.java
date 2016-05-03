@@ -66,6 +66,7 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
         initEvents();
         pageNumber = getPageNumber();
         query = initQueryBasic();
+        query.setLimit(pageNumber);
         performNewQuery();
 
         return root;
@@ -83,7 +84,8 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                initQueryBasic();
+                query=initQueryBasic();
+                query.setLimit(pageNumber);
                 performNewQuery();
             }
         });
@@ -173,8 +175,8 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
                 return getNormalItemViewHolder(parent);
             } else {
                 View view = mLayoutInflater.inflate(R.layout.moments_footer, parent, false);
-                final FooterViewHolder footerViewHolder = new FooterViewHolder(view);
-                return footerViewHolder;
+                mFooterViewHolder = new FooterViewHolder(view);
+                return mFooterViewHolder;
             }
         }
 
@@ -199,7 +201,7 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
                 }
                 return;
             } else {
-                onBindNormalItemViewHolder(holder,mDataList, position);
+                onBindNormalItemViewHolder(holder, mDataList, position);
             }
         }
 

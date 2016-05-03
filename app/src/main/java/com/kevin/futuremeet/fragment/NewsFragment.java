@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.MyCommentedMomentActivity;
+import com.kevin.futuremeet.activity.MyCommentingMomentActivity;
 import com.kevin.futuremeet.activity.MyLikedMomentActivity;
 import com.kevin.futuremeet.activity.MyLikingMomentActivity;
 
@@ -76,6 +78,22 @@ public class NewsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MyLikedMomentActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mMyCommentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MyCommentingMomentActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mCommentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MyCommentedMomentActivity.class);
                 startActivity(intent);
             }
         });

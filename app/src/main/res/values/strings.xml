@@ -166,4 +166,7 @@
     <string name="have_liked_your_moment">赞了你</string>
     <string name="send">发送</string>
     <string name="comment_failed">评论失败</string>
+    <string name="have_commented">评论</string>
+    <string name="reply">回复</string>
+    <string name="reply_to_you">回复你</string>
 </resources>

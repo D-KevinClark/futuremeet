@@ -11,4 +11,7 @@ public class MomentCommentContract {
     public static final String CONTENT = "content";
     public static final String MOMENT = "moment";
     public static final String HAPPEN_TIME = "createdAt";
+
+    public static final int TYPE_COMMENT = 1;
+    public static final int TYPE_REPLY = 2;
 }

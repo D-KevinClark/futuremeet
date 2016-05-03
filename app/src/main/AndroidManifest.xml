@@ -85,6 +85,7 @@
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -102,7 +103,9 @@
 
         <activity android:name=".activity.UserDetailInfoActivity" />
         <activity android:name=".activity.MyLikingMomentActivity" />
-        <activity android:name=".activity.MyLikedMomentActivity"></activity>
+        <activity android:name=".activity.MyLikedMomentActivity" />
+        <activity android:name=".activity.MyCommentingMomentActivity" />
+        <activity android:name=".activity.MyCommentedMomentActivity"></activity>
     </application>
 
 </manifest>

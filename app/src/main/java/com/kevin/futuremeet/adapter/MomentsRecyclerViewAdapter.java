@@ -190,6 +190,7 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
                     comment.put(MomentCommentContract.TO_USER_BASIC_INFO, userBasicInfo);
                     comment.put(MomentCommentContract.CONTENT, commentStr);
                     comment.put(MomentCommentContract.MOMENT, moment);
+                    comment.put(MomentCommentContract.TYPE, MomentCommentContract.TYPE_COMMENT);
 
                     comment.saveInBackground(new SaveCallback() {
                         @Override
