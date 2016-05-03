@@ -59,14 +59,14 @@ public class PeopleRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
         final String username = userBasicInfo.getString(UserBasicInfoContract.USERNAME);
         peopleViewHolder.usernameText.setText(username);
 
-        int gender = people.getInt(UserContract.GENDER);
+        int gender = people.getInt(FuturePoiContract.USER_GENDER);
         if (gender == 1) {
             peopleViewHolder.genderImage.setImageResource(R.drawable.male_icon);
         } else {
             peopleViewHolder.genderImage.setImageResource(R.drawable.female_icon);
         }
 
-        int age = people.getInt(UserContract.AGE);
+        int age = people.getInt(FuturePoiContract.USER_AGE);
         peopleViewHolder.userAgeText.setText(age + "");
 
         AVGeoPoint geoPoint = people.getAVGeoPoint(FuturePoiContract.POI_LOCATION);

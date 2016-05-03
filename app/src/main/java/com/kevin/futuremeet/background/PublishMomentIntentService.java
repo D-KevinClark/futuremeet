@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.ViewAnimationUtils;
 
 import com.avos.avoscloud.AVACL;
@@ -43,6 +44,8 @@ public class PublishMomentIntentService extends IntentService {
 
     public static final String STATUS_REPORT_ACTION = "com.kevin.futuremeet.background.action.status.report";
     public static final String EXTRA_STATUS = "com.kevin.futuremeet.background.extra.status";
+    private static final String TAG = PublishMomentIntentService.class.getSimpleName();
+
 
     private ArrayList<HashMap<String, String>> mFuturePois = new ArrayList<>();
     private static final String KEY_LNG = "lng";
@@ -254,6 +257,7 @@ public class PublishMomentIntentService extends IntentService {
      * @param status
      */
     private void sendStatusReportBroadcast(@UploadStatus int status) {
+        Log.i(TAG, "sendStatusReportBroadcast: ");
         Intent intent = new Intent(STATUS_REPORT_ACTION)
                 .putExtra(EXTRA_STATUS, status);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

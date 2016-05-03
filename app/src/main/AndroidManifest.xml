@@ -64,8 +64,7 @@
             android:name=".background.PublishMomentIntentService"
             android:exported="false" />
 
-        <activity android:name=".activity.TestActivity">
-        </activity>
+        <activity android:name=".activity.TestActivity" />
         <activity
             android:name=".activity.RegisterActivity"
             android:screenOrientation="portrait"
@@ -77,7 +76,7 @@
             android:name=".activity.DestChooseActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
 
         <service
             android:name=".background.PublishPoiIntentServie"
@@ -86,7 +85,6 @@
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -102,7 +100,9 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.UserDetailInfoActivity"></activity>
+        <activity android:name=".activity.UserDetailInfoActivity" />
+        <activity android:name=".activity.MyLikingMomentActivity" />
+        <activity android:name=".activity.MyLikedMomentActivity"></activity>
     </application>
 
 </manifest>

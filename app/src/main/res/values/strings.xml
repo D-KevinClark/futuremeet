@@ -157,4 +157,13 @@
     <string name="good_friends">好友</string>
     <string name="followee">关注</string>
     <string name="follower">粉丝</string>
+    <string name="comment">评论</string>
+    <string name="like">赞</string>
+    <string name="my_comment">我的评论</string>
+    <string name="my_like">我的赞</string>
+    <string name="conversation">聊天</string>
+    <string name="you_have_liked">你赞了</string>
+    <string name="have_liked_your_moment">赞了你</string>
+    <string name="send">发送</string>
+    <string name="comment_failed">评论失败</string>
 </resources>

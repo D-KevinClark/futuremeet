@@ -71,6 +71,7 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
         return root;
     }
 
+
     private void initEvents() {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
             @Override

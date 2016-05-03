@@ -35,6 +35,8 @@ import com.kevin.futuremeet.utility.Config;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     FrameLayout mFragmentContainer;
 
     View mFriendsLayout;
@@ -193,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction().equals(PublishMomentIntentService.STATUS_REPORT_ACTION)) {
+                Log.i(TAG, "onReceive: ");
                 int status = intent.getIntExtra(PublishMomentIntentService.EXTRA_STATUS, 0);
                 if (status == PublishMomentIntentService.UPLOAD_SUCCESS) {
                     Toast.makeText(MainActivity.this, R.string.moment_publish_success, Toast.LENGTH_SHORT).show();

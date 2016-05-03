@@ -33,4 +33,6 @@
     <dimen name="dialog_bottom_btn_height">36dp</dimen>
     <dimen name="user_prefers_item_height">48dp</dimen>
     <dimen name="friends_avatar_size">60dp</dimen>
+    <dimen name="like_item_avatar_size">48dp</dimen>
+    <dimen name="like_item_image_size">60dp</dimen>
 </resources>

@@ -172,6 +172,13 @@ public class Util {
         }
     }
 
+    public static void openTheSoftKeyBoard(Context context, View currentView) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.showSoftInput(currentView, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
     /**
      * detect the network status
      *

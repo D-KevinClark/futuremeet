@@ -3,182 +3,208 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:background="@android:color/white"
-    android:orientation="horizontal"
-    android:paddingBottom="4dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_horizontal_margin">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/avatar_imageview"
-            android:layout_width="@dimen/moment_avatar_size_moment"
-            android:layout_height="@dimen/moment_avatar_size_moment"
-            android:src="@drawable/grey_background_selector" />
-    </LinearLayout>
-
-    <!--todo clear all the text in the textview-->
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/username_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:text="Nick名字" />
-
-            <TextView
-                android:id="@+id/arrive_time_diff_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="早到1小时30分钟" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp">
-
-            <ImageView
-                android:id="@+id/gender_imageview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:src="@drawable/male_icon" />
-
-            <TextView
-                android:id="@+id/userage_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/gender_imageview"
-                android:text="23"
-                android:textSize="12dp" />
-
-            <TextView
-                android:id="@+id/poi_distance_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="100m" />
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginTop="6dp"
-            android:background="@android:color/darker_gray" />
-
-        <TextView
-            android:id="@+id/moment_content_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="地方哈地方花洒的开发和喀什地方领导和法律的深刻的粉红色桑单发货撒地方和使得" />
-
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin">
 
         <LinearLayout
-            android:id="@+id/moment_images_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
-        <RelativeLayout
+            <ImageView
+                android:id="@+id/avatar_imageview"
+                android:layout_width="@dimen/moment_avatar_size_moment"
+                android:layout_height="@dimen/moment_avatar_size_moment"
+                android:src="@drawable/grey_background_selector" />
+        </LinearLayout>
+
+        <!--todo clear all the text in the textview-->
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginLeft="8dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/username_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="Nick名字" />
+
+                <TextView
+                    android:id="@+id/arrive_time_diff_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="早到1小时30分钟" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp">
+
+                <ImageView
+                    android:id="@+id/gender_imageview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/male_icon" />
+
+                <TextView
+                    android:id="@+id/userage_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/gender_imageview"
+                    android:text="23"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/poi_distance_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="100m" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="6dp"
+                android:background="@android:color/darker_gray" />
 
             <TextView
-                android:id="@+id/publish_time_textview"
+                android:id="@+id/moment_content_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="13:24" />
+                android:layout_marginTop="8dp"
+                android:text="地方哈地方花洒的开发和喀什地方领导和法律的深刻的粉红色桑单发货撒地方和使得" />
+
+
+            <LinearLayout
+                android:id="@+id/moment_images_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
 
             <RelativeLayout
-                android:id="@+id/comment_layout"
-                android:layout_width="@dimen/like_or_comment_layout_width"
-                android:layout_height="@dimen/like_or_comment_layout_height"
-                android:layout_alignParentRight="true">
-
-
-                <View
-                    android:id="@+id/center_view1"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_centerInParent="true" />
-
-                <ImageView
-                    android:id="@+id/comment_imageview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="1dp"
-                    android:layout_toLeftOf="@id/center_view1"
-                    android:src="@drawable/comment_icon" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/comment_number_text"
+                    android:id="@+id/publish_time_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="1dp"
-                    android:layout_toRightOf="@id/center_view1"
-                    android:text="24" />
+                    android:text="13:24" />
+
+                <RelativeLayout
+                    android:id="@+id/comment_layout"
+                    android:layout_width="@dimen/like_or_comment_layout_width"
+                    android:layout_height="@dimen/like_or_comment_layout_height"
+                    android:layout_alignParentRight="true">
+
+
+                    <View
+                        android:id="@+id/center_view1"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_centerInParent="true" />
+
+                    <ImageView
+                        android:id="@+id/comment_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="1dp"
+                        android:layout_toLeftOf="@id/center_view1"
+                        android:src="@drawable/comment_icon" />
+
+                    <TextView
+                        android:id="@+id/comment_number_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="1dp"
+                        android:layout_toRightOf="@id/center_view1"
+                        android:text="24" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/like_layout"
+                    android:layout_width="@dimen/like_or_comment_layout_width"
+                    android:layout_height="@dimen/like_or_comment_layout_height"
+                    android:layout_marginRight="24dp"
+                    android:layout_toLeftOf="@id/comment_layout">
+
+                    <View
+                        android:id="@+id/center_view2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_centerInParent="true" />
+
+                    <ImageView
+                        android:id="@+id/like_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="1dp"
+                        android:layout_toLeftOf="@id/center_view2"
+                        android:src="@drawable/like_icon" />
+
+                    <TextView
+                        android:id="@+id/like_number_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="1dp"
+                        android:layout_toRightOf="@id/center_view2"
+                        android:text="12" />
+
+                </RelativeLayout>
+
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/like_layout"
-                android:layout_width="@dimen/like_or_comment_layout_width"
-                android:layout_height="@dimen/like_or_comment_layout_height"
-                android:layout_marginRight="24dp"
-                android:layout_toLeftOf="@id/comment_layout">
-
-                <View
-                    android:id="@+id/center_view2"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_centerInParent="true" />
-
-                <ImageView
-                    android:id="@+id/like_imageview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="1dp"
-                    android:layout_toLeftOf="@id/center_view2"
-                    android:src="@drawable/like_icon" />
-
-                <TextView
-                    android:id="@+id/like_number_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="1dp"
-                    android:layout_toRightOf="@id/center_view2"
-                    android:text="12" />
-
-            </RelativeLayout>
-
-
-        </RelativeLayout>
-
+        </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/comment_area_view"
+        android:visibility="gone"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/comment_edittext"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/send_comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send" />
+    </LinearLayout>
 
 </LinearLayout>

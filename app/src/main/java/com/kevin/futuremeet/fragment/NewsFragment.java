@@ -1,5 +1,6 @@
 package com.kevin.futuremeet.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.MyLikedMomentActivity;
+import com.kevin.futuremeet.activity.MyLikingMomentActivity;
 
 public class NewsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -19,9 +22,14 @@ public class NewsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View mLikeLayout;
+    private View mCommentLayout;
+    private View mMyLikeLayout;
+    private View mMyCommentLayout;
+    private View mConversationLayout;
 
 
-//    private OnFragmentInteractionListener mListener;
+
 
     private ListView mListView;
 
@@ -52,13 +60,34 @@ public class NewsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root=inflater.inflate(R.layout.fragment_news, container, false);
         initViews(root);
+        initEvents();
         return root;
     }
 
-    private void initViews(View root) {
-        mListView = (ListView) root.findViewById(R.id.listview);
+    private void initEvents() {
+        mMyLikeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MyLikingMomentActivity.class);
+                startActivity(intent);
+            }
+        });
+        mLikeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MyLikedMomentActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
+    private void initViews(View root) {
+        mLikeLayout = root.findViewById(R.id.like_layout);
+        mCommentLayout = root.findViewById(R.id.comment_layout);
+        mMyLikeLayout = root.findViewById(R.id.my_like_layout);
+        mMyCommentLayout = root.findViewById(R.id.my_comment_layout);
+        mConversationLayout = root.findViewById(R.id.conversation_layout);
+    }
 
 
 //    // TODO: Rename method, update argument and hook method into UI event

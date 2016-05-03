@@ -38,6 +38,8 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
             this.previousTotalItemCount = totalItemCount;
             if (totalItemCount == 0) {
                 this.loading = true;
+            } else {
+                this.loading = false;
             }
         }
         // If it’s still loading, we check to see if the dataset count has
@@ -58,6 +60,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
             loading = true;
         }
     }
+
 
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore();
