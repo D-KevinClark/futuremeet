@@ -13,6 +13,7 @@ import cn.finalteam.galleryfinal.CoreConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
 import cn.finalteam.galleryfinal.ImageLoader;
 import cn.finalteam.galleryfinal.ThemeConfig;
+import io.rong.imkit.RongIM;
 
 /**
  * Created by carver on 2016/3/26.
@@ -50,6 +51,11 @@ public class FMApplication extends Application {
         //initial the LeanCloud
         AVOSCloud.initialize(this,"Q0Uvxfqo7eW0EJCW0JPjTJID-gzGzoHsz","18gnqT4d6IAdD7vKxRBXOaFd");
         AVOSCloud.setLastModifyEnabled(true);
+
+
+        //IM =========================================
+        RongIM.init(this);
+
     }
 
 }

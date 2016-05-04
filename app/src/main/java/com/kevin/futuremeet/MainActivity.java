@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
         initEvents();
 
+        connectToRongIM();
+
 
         //these code is prepared for the case that activity is killed by the system for resource
         //if so, the UI instance may still be in the memory but we lost the reference to them,
@@ -108,6 +110,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         registerPushiService();
+    }
+
+    private String Token=""
+
+    private void connectToRongIM() {
+        RongIM.connect(Token, new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+                //Connect Token 失效的状态处理，需要重新获取 Token
+            }
+
+            @Override
+            public void onSuccess(String userId) {
+                Log.e(“MainActivity”, “——onSuccess— -”+userId);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                Log.e(“MainActivity”, “——onError— -”+errorCode);
+            }
+        });
     }
 
     @Override
