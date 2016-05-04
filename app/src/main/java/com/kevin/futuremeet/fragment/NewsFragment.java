@@ -14,6 +14,8 @@ import com.kevin.futuremeet.activity.MyCommentingMomentActivity;
 import com.kevin.futuremeet.activity.MyLikedMomentActivity;
 import com.kevin.futuremeet.activity.MyLikingMomentActivity;
 
+import io.rong.imkit.RongIM;
+
 public class NewsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,6 +97,15 @@ public class NewsFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MyCommentedMomentActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        mConversationLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (RongIM.getInstance() != null) {
+                    RongIM.getInstance().startConversationList(getContext());
+                }
             }
         });
     }

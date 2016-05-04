@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -32,6 +34,18 @@ import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
 import com.kevin.futuremeet.utility.Config;
+import com.kevin.futuremeet.utility.NetUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import io.rong.imkit.RongContext;
+import io.rong.imkit.RongIM;
+import io.rong.imkit.widget.provider.CameraInputProvider;
+import io.rong.imkit.widget.provider.ImageInputProvider;
+import io.rong.imkit.widget.provider.InputProvider;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -108,7 +122,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         registerPushiService();
+
+        setUpRongIM();
     }
+
+    private void setUpRongIM() {
+        //我需要让他显示的内容的数组  此处示例 语音 位置
+        InputProvider.ExtendProvider[] ep = {new ImageInputProvider(RongContext.getInstance()),new CameraInputProvider(RongContext.getInstance())};
+        //我需要让他在什么会话类型中的 bar 展示
+        RongIM.resetInputExtensionProvider(Conversation.ConversationType.PRIVATE, ep);
+    }
+
 
     @Override
     protected void onStart() {
@@ -130,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         manager.registerReceiver(newsReceive, newsIntentFilter);
 
     }
+
 
     @Override
     protected void onStop() {
