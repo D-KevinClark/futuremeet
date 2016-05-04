@@ -21,6 +21,7 @@ public class ConversationListActivity extends AppCompatActivity {
     private void prepareToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(getString(R.string.message));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

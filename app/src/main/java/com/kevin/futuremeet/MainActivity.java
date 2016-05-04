@@ -39,8 +39,13 @@ import com.kevin.futuremeet.utility.NetUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.rong.imkit.RongContext;
 import io.rong.imkit.RongIM;
+import io.rong.imkit.widget.provider.CameraInputProvider;
+import io.rong.imkit.widget.provider.ImageInputProvider;
+import io.rong.imkit.widget.provider.InputProvider;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -117,6 +122,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         registerPushiService();
+
+        setUpRongIM();
+    }
+
+    private void setUpRongIM() {
+        //我需要让他显示的内容的数组  此处示例 语音 位置
+        InputProvider.ExtendProvider[] ep = {new ImageInputProvider(RongContext.getInstance()),new CameraInputProvider(RongContext.getInstance())};
+        //我需要让他在什么会话类型中的 bar 展示
+        RongIM.resetInputExtensionProvider(Conversation.ConversationType.PRIVATE, ep);
     }
 
 

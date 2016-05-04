@@ -8,6 +8,10 @@ import android.view.View;
 
 import com.kevin.futuremeet.R;
 
+import java.util.Locale;
+
+import io.rong.imlib.model.Conversation;
+
 public class ConversationActivity extends AppCompatActivity {
 
     @Override
@@ -15,11 +19,18 @@ public class ConversationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
+
         prepareToolbar();
     }
 
-    private void prepareToolbar(){
+    private void prepareToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if (getIntent() != null) {
+            String title = getIntent().getData().getQueryParameter("title");
+            toolbar.setTitle(title);
+        }
+
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,5 +40,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+
     }
 }
