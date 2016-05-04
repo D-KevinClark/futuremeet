@@ -77,6 +77,21 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".activity.LoginActivity" />
+        <activity
+            android:name=".activity.ConversationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.kevin.futuremeet"
+                    android:pathPrefix="/conversation/"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".background.PublishPoiIntentServie"
@@ -105,7 +120,21 @@
         <activity android:name=".activity.MyLikingMomentActivity" />
         <activity android:name=".activity.MyLikedMomentActivity" />
         <activity android:name=".activity.MyCommentingMomentActivity" />
-        <activity android:name=".activity.MyCommentedMomentActivity"></activity>
+        <activity android:name=".activity.MyCommentedMomentActivity" />
+        <activity
+            android:name=".activity.ConversationListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="com.kevin.futuremeet"
+                    android:pathPrefix="/conversationlist"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

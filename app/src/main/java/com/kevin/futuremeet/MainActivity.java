@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -32,6 +34,13 @@ import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
 import com.kevin.futuremeet.utility.Config;
+import com.kevin.futuremeet.utility.NetUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
         initEvents();
 
-        connectToRongIM();
-
 
         //these code is prepared for the case that activity is killed by the system for resource
         //if so, the UI instance may still be in the memory but we lost the reference to them,
@@ -112,26 +119,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         registerPushiService();
     }
 
-    private String Token=""
-
-    private void connectToRongIM() {
-        RongIM.connect(Token, new RongIMClient.ConnectCallback() {
-            @Override
-            public void onTokenIncorrect() {
-                //Connect Token 失效的状态处理，需要重新获取 Token
-            }
-
-            @Override
-            public void onSuccess(String userId) {
-                Log.e(“MainActivity”, “——onSuccess— -”+userId);
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                Log.e(“MainActivity”, “——onError— -”+errorCode);
-            }
-        });
-    }
 
     @Override
     protected void onStart() {
@@ -153,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         manager.registerReceiver(newsReceive, newsIntentFilter);
 
     }
+
 
     @Override
     protected void onStop() {

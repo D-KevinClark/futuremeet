@@ -1,5 +1,6 @@
 package com.kevin.futuremeet.activity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,6 +15,8 @@ import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.RelationShipContract;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.utility.NetUtils;
+import com.kevin.futuremeet.utility.Util;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -29,32 +32,23 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        AVQuery<AVObject> query = new AVQuery<>(MomentLikeContrast.CLASS_NAME);
-        query.setCachePolicy(AVQuery.CachePolicy.NETWORK_ELSE_CACHE);
-        query.include(MomentLikeContrast.MOMENT);
-        query.include(MomentLikeContrast.TO_USER_BASIC_INFO);
-        query.include(MomentLikeContrast.MOMENT + "." + MomentContract.IMAGES);
+        new AsyncTask<Void, Void, String>() {
 
-
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        query.whereLessThanOrEqualTo(RelationShipContract.ESTABLISH_TIME, date);
-
-        AVObject cuurUserBasicInfoAVobj = AVUser.getCurrentUser().getAVObject(UserContract.USER_BASIC_INFO);
-        query.whereEqualTo(MomentLikeContrast.FROM_USER_BASIC_INFO, cuurUserBasicInfoAVobj);
-
-        query.findInBackground(new FindCallback<AVObject>() {
             @Override
-            public void done(List<AVObject> list, AVException e) {
-                if (e == null) {
-                    Log.i(TAG, "onCreate: " + list.size());
-                } else {
-                    Log.i(TAG, "onCreate: " + e.getMessage());
-                }
+            protected String doInBackground(Void... params) {
+                AVUser currUser = AVUser.getCurrentUser();
+                String userid = currUser.getAVObject(UserContract.USER_BASIC_INFO).getObjectId();
+                String username = currUser.getUsername();
+                String avatar = currUser.getAVFile(UserContract.AVATAR).getThumbnailUrl(false, 50, 50, 100, "jsp");
+                return NetUtils.getToken(userid, username, avatar);
             }
-        });
+
+            @Override
+            protected void onPostExecute(String s) {
+                Log.i(TAG, "onPostExecute: " + s);
+            }
+        }.execute();
 
     }
-
 
 }

@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,20 +13,31 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.kevin.futuremeet.FMApplication;
 import com.kevin.futuremeet.MainActivity;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.utility.NetUtils;
 import com.kevin.futuremeet.utility.Util;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.UserInfo;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -127,10 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if (e == null) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-
+                    getRongIMToken();
                 } else {
                     new AlertDialog.Builder(LoginActivity.this)
                             .setTitle(R.string.login_fail)
@@ -156,6 +166,93 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordTextview = (TextView) findViewById(R.id.password_edittext);
         mLoginButton = (Button) findViewById(R.id.login_button);
         mRegisterButton = (Button) findViewById(R.id.go_register_button);
+    }
+
+
+
+
+    private void getRongIMToken() {
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                AVUser currUser = AVUser.getCurrentUser();
+                String userid = currUser.getAVObject(UserContract.USER_BASIC_INFO).getObjectId();
+                String username = currUser.getUsername();
+                String avatar = currUser.getAVFile(UserContract.AVATAR).getThumbnailUrl(false, 50, 50, 100, "jsp");
+                return NetUtils.getToken(userid, username, avatar);
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    if (!TextUtils.isEmpty(result)) {
+                        JSONObject jsonObject = new JSONObject(result);
+                        int code = jsonObject.getInt("code");
+                        String token = jsonObject.getString("token");
+                        if (code == 200) {
+                            connectToRongIM(token);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+    }
+
+    private void connectToRongIM(String token) {
+
+        if (getApplicationInfo().packageName.equals(FMApplication.getCurProcessName(getApplicationContext()))) {
+            /**
+             * IMKit SDK调用第二步,建立与服务器的连接
+             */
+            RongIM.connect(token, new RongIMClient.ConnectCallback() {
+
+                /**
+                 * Token 错误，在线上环境下主要是因为 Token 已经过期，您需要向 App Server 重新请求一个新的 Token
+                 */
+                @Override
+                public void onTokenIncorrect() {
+                    Log.d("LoginActivity", "--onTokenIncorrect");
+                }
+
+                /**
+                 * 连接融云成功
+                 * @param userid 当前 token
+                 */
+                @Override
+                public void onSuccess(String userid) {
+
+                    Log.d("LoginActivity", "--onSuccess" + userid);
+
+                    AVUser user = AVUser.getCurrentUser();
+                    String username = user.getUsername();
+
+                    AVFile avatar = user.getAVFile(UserContract.AVATAR);
+                    String url = avatar.getThumbnailUrl(false, 50, 50, 100, "jpg");
+
+                    if (RongIM.getInstance() != null) {
+                        RongIM.getInstance().setCurrentUserInfo(new UserInfo(
+                                userid, username, Uri.parse(url)
+                        ));
+                    }
+                    RongIM.getInstance().setMessageAttachedUserInfo(true);
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
+                /**
+                 * 连接融云失败
+                 * @param errorCode 错误码，可到官网 查看错误码对应的注释
+                 *                  http://www.rongcloud.cn/docs/android.html#常见错误码
+                 */
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+
+                    Log.d("LoginActivity", "--onError" + errorCode);
+                }
+            });
+        }
     }
 
 
