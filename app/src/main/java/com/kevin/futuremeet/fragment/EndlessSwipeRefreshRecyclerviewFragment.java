@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -51,6 +52,12 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
     abstract int getPageNumber();
 
     protected abstract AVQuery<AVObject> initQueryBasic();
+
+    /**
+     * when all data showed, what words should be showed on the footer
+     * @return
+     */
+    abstract String getAllDateLoadText();
 
 
     public EndlessSwipeRefreshRecyclerviewFragment() {
@@ -175,6 +182,8 @@ public abstract class EndlessSwipeRefreshRecyclerviewFragment extends Fragment {
                 return getNormalItemViewHolder(parent);
             } else {
                 View view = mLayoutInflater.inflate(R.layout.moments_footer, parent, false);
+                TextView allDataLoadedText = (TextView) view.findViewById(R.id.all_result_showed);
+                allDataLoadedText.setText(getAllDateLoadText());
                 mFooterViewHolder = new FooterViewHolder(view);
                 return mFooterViewHolder;
             }

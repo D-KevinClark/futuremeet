@@ -121,6 +121,11 @@ public class FollowerFragment extends EndlessSwipeRefreshRecyclerviewFragment {
         return query;
     }
 
+    @Override
+    String getAllDateLoadText() {
+        return getString(R.string.all_has_been_showed);
+    }
+
     public static class FriendViewHolder extends RecyclerView.ViewHolder {
 
         public final ImageView avatarImage;

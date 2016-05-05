@@ -61,6 +61,11 @@ public class GoodFriendsFragment extends EndlessSwipeRefreshRecyclerviewFragment
     }
 
     @Override
+    String getAllDateLoadText() {
+        return getString(R.string.all_has_been_showed);
+    }
+
+    @Override
 
     RecyclerView.ViewHolder getNormalItemViewHolder(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());

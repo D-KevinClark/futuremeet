@@ -66,6 +66,12 @@ public class MyLikedMomentFragment extends EndlessSwipeRefreshRecyclerviewFragme
         return new MyLikedMomentFragment.LikeStatusViewHolder(view);
     }
 
+
+    @Override
+    String getAllDateLoadText() {
+        return getString(R.string.all_has_been_showed);
+    }
+
     @Override
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder,List<AVObject> dataList, int position) {
 

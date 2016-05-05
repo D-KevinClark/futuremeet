@@ -61,6 +61,12 @@ public class MyCommentingFraqment extends EndlessSwipeRefreshRecyclerviewFragmen
 
 
     @Override
+    String getAllDateLoadText() {
+        return getString(R.string.all_has_been_showed);
+    }
+
+
+    @Override
     RecyclerView.ViewHolder getNormalItemViewHolder(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.my_commenting_moment_item_layout, parent, false);

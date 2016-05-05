@@ -150,4 +150,9 @@ public class MyCommentedFraqment extends EndlessSwipeRefreshRecyclerviewFragment
         }
     }
 
+    @Override
+    String getAllDateLoadText() {
+        return getString(R.string.all_has_been_showed);
+    }
+
 }
