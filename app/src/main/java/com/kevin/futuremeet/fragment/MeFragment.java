@@ -559,7 +559,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
      */
     private void updateUserPreferContainer(FlowLayout mLiteratureFlowLayout, ArrayList<String> prefers) {
         mLiteratureFlowLayout.removeAllViews();
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < prefers.size(); i++) {
             View view = inflater.inflate(R.layout.user_prefers_textview_layout, null);
             TextView text = (TextView) view.findViewById(R.id.prefers_textview);

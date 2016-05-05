@@ -1,9 +1,11 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -44,28 +46,36 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="32dp"
             android:orientation="vertical">
 
 
             <android.support.v7.widget.CardView
+                card_view:cardElevation="4dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="16dp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/personal_info" />
+                        android:text="@string/personal_info"
+                        android:textAppearance="@android:style/TextAppearance.Large" />
 
                     <LinearLayout
                         android:id="@+id/occupation_layout"
@@ -74,6 +84,11 @@
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/occupation_icon" />
 
                         <TextView
                             android:id="@+id/occupation_text"
@@ -89,6 +104,11 @@
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/organization_icon" />
 
                         <TextView
                             android:id="@+id/school_or_firm_text"
@@ -106,6 +126,11 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/home_icon" />
+
                         <TextView
                             android:id="@+id/hometown_text"
                             android:layout_width="wrap_content"
@@ -122,6 +147,11 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/hashtag_icon" />
+
                         <TextView
                             android:id="@+id/idiograph_text"
                             android:layout_width="wrap_content"
@@ -137,28 +167,38 @@
                         android:gravity="center_vertical"
                         android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:src="@drawable/label_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/selflable_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
 
             <android.support.v7.widget.CardView
+                card_view:cardElevation="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp">
 
                 <LinearLayout
+                    android:paddingLeft="8dp"
+                    android:paddingTop="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAppearance="@android:style/TextAppearance.Large"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/my_life" />
@@ -167,81 +207,101 @@
                         android:id="@+id/music_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/info_editor_item_height"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
+                        android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/music_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/music_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/food_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/info_editor_item_height"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
+                        android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:src="@drawable/food_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/food_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/sport_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/info_editor_item_height"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
+                        android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/sport_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/sport_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/tv_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/info_editor_item_height"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
+                        android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/tv_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/tv_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/literature_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/info_editor_item_height"
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
+                        android:minHeight="@dimen/info_editor_item_height"
                         android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/book_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <org.apmem.tools.layouts.FlowLayout
                             android:id="@+id/literature_container"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </org.apmem.tools.layouts.FlowLayout>
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
+
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>
@@ -249,12 +309,12 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/edit_icon"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:src="@drawable/edit_icon"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
