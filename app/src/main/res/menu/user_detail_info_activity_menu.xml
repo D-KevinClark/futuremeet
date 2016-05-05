@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/conversation_menu"
-        android:icon="@drawable/ic_chat_bubble_white_24dp"
-        android:title="@string/conversion"
+        android:icon="@drawable/ic_person_add_white_24dp"
+        android:title="@string/add_as_friends"
         app:showAsAction="always" />
 </menu>

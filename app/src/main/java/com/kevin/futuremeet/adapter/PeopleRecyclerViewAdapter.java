@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.UserDetailInfoActivity;
 import com.kevin.futuremeet.beans.FuturePoiContract;
 import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
@@ -74,7 +76,7 @@ public class PeopleRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
         peopleViewHolder.distanceText.setText(distance);
 
         Date date = people.getDate(FuturePoiContract.ARRIVE_TIME);
-        peopleViewHolder.arriveTimeDiffText.setText(getProperTimeDiffFormat(date));
+        peopleViewHolder.arriveTimeDiffText.setText(Util.getProperTimeDiffFormat(mContext,date));
 
         int size=mContext.getResources().getDimensionPixelSize(R.dimen.people_avatar_size);
         AVFile avatar = userBasicInfo.getAVFile(UserBasicInfoContract.AVATAR);
@@ -83,6 +85,16 @@ public class PeopleRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
                 .load(url)
                 .asBitmap()
                 .into(peopleViewHolder.avatarImage);
+
+        peopleViewHolder.avatarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userBasicInfoId = userBasicInfo.getObjectId();
+                Intent intent = new Intent(mContext, UserDetailInfoActivity.class);
+                intent.putExtra(UserDetailInfoActivity.EXTRA_USER_BASIC_INFO_ID, userBasicInfoId);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
 

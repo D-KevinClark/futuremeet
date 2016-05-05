@@ -114,35 +114,6 @@ public abstract class LocationBasedRecyclerAdapter extends RecyclerView.Adapter<
     }
 
 
-    /**
-     * @param date
-     * @return
-     */
-    protected String getProperTimeDiffFormat(Date date) {
-        long nowTimeInMilliSecond = System.currentTimeMillis();
-        long targetTimeInMilliSecond = date.getTime();
-        String earlyOrLate = null;
-
-        long minuteOffset = (targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000);
-        if (minuteOffset == 0) {
-            return mContext.getString(R.string.arrive_at_same_time);
-        } else if (minuteOffset < 0) {
-            earlyOrLate = mContext.getString(R.string.early_arrive);
-            minuteOffset = (-minuteOffset);
-        } else {
-            earlyOrLate = mContext.getString(R.string.late_arrive);
-        }
-
-        if (minuteOffset <= 59) {
-            return earlyOrLate + minuteOffset + mContext.getString(R.string.minute);
-        } else {
-            int hour = (int) (minuteOffset / 60);
-            int minute = (int) (minuteOffset % 60);
-            return earlyOrLate + hour + mContext.getString(R.string.hour)
-                    + minute + mContext.getString(R.string.minute);
-        }
-    }
-
     public void setDatasList(List<AVObject> datasList) {
         mAvobjectList = datasList;
     }

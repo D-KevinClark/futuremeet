@@ -5,8 +5,7 @@
 
     <include layout="@layout/toolbar_main" />
     <LinearLayout
-        android:backgroundTint="@android:color/white"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/normal_white_pressed_grey_selector"
         android:paddingLeft="16dp"
         android:id="@+id/like_layout"
         android:layout_width="match_parent"
@@ -28,8 +27,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
         android:backgroundTint="@android:color/white"
-        android:background="?attr/selectableItemBackground"
         android:paddingLeft="16dp"
         android:id="@+id/comment_layout"
         android:layout_width="match_parent"
@@ -51,8 +50,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
         android:backgroundTint="@android:color/white"
-        android:background="?attr/selectableItemBackground"
         android:layout_marginTop="16dp"
         android:paddingLeft="16dp"
         android:id="@+id/my_like_layout"
@@ -75,8 +74,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
         android:backgroundTint="@android:color/white"
-        android:background="?attr/selectableItemBackground"
         android:paddingLeft="16dp"
         android:id="@+id/my_comment_layout"
         android:layout_width="match_parent"
@@ -97,8 +96,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
         android:backgroundTint="@android:color/white"
-        android:background="?attr/selectableItemBackground"
         android:layout_marginTop="16dp"
         android:paddingLeft="16dp"
         android:id="@+id/conversation_layout"

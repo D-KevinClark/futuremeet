@@ -74,6 +74,8 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     private String mUserBasiclInfoId;
 
     private AVObject mUserBasicInfoAvobject;
+    private CollapsingToolbarLayout mToolbarLayout;
+
 
 
     @Override
@@ -171,15 +173,24 @@ public class UserDetailInfoActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(url)
                 .into(mAppbarImage);
+
+        mCollapsingToolbarLayout.setTitle(mUserBasicInfoAvobject.getString(UserBasicInfoContract.USERNAME));
+
     }
 
     private void initEvent() {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                followUser();
+                RongIM.getInstance().startPrivateChat(
+                        UserDetailInfoActivity.this,
+                        mUserBasiclInfoId,
+                        mUserBasicInfoAvobject.getString(UserBasicInfoContract.USERNAME)
+                );
             }
         });
+
+
     }
 
     private void followUser() {
@@ -297,7 +308,6 @@ public class UserDetailInfoActivity extends AppCompatActivity {
         mSportFlowLayout = (FlowLayout)findViewById(R.id.sport_container);
         mTVFlowLayout = (FlowLayout)findViewById(R.id.tv_container);
         mLiteratureFlowLayout = (FlowLayout)findViewById(R.id.literature_container);
-
         mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinator_layout);
     }
 
@@ -326,11 +336,7 @@ public class UserDetailInfoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mUserBasicInfoAvobject != null && RongIM.getInstance() != null) {
-            RongIM.getInstance().startPrivateChat(
-                    this,
-                    mUserBasiclInfoId,
-                    mUserBasicInfoAvobject.getString(UserBasicInfoContract.USERNAME)
-            );
+            followUser();
         }
         return true;
     }

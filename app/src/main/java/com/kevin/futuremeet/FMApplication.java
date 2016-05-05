@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
+import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVOSCloud;
 import com.baidu.mapapi.SDKInitializer;
 import com.kevin.futuremeet.loader.GlideImageLoader;
@@ -21,6 +22,19 @@ import io.rong.imkit.RongIM;
  * Created by carver on 2016/3/26.
  */
 public class FMApplication extends Application {
+
+
+    public AVGeoPoint getUserCurrentAvGeoPoint() {
+        return userCurrentAvGeoPoint;
+    }
+
+    public void setUserCurrentAvGeoPoint(AVGeoPoint userCurrentAvGeoPoint) {
+        this.userCurrentAvGeoPoint = userCurrentAvGeoPoint;
+    }
+
+    private AVGeoPoint userCurrentAvGeoPoint;
+
+
 
     @Override
     public void onCreate() {

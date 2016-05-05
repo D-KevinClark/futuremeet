@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.MomentDetailActivity;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.RelationShipContract;
@@ -76,7 +78,7 @@ public class MyLikedMomentFragment extends EndlessSwipeRefreshRecyclerviewFragme
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder,List<AVObject> dataList, int position) {
 
         AVObject likeObj = dataList.get(position);
-        AVObject momentObj = likeObj.getAVObject(MomentLikeContrast.MOMENT);
+        final AVObject momentObj = likeObj.getAVObject(MomentLikeContrast.MOMENT);
         AVObject fromUserInfo = likeObj.getAVObject(MomentLikeContrast.FROM_USER_BASIC_INFO);
 
         LikeStatusViewHolder likeStatusViewHolder = (LikeStatusViewHolder) holder;
@@ -107,6 +109,15 @@ public class MyLikedMomentFragment extends EndlessSwipeRefreshRecyclerviewFragme
         String properFormatTime = Util.getProperPublishTimeFormate(getContext(), likeTime);
         likeStatusViewHolder.timeText.setText(properFormatTime);
 
+        likeStatusViewHolder.wholeLayoutItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String momentObjectId = momentObj.getObjectId();
+                Intent intent = new Intent(getContext(), MomentDetailActivity.class);
+                intent.putExtra(MomentDetailActivity.EXTRA_MOMENT_ID, momentObjectId);
+                getContext().startActivity(intent);
+            }
+        });
 
     }
 
@@ -141,10 +152,12 @@ public class MyLikedMomentFragment extends EndlessSwipeRefreshRecyclerviewFragme
         public final TextView usernameText;
         public final ImageView momentImage;
         public final TextView timeText;
+        public View wholeLayoutItem;
 
 
         public LikeStatusViewHolder(View itemView) {
             super(itemView);
+            wholeLayoutItem = itemView;
             avatarImage = (ImageView) itemView.findViewById(R.id.avatar);
             usernameText = (TextView) itemView.findViewById(R.id.username_text);
             timeText = (TextView) itemView.findViewById(R.id.time_textview);

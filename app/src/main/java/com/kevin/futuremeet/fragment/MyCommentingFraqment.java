@@ -1,6 +1,7 @@
 package com.kevin.futuremeet.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.MomentDetailActivity;
 import com.kevin.futuremeet.beans.MomentCommentContract;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.UserBasicInfoContract;
@@ -76,7 +78,7 @@ public class MyCommentingFraqment extends EndlessSwipeRefreshRecyclerviewFragmen
     @Override
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder, List<AVObject> dataList, int position) {
         AVObject comment = dataList.get(position);
-        AVObject moment = comment.getAVObject(MomentCommentContract.MOMENT);
+        final AVObject moment = comment.getAVObject(MomentCommentContract.MOMENT);
         AVObject toUserBasicInfo = comment.getAVObject(MomentCommentContract.TO_USER_BASIC_INFO);
         AVUser currUser = AVUser.getCurrentUser();
 
@@ -114,6 +116,16 @@ public class MyCommentingFraqment extends EndlessSwipeRefreshRecyclerviewFragmen
         }
         viewHolder.commentTypeText.setText(typeStr);
 
+        viewHolder.wholeLayoutItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String momentObjectId = moment.getObjectId();
+                Intent intent = new Intent(getContext(), MomentDetailActivity.class);
+                intent.putExtra(MomentDetailActivity.EXTRA_MOMENT_ID, momentObjectId);
+                getContext().startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -148,9 +160,11 @@ public class MyCommentingFraqment extends EndlessSwipeRefreshRecyclerviewFragmen
         public final TextView timeText;
         public final ImageView momentImage;
         public final TextView commentTypeText;
+        public View wholeLayoutItem;
 
         public CommentingViewHolder(View itemView) {
             super(itemView);
+            wholeLayoutItem = itemView;
             avatarImage = (ImageView) itemView.findViewById(R.id.avatar);
             usernameText = (TextView) itemView.findViewById(R.id.username_text);
             contentText = (TextView) itemView.findViewById(R.id.comment_content_text);

@@ -263,4 +263,33 @@ public class Util {
     }
 
 
+    /**
+     * @param date
+     * @return
+     */
+    public static String getProperTimeDiffFormat(Context context,Date date) {
+        long nowTimeInMilliSecond = System.currentTimeMillis();
+        long targetTimeInMilliSecond = date.getTime();
+        String earlyOrLate = null;
+
+        long minuteOffset = (targetTimeInMilliSecond - nowTimeInMilliSecond) / (60 * 1000);
+        if (minuteOffset == 0) {
+            return context.getString(R.string.arrive_at_same_time);
+        } else if (minuteOffset < 0) {
+            earlyOrLate = context.getString(R.string.early_arrive);
+            minuteOffset = (-minuteOffset);
+        } else {
+            earlyOrLate = context.getString(R.string.late_arrive);
+        }
+
+        if (minuteOffset <= 59) {
+            return earlyOrLate + minuteOffset + context.getString(R.string.minute);
+        } else {
+            int hour = (int) (minuteOffset / 60);
+            int minute = (int) (minuteOffset % 60);
+            return earlyOrLate + hour + context.getString(R.string.hour)
+                    + minute + context.getString(R.string.minute);
+        }
+    }
+
 }

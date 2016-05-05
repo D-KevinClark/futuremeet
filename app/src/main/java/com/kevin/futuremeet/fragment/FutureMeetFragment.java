@@ -37,6 +37,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.kevin.futuremeet.FMApplication;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.activity.DestChooseActivity;
 import com.kevin.futuremeet.activity.MomentEditorActivity;
@@ -282,6 +283,9 @@ public class FutureMeetFragment extends Fragment {
         getChildFragment();
         if (avGeoPoint != null) {
             mCurrentGeoPoint = avGeoPoint;
+
+            FMApplication application= (FMApplication) getActivity().getApplication();
+            application.setUserCurrentAvGeoPoint(mCurrentGeoPoint);
         } else {
             avGeoPoint = mCurrentGeoPoint;
         }

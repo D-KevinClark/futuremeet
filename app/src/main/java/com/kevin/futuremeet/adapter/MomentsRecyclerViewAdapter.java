@@ -95,7 +95,7 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
         momentHolder.distanceText.setText(distance);
 
         Date date = moment.getDate(MomentContract.ARRIVE_TIME);
-        momentHolder.arriveTimeDiffText.setText(getProperTimeDiffFormat(date));
+        momentHolder.arriveTimeDiffText.setText(Util.getProperTimeDiffFormat(mContext,date));
 
         Date publishDate = moment.getDate(MomentContract.PUBLISH_TIME);
         momentHolder.publishTimeText.setText(Util.getProperPublishTimeFormate(mContext, publishDate));

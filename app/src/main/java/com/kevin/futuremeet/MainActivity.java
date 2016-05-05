@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -34,17 +32,12 @@ import com.kevin.futuremeet.fragment.FutureMeetFragment;
 import com.kevin.futuremeet.fragment.MeFragment;
 import com.kevin.futuremeet.fragment.NewsFragment;
 import com.kevin.futuremeet.utility.Config;
-import com.kevin.futuremeet.utility.NetUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import io.rong.imkit.RongContext;
 import io.rong.imkit.RongIM;
 import io.rong.imkit.widget.provider.CameraInputProvider;
 import io.rong.imkit.widget.provider.ImageInputProvider;
 import io.rong.imkit.widget.provider.InputProvider;
-import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

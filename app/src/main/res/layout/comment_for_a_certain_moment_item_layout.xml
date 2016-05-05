@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,8 +7,8 @@
 
     <LinearLayout
         android:paddingLeft="8dp"
-        android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -31,25 +30,32 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
             <TextView
-                android:id="@+id/username_text"
+                android:id="@+id/from_username_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="username" />
+
+
             <TextView
+                android:id="@+id/comment_type_text"
                 android:layout_marginLeft="4dp"
+                android:text="@string/reply"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/have_liked_your_moment" />
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/to_user_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
 
-        <ImageView
+        <TextView
+            android:id="@+id/comment_content_text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/like_icon" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/time_textview"
@@ -57,12 +63,6 @@
             android:layout_height="wrap_content"
             android:text="12-04-03 12:34" />
     </LinearLayout>
-
-    <ImageView
-        android:layout_marginRight="16dp"
-        android:id="@+id/moment_image"
-        android:layout_width="@dimen/like_item_image_size"
-        android:layout_height="@dimen/like_item_image_size" />
 
     </LinearLayout>
 
