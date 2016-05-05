@@ -128,14 +128,10 @@ public class MeFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root=inflater.inflate(R.layout.fragment_me, container, false);
-
         initViews(root);
         initEvents();
-
         new Thread(parseJsonRunnable).start();
-
         getCurrentUserDetailInfo();
-
         return root;
     }
 

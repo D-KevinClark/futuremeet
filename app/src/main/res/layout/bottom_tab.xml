@@ -58,6 +58,7 @@
             android:text="@string/message"
             android:textSize="@dimen/bottom_tab_text_size" />
         <ImageView
+            android:visibility="invisible"
             android:id="@+id/news_badge_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

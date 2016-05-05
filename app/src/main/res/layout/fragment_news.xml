@@ -3,7 +3,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/toolbar_main" />
     <LinearLayout
+        android:backgroundTint="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:paddingLeft="16dp"
         android:id="@+id/like_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -13,15 +17,20 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/news" />
+            android:src="@drawable/thumb_up_purple" />
 
         <TextView
             android:text="@string/like"
+            android:layout_marginLeft="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
+        android:backgroundTint="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:paddingLeft="16dp"
         android:id="@+id/comment_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -31,15 +40,21 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/news" />
+            android:src="@drawable/comment_icon_purple" />
 
         <TextView
             android:text="@string/comment"
+            android:layout_marginLeft="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
+        android:backgroundTint="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
         android:id="@+id/my_like_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -49,15 +64,20 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/news" />
+            android:src="@drawable/thumb_up_icon_green" />
 
         <TextView
             android:text="@string/my_like"
+            android:layout_marginLeft="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
+        android:backgroundTint="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:paddingLeft="16dp"
         android:id="@+id/my_comment_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -67,14 +87,20 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/news" />
+            android:src="@drawable/comment_icon_green" />
         <TextView
             android:text="@string/my_comment"
+            android:layout_marginLeft="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
+        android:backgroundTint="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
         android:id="@+id/conversation_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -84,9 +110,11 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/news" />
+            android:src="@drawable/chat_icon_color" />
         <TextView
             android:text="@string/conversation"
+            android:layout_marginLeft="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

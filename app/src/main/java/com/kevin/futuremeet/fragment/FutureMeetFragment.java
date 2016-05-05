@@ -137,6 +137,7 @@ public class FutureMeetFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.i(TAG, "onResume: ");
         checkIfPoiOutOfDate();
     }
 
@@ -181,6 +182,7 @@ public class FutureMeetFragment extends Fragment {
             startActivity(intent);
         }
     }
+
 
     private void tryToPublishMoment() {
         if (mFuturePoiList.size() == 0) {
@@ -273,9 +275,8 @@ public class FutureMeetFragment extends Fragment {
     };
 
     /**
-     *
      * @param avGeoPoint
-     * @param date the date of the arrive time,if is now ,just pass null
+     * @param date       the date of the arrive time,if is now ,just pass null
      */
     private void performSearch(AVGeoPoint avGeoPoint, Date date) {
         getChildFragment();
@@ -285,8 +286,8 @@ public class FutureMeetFragment extends Fragment {
             avGeoPoint = mCurrentGeoPoint;
         }
         if (mMomentFragment != null && mPeopleFragment != null && avGeoPoint != null) {
-            mMomentFragment.performSearch(avGeoPoint,date);
-            mPeopleFragment.performSearch(avGeoPoint,date);
+            mMomentFragment.performSearch(avGeoPoint, date);
+            mPeopleFragment.performSearch(avGeoPoint, date);
         }
     }
 
@@ -425,10 +426,31 @@ public class FutureMeetFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart: ");
+    }
+
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        //doing this is because when a show this fragment in the main activity again the menu item
+        //will always somehow disappear, which is really weird
+        AppCompatActivity compatActivity = (AppCompatActivity) getActivity();
+        compatActivity.setSupportActionBar(mToolbar);
+        compatActivity.invalidateOptionsMenu();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.futuremeet_fragment_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

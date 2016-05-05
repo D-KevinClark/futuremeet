@@ -72,11 +72,12 @@ public class MyCommentingFraqment extends EndlessSwipeRefreshRecyclerviewFragmen
         AVObject comment = dataList.get(position);
         AVObject moment = comment.getAVObject(MomentCommentContract.MOMENT);
         AVObject toUserBasicInfo = comment.getAVObject(MomentCommentContract.TO_USER_BASIC_INFO);
+        AVUser currUser = AVUser.getCurrentUser();
 
         CommentingViewHolder viewHolder = (CommentingViewHolder) holder;
 
         int size = getResources().getDimensionPixelSize(R.dimen.like_item_image_size);
-        AVFile toUserAvatarImage = toUserBasicInfo.getAVFile(UserBasicInfoContract.AVATAR);
+        AVFile toUserAvatarImage = currUser.getAVFile(UserBasicInfoContract.AVATAR);
         String url = toUserAvatarImage.getThumbnailUrl(false, size, size, 100, "jpg");
         Glide.with(getContext())
                 .load(url)

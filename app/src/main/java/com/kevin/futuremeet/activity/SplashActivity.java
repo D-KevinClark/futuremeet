@@ -3,22 +3,16 @@ package com.kevin.futuremeet.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
-import com.avos.avoscloud.AVInstallation;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.GetCallback;
 import com.kevin.futuremeet.FMApplication;
 import com.kevin.futuremeet.MainActivity;
 import com.kevin.futuremeet.R;
-import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.NetUtils;
 
