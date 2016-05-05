@@ -187,24 +187,32 @@
     </LinearLayout>
 
     <LinearLayout
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:id="@+id/comment_area_view"
-        android:visibility="gone"
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <EditText
+            android:textColorHint="#E0E0E0"
+            android:hint="@string/input_comments"
             android:id="@+id/comment_edittext"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:background="@null"
             android:layout_height="wrap_content"/>
 
-        <Button
+        <ImageButton
+            android:padding="8dp"
+            android:layout_marginLeft="4dp"
             android:id="@+id/send_comment_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/send" />
+            android:background="@android:color/white"
+            android:src="@drawable/sned_icon_blue"/>
     </LinearLayout>
 
 </LinearLayout>

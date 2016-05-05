@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -272,7 +273,7 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
         public final View likeLayoutView;
         public final View commentLayoutView;
         public final EditText commentEditText;
-        public final Button commentSendButton;
+        public final ImageButton commentSendButton;
         public final View commentAreaView;
 
 
@@ -295,7 +296,7 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
             commentLayoutView = itemView.findViewById(R.id.comment_layout);
             commentAreaView = itemView.findViewById(R.id.comment_area_view);
             commentEditText = (EditText) itemView.findViewById(R.id.comment_edittext);
-            commentSendButton = (Button) itemView.findViewById(R.id.send_comment_button);
+            commentSendButton = (ImageButton) itemView.findViewById(R.id.send_comment_button);
         }
     }
 

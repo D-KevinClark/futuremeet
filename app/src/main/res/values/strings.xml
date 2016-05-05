@@ -171,4 +171,5 @@
     <string name="reply_to_you">回复你</string>
     <string name="conversion">聊天</string>
     <string name="all_has_been_showed">已经显示全部</string>
+    <string name="input_comments">输入评论</string>
 </resources>
