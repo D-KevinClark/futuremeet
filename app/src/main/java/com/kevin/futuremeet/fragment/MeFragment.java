@@ -27,6 +27,7 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.AccountEditActivity;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.beans.UserDetailContract;
 import com.kevin.futuremeet.utility.Config;
@@ -324,6 +325,14 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         mSportLayout.setOnClickListener(this);
         mTVlayout.setOnClickListener(this);
         mLiteratureLayout.setOnClickListener(this);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AccountEditActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -175,4 +175,12 @@
     <string name="moment">动态</string>
     <string name="no_more_comment_concern_your_two">没有更多你们的相关评论</string>
     <string name="add_as_friends">加好友</string>
+    <string name="change_username">修改用户名</string>
+    <string name="change_passwords">修改密码</string>
+    <string name="setting">设置</string>
+    <string name="change_avatar">修改头像</string>
+    <string name="avatar_change_success">头像修改成功</string>
+    <string name="avatar_selection_failed_try_again">选取失败，请重试</string>
+    <string name="avatar_upload_failed">头像上传失败</string>
+    <string name="account_info_modify">账户设置</string>
 </resources>

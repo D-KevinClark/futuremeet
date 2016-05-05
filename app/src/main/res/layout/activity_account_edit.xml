@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/greyShadow"
+    android:orientation="vertical"
+    tools:context="com.kevin.futuremeet.activity.AccountEditActivity">
+
+    <include layout="@layout/toolbar_main" />
+
+
+    <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
+        android:id="@+id/change_avatar_layout"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/normal_selection_height"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_marginLeft="16dp"
+            android:layout_width="@dimen/setting_page_avatar_size"
+            android:layout_height="@dimen/setting_page_avatar_size" />
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="@string/change_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
+        android:id="@+id/change_username_layout"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/normal_selection_height"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/username_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="@string/change_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
+        android:id="@+id/change_password_layout"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/normal_selection_height"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/passwords_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="@string/change_passwords"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/normal_white_pressed_grey_selector"
+        android:id="@+id/change_setting_layout"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/normal_selection_height"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/setting_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="@string/setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+</LinearLayout>

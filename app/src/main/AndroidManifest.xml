@@ -136,8 +136,10 @@
                     android:scheme="rong" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MomentDetailActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".activity.MomentDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".activity.AccountEditActivity"></activity>
     </application>
 
 </manifest>
