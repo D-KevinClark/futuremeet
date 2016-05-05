@@ -98,7 +98,7 @@ public class MyCommentedFraqment extends EndlessSwipeRefreshRecyclerviewFragment
 
         viewHolder.contentText.setText(comment.getString(MomentCommentContract.CONTENT));
 
-        String time = Util.getProperPublishTimeFormate(getContext(), Calendar.getInstance().getTime());
+        String time = Util.getProperPublishTimeFormate(getContext(), comment.getCreatedAt());
         viewHolder.timeText.setText(time);
 
         int commentType = comment.getInt(MomentCommentContract.TYPE);

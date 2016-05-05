@@ -1,5 +1,6 @@
 package com.kevin.futuremeet.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.UserDetailInfoActivity;
 import com.kevin.futuremeet.beans.RelationShipContract;
 import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
@@ -71,7 +73,7 @@ public class FollowerFragment extends EndlessSwipeRefreshRecyclerviewFragment {
     @Override
     void onBindNormalItemViewHolder(RecyclerView.ViewHolder holder,List<AVObject> dataList, int position) {
         AVObject fromUserObj = dataList.get(position);
-        AVObject friendObj = fromUserObj.getAVObject(RelationShipContract.FROM);
+        final AVObject friendObj = fromUserObj.getAVObject(RelationShipContract.FROM);
         FriendViewHolder friendViewHolder = (FriendViewHolder) holder;
 
         int size = getResources().getDimensionPixelSize(R.dimen.friends_avatar_size);
@@ -80,6 +82,16 @@ public class FollowerFragment extends EndlessSwipeRefreshRecyclerviewFragment {
                 .load(url)
                 .asBitmap()
                 .into(friendViewHolder.avatarImage);
+
+        friendViewHolder.wholeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userBasicInfoId = friendObj.getObjectId();
+                Intent intent = new Intent(getContext(), UserDetailInfoActivity.class);
+                intent.putExtra(UserDetailInfoActivity.EXTRA_USER_BASIC_INFO_ID, userBasicInfoId);
+                getContext().startActivity(intent);
+            }
+        });
 
         String name = friendObj.getString(UserBasicInfoContract.USERNAME);
         friendViewHolder.usernameText.setText(name);
@@ -132,10 +144,12 @@ public class FollowerFragment extends EndlessSwipeRefreshRecyclerviewFragment {
         public final TextView usernameText;
         public final ImageView genderImage;
         public final TextView userAgeText;
+        public View wholeLayout;
 
 
         public FriendViewHolder(View itemView) {
             super(itemView);
+            wholeLayout = itemView;
             avatarImage = (ImageView) itemView.findViewById(R.id.avatar_imageview);
             usernameText = (TextView) itemView.findViewById(R.id.username_text);
             userAgeText = (TextView) itemView.findViewById(R.id.user_age_textview);
