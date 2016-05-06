@@ -11,10 +11,12 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.beans.FuturePoiContract;
 import com.kevin.futuremeet.beans.MomentContract;
 import com.kevin.futuremeet.beans.MomentLikeContrast;
 import com.kevin.futuremeet.beans.RelationShipContract;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.utility.Config;
 import com.kevin.futuremeet.utility.NetUtils;
 import com.kevin.futuremeet.utility.Util;
 
@@ -32,23 +34,7 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        new AsyncTask<Void, Void, String>() {
 
-            @Override
-            protected String doInBackground(Void... params) {
-                AVUser currUser = AVUser.getCurrentUser();
-                String userid = currUser.getAVObject(UserContract.USER_BASIC_INFO).getObjectId();
-                String username = currUser.getUsername();
-                String avatar = currUser.getAVFile(UserContract.AVATAR).getThumbnailUrl(false, 50, 50, 100, "jsp");
-                return NetUtils.getToken(userid, username, avatar);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                Log.i(TAG, "onPostExecute: " + s);
-            }
-        }.execute();
 
     }
-
 }

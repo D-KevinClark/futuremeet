@@ -95,7 +95,7 @@ public class PublishPoiIntentServie extends IntentService {
         futurePoi.put(FuturePoiContract.USER_GENDER, user.get(UserContract.GENDER));
 
         AVACL avacl = new AVACL();
-        avacl.setReadAccess(user, true);
+        avacl.setPublicReadAccess(true);
         avacl.setWriteAccess(user, true);
         futurePoi.setACL(avacl);
 
