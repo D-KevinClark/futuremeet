@@ -170,12 +170,6 @@ public class PublishMomentIntentService extends IntentService {
             AVObject userBasicInfo = AVObject.createWithoutData(UserBasicInfoContract.CLASS_NAME, userBasicInfoId);
             avObject.put(MomentContract.USER_BASIC_INFO,userBasicInfo);
 
-
-            AVACL avacl = new AVACL();
-            avacl.setPublicReadAccess(true);
-            avacl.setWriteAccess(user, true);
-            avObject.setACL(avacl);
-
             avObjects.add(avObject);
         }
 
