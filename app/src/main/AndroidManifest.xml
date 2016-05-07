@@ -139,7 +139,11 @@
         <activity
             android:name=".activity.MomentDetailActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".activity.AccountEditActivity"></activity>
+        <activity android:name=".activity.AccountEditActivity" />
+        <activity android:name=".activity.UserNameEditActivity" />
+        <activity android:name=".activity.PasswordChangeAcitivity" />
+        <activity android:name=".activity.ImageDispalyActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"/>
     </application>
 
 </manifest>

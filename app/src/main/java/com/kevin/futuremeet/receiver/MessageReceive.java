@@ -70,6 +70,9 @@ public class MessageReceive extends BroadcastReceiver {
                     builder.setContentText(context.getString(R.string.someone_like_you_moment))
                             .setNumber(likeNum + commentNum);
 
+                    if (!preferences.getBoolean(Config.SETTING_PUSH_SERVICE_ENABLE,true)) {
+                        return;
+                    }
                     Intent resultIntent = new Intent(context, SplashActivity.class);
                     resultIntent.setAction(Intent.ACTION_MAIN);
                     resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);

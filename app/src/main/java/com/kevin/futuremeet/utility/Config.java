@@ -35,5 +35,7 @@ public class Config {
     public static final String CATEGORY_JSON_KEY_OCCUPATION= "occupation";
 
 
+    public static final String SETTING_PUSH_SERVICE_ENABLE = "setting_push_service_enable";
+
 
 }

@@ -2,6 +2,8 @@ package com.kevin.futuremeet.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,6 +26,7 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
+import com.kevin.futuremeet.activity.ImageDispalyActivity;
 import com.kevin.futuremeet.activity.UserDetailInfoActivity;
 import com.kevin.futuremeet.beans.MomentCommentContract;
 import com.kevin.futuremeet.beans.MomentContract;
@@ -32,6 +35,7 @@ import com.kevin.futuremeet.beans.UserBasicInfoContract;
 import com.kevin.futuremeet.beans.UserContract;
 import com.kevin.futuremeet.utility.Util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -230,15 +234,30 @@ public class MomentsRecyclerViewAdapter extends LocationBasedRecyclerAdapter {
             momentHolder.imagesContainer.removeAllViews();
         }
 
-        List<AVFile> images = mAvobjectList.get(position).getList(MomentContract.IMAGES);
+        ArrayList<AVFile> images = (ArrayList<AVFile>) mAvobjectList.get(position).getList(MomentContract.IMAGES);
+
+        final ArrayList<String> imagesUrl = new ArrayList<>();
+        for (AVFile file : images) {
+            imagesUrl.add(file.getUrl());
+        }
+
         int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_size);
         int imageViewMarginRight = mContext.getResources().getDimensionPixelSize(R.dimen.moment_images_margin_right);
-
         int imagesMarginTop = mContext.getResources().getDimensionPixelOffset(R.dimen.moment_images_margin_right);
         if (images == null) return;//if there is no image within this post moment just return
         for (int i = 0; i < images.size(); i++) {
             AVFile image = images.get(i);
             ImageView imageView = new ImageView(mContext);
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext,ImageDispalyActivity.class);
+                    intent.putStringArrayListExtra(ImageDispalyActivity.EXTEA_IMAGES_URL, imagesUrl);
+                    mContext.startActivity(intent);
+                    ((AppCompatActivity)mContext).overridePendingTransition(R.anim.scale_from_center_to_full_anim,0);
+                }
+            });
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageSize, imageSize);
             layoutParams.setMargins(0, imagesMarginTop, imageViewMarginRight, 0);
