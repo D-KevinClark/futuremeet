@@ -2,6 +2,7 @@ package com.kevin.futuremeet.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -24,6 +25,8 @@ import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
 import com.kevin.futuremeet.R;
 import com.kevin.futuremeet.beans.UserContract;
+import com.kevin.futuremeet.database.FollowerDBContract;
+import com.kevin.futuremeet.database.FollowerDBHelper;
 import com.kevin.futuremeet.utility.Config;
 import com.kevin.futuremeet.utility.Util;
 
@@ -127,10 +130,13 @@ public class AccountEditActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AVUser user = AVUser.getCurrentUser();
                 user.logOut();
+                romoveAllDataInRelationShipDB();
                 Intent intent = new Intent(AccountEditActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                finish();
             }
+
+
         });
 
         mChangeUsernameLayout.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +168,12 @@ public class AccountEditActivity extends AppCompatActivity {
                 editor.commit();
             }
         });
+    }
+
+    private void romoveAllDataInRelationShipDB() {
+        FollowerDBHelper helper = new FollowerDBHelper(this);
+        SQLiteDatabase database = helper.getWritableDatabase();
+        database.delete(FollowerDBContract.FollowerEntry.TABLE_NAME, null, null);
     }
 
     private void initviews() {
